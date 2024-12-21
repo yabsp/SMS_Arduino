@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
-#define RX_PIN 7 // Connect to TX of SIM7600
-#define TX_PIN 8  // Connect to RX of SIM7600
+#define RX_PIN 7 // Connect to TX of SIM7600, should be 7
+#define TX_PIN 8  // Connect to RX of SIM7600, should be 8
 SoftwareSerial sim7600(RX_PIN, TX_PIN);
 
 const char simPin[] = "0135"; // Replace with your SIM PIN
@@ -17,18 +17,28 @@ void setup() {
 
   // Send AT command to check connection
   sim7600.println("AT");
-  /*Serial.println(sim7600.available());
+  Serial.println("AT");
+  //Serial.println(sim7600.available());
   Serial.println(sim7600.readString());
-  Serial.println(sim7600.available());
-  */
 
+  sim7600.println("AT+CPIN?");
+  Serial.println("AT+CPIN?");
+  Serial.println(sim7600.readString());
+
+  sim7600.println("AT+CPIN=\"0135\"");
+  Serial.println("AT+CPIN=\"0135\""); 
+  Serial.println(sim7600.readString());
+
+  
+
+  /*
   if (waitForResponse("OK")) {
     Serial.println("SIM7600 module is responsive.");
   } else {
     Serial.println("No response from SIM7600. Check connections.");
     return; // Stop setup if the module doesn't respond
   }
-
+  
   // Check SIM PIN status
   sim7600.println("AT+CPIN?");
   if (waitForResponse("SIM PIN")) {
@@ -54,6 +64,7 @@ void setup() {
     Serial.println(sim7600.readString());
     Serial.println("Failed to initialize SIM. Check SIM card.");
   }
+  */
 }
 
 void loop() {
