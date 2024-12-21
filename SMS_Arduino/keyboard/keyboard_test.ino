@@ -3,27 +3,86 @@
 
 #include <LiquidCrystal.h>  //Best imported by library manager
 
-const char keymap[] = {
-  0, 0,  0,  0,  0,  0,  0,  0,
-  0, 0,  0,  0,  0,  0, '`', 0,
-  0, 0 , 0 , 0,  0, 'q','1', 0,
-  0, 0, 'z','s','a','w','2', 0,
-  0,'c','x','d','e','4','3', 0,
-  0,' ','v','f','t','r','5', 0,
-  0,'n','b','h','g','y','6', 0,
-  0, 0, 'm','j','u','7','8', 0,
-  0,',','k','i','o','0','9', 0,
-  0,'.','/','l',';','p','-', 0,
-  0, 0,'\'', 0,'[', '=', 0, 0,
-  0, 0,13, ']', 0, '\\', 0, 0,
-  0, 0, 0, 0, 0, 0, 127, 0,
-  0,'1', 0,'4','7', 0, 0, 0,
-  '0','.','2','5','6','8', 0, 0,
-  0,'+','3','-','*','9', 0, 0,
-  0, 0, 0, 0 };
+const char keymapUS[] = {   // US Keyboard
+  0, 'F9',  0,  'F5',  'F3',  'F1',  'F6',  'F12',      // 08
+  0, 'F10',  'F8',  'F6',  'F4',  'TAB', '`', 0,        // 10
+  0, 'ALT' , 'LSHIFT' , 0,  'LCTRL', 'q','1', 0,        // 18
+  0, 0, 'z','s','a','w','2', 0,                         // 20
+  0,'c','x','d','e','4','3', 0,                         // 28
+  0,' ','v','f','t','r','5', 0,                         // 30
+  0,'n','b','h','g','y','6', 0,                         // 38
+  0, 0, 'm','j','u','7','8', 0,                         // 40
+  0,',','k','i','o','0','9', 0,                         // 48
+  0,'.','/','l',';','p','-', 0,                         // 50
+  0, 0,'\'', 0,'[', '=', 0, 0,                          // 58
+  'CAPSLOCK', 'RSHIFT','ENTER', ']', 0, '\\', 0, 0,     // 60
+  0, 0, 0, 0, 0, 0, 'BACKSPACE', 0,                     // 68
+  0,'1', 0,'4','7', 0, 'ESC', 0,                        // 70
+  '0','.','2','5','6','8', 0, 'NUMLOCK',                // 78
+  'F11','+','3','-','*','9', 0, 0,                      // 80
+  0, 0, 0, 'F7' };                                      // 84
+
+  const char keymapGER[] = {   // German Keyboard
+  0, 'F9',  0,  'F5',  'F3',  'F1',  'F6',  'F12',      // 08
+  0, 'F10',  'F8',  'F6',  'F4',  'TAB', '`', 0,        // 10
+  0, 'ALTGR' , 'LSHIFT' , 0,  'LCTRL', 'q','1', 0,      // 18
+  0, 0, 'y','s','a','w','2', 0,                         // 20
+  0,'c','x','d','e','4','3', 0,                         // 28
+  0,' ','v','f','t','r','5', 0,                         // 30
+  0,'n','b','h','g','z','6', 0,                         // 38
+  0, 0, 'm','j','u','7','8', 0,                         // 40
+  0,',','k','i','o','0','9', 0,                         // 48
+  0,'.','-','l','ö','p','ß', 0,                         // 50
+  0, 0,'ä', 0,'ü', '`', '<', 0,                         // 58   '<' maybe elsewhere
+  'CAPSLOCK', 'RSHIFT','ENTER', '+', 0, 'ENTER', 0, 0,  // 60 Maybo 'ENTER' should be 0 or '#' and where <>|
+  0, 0, 0, 0, 0, 0, 'BACKSPACE', 0,                     // 68
+  0,'1', 0,'4','7', 0, 'ESC', 0,                        // 70
+  '0','.','2','5','6','8', 0, 'NUMLOCK',                // 78
+  'F11','+','3','-','*','9', 0, 0,                      // 80
+  0, 0, 0, 'F7' };                                      // 84
+
+const char keymapGERShift[] = {    // for pressing ALTGR
+  0, 0,  0,  0,  0, 0, 0,  0,                           // 08
+  0, 0, 0, 0, 0, 0, '´', 0,                             // 10
+  0, 0, 0, 0, 0, 'Q', '!', 0,                           // 18
+  0, 0, 'Y', 'S', 'A', 'W', '"', 0,                     // 20
+  0, 'C', 'X', 'D', 'E', '$', '§', 0,                   // 28
+  0, 0, 'V', 'F', 'T', 'R', '%', 0,                     // 30
+  0, 'N', 'B', 'H', 'G', 'Z', '&', 0,                   // 38
+  0, 0, 'M', 'J', 'U', '/', '(', 0,                     // 40
+  0, ';', 'K', 'I', 'O', '=', ')', 0,                   // 48
+  0, ':', '_', 'L', 'Ö', 'P', '?', 0,                   // 50
+  0, 0, 'Ä', 0, 'Ü', '`', '>', 0,                       // 58
+  0, 0, 0, '*', 0, 0, 0, 0,                             // 60
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 68
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 70
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 78
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 80
+  0, 0, 0, 0};                                          // 84 
+const char keymapGERAltGR [] = {  // for pressing shift
+  0, 0,  0,  0, 0, 0, 0,  0,                            // 08
+  0, 0, 0, 0, 0, 0, '|', 0,                             // 10
+  0, 0, 0, 0, 0, '@', 0, 0,                             // 18
+  0, 0, 0, 0, 0, 0, '²', 0,                             // 20
+  0, 0, 0, 0, '€', 0, 0, '³',                           // 28
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 30
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 38
+  0, 0, 'µ', 0, 0, '{', '[', 0,                         // 40
+  0, 0, 0, 0, 0, '}', ']', 0,                           // 48
+  0, 0, 0, 0, 0, 0, '\\', 0,                            // 50
+  0, 0, 0, 0, 0, 0, '|', 0,                             // 58
+  0, 0, 0, '~', 0, 0, 0, 0,                             // 60
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 68
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 70
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 78
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 80
+  0, 0, 0, 0};                                          // 84
 
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+bool altgrActive = false;
+bool shiftActive = false;
 
 void setup()
 {
@@ -56,6 +115,17 @@ ISR(PCINT2_vect)
   
   if(lastscan != 0xF0 && scanval != 0xF0){
   Serial.println(scanval, HEX);
+    if (scanval == 0x12 || scanval = 0x59) { // Shift press
+      shiftActive = true;
+    } else if (lastscan == 0xF0 && (canval == 0x12 || scanval = 0x59)) { // Shift release
+      shiftActive = false;
+    } else if (scanval == 0x11) { // AltGR press
+      altgrActive = true;
+    } else if (lastscan == 0xF0 && scanval == 0x11) { // AltGR release
+      altgrActive = false;
+    } else {
+      char output;
+    }
 	  switch(scanval)
 	  {
 		case 0x5A: //Enter
@@ -67,9 +137,29 @@ ISR(PCINT2_vect)
 		  lcd.write(' ');
 		  lcd.setCursor(col, line);
 		break;
+    case 0x4C: //Ö
+      lcd.wrote("oe");
+      col++;
 		default:
-		  lcd.write(keymap[scanval]);
-		  col++;
+    case 0x52: //Ä
+      lcd.wrote("ae");
+      col++;
+		default:
+    case 0x54: //Ü
+      lcd.wrote("ue");
+      col++;
+		default:
+      if (shiftActive) {
+        output = keymapGERShift[scanval]; // output = shift + key
+      } else if (altgrActive) {
+        output = keymapGERaltGR[scanval]; // output = AltGR + key
+      } else {
+        output = keymapGER[scanval];      // output = key
+      }
+      if (output != 0) { // only print if valod key is pressed
+        lcd.write(output);
+        col++;
+      }
 	  }
   }
   lastscan = scanval;
