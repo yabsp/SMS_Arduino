@@ -3,80 +3,80 @@
 #define RX_PIN 7 // Connect to TX of SIM7600, should be 7
 #define TX_PIN 8  // Connect to RX of SIM7600, should be 8
 SoftwareSerial sim7600(RX_PIN, TX_PIN);
+int counter = 0;
+const char simPin[] = "0135";
 
-const char simPin[] = "0135"; // Replace with your SIM PIN
-
-bool waitForResponse(const char*);
+bool responseEqualsGiven(const char*);
+void readWhileAvailable();
 
 void setup() {
-  Serial.begin(115200);         // For Arduino Serial Monitor
-  sim7600.begin(115200);        // For SIM7600 communication
+  Serial.begin(4800);        
+  sim7600.begin(115200); //initialize at 115200 which is the default of the sim7600g-h module
 
   Serial.println("Initializing SIM7600...");
   delay(1000);
 
-  // Send AT command to check connection
-  sim7600.println("AT");
+  // Routine to change baud rate, from default to 9600.
+  // This is done as the default baud rate causes decoding errors.
+  int count = 0;
+  do{
+    sim7600.println("AT");
+    Serial.println("Checking connection, please wait...");
+    delay(100);
+    count++;
+  } while(!responseEqualsGiven("OK") && count < 4);
+
+  count = 0;
+  do {
+    Serial.println("Configuring baud rate to 9600, please wait...");
+    sim7600.println("AT+IPREX=9600");
+    delay(100);
+    sim7600.begin(9600);
+    count++;
+  } while(!responseEqualsGiven("OK") && count < 4);
+  
   Serial.println("AT");
-  //Serial.println(sim7600.available());
-  Serial.println(sim7600.readString());
-
-  sim7600.println("AT+CPIN?");
+  sim7600.println("AT");
+  delay(1000);
+  readWhileAvailable();
+  
   Serial.println("AT+CPIN?");
-  Serial.println(sim7600.readString());
+  sim7600.println("AT+CPIN?");
+  delay(1000);
+  readWhileAvailable();
 
-  sim7600.println("AT+CPIN=\"0135\"");
   Serial.println("AT+CPIN=\"0135\""); 
-  Serial.println(sim7600.readString());
-
+  sim7600.println("AT+CPIN=\"0135\"");
+  delay(1000);
+  readWhileAvailable();
   
-
-  /*
-  if (waitForResponse("OK")) {
-    Serial.println("SIM7600 module is responsive.");
-  } else {
-    Serial.println("No response from SIM7600. Check connections.");
-    return; // Stop setup if the module doesn't respond
-  }
-  
-  // Check SIM PIN status
-  sim7600.println("AT+CPIN?");
-  if (waitForResponse("SIM PIN")) {
-    // Send SIM PIN if required
-    sim7600.print("AT+CPIN=\"");
-    sim7600.print(simPin);
-    sim7600.println("\"");
-    if (waitForResponse("OK")) {
-      Serial.println("SIM PIN accepted.");
-    } else {
-      Serial.println("Failed to unlock SIM. Check PIN.");
-      return; // Stop setup if the PIN is incorrect
-    }
-  } else if (waitForResponse("READY")) {
-    Serial.println("SIM is already unlocked.");
-  }
-
-  // Check if the SIM is ready
-  sim7600.println("AT+CPIN?");
-  if (waitForResponse("+CPIN READY")) {
-    Serial.println("SIM is ready and connection established.");
-  } else {
-    Serial.println(sim7600.readString());
-    Serial.println("Failed to initialize SIM. Check SIM card.");
-  }
-  */
 }
 
 void loop() {
-  // Your main code here
+  while(counter < 1) {
+  sim7600.println("AT+CMGS=\"+41786939406\"");
+  delay(100);
+  sim7600.println("Test1\r");
+  delay(100);
+  sim7600.println((char) 26);
+  delay(1000);
+  counter++;
+  }
 }
 
-bool waitForResponse(const char *expected = nullptr) {
-  unsigned long timeout = 5000;
+void readWhileAvailable() {
+  while(sim7600.available()) {
+    Serial.println(sim7600.readString());
+  }
+  
+}
+
+bool responseEqualsGiven(const char *expected = nullptr) {
+  unsigned long timeout = 500;
   unsigned long start = millis();
   while (millis() - start < timeout) {
       String response = sim7600.readString();
-      Serial.println(response); // Echo response to Serial Monitor
+      Serial.println(response);
       if (expected && response.indexOf(expected) != -1) {
         return true;
       }
