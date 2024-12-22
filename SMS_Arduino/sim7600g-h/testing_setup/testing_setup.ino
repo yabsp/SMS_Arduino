@@ -10,9 +10,11 @@ volatile bool newMessage = false;
 
 int counter = 1;
 
+enum SimStatus {READY, SIM_PIN, SIM_PUK, UNKNOWN};
+
 bool responseEqualsGiven(const char*);
 void readWhileAvailable();
-String checkCPINStatus();
+SimStatus checkCPINStatus();
 String sendCommandAndGetResponse(const char* command, unsigned long timeout = 1000);
 
 
@@ -51,38 +53,39 @@ void setup() {
   readWhileAvailable();
 
   Serial.println("Checking CPIN status...");
-  String cpinStatus = checkCPINStatus();
+  SimStatus cpinStatus = checkCPINStatus();
 
-  if (cpinStatus == "READY") {
-    Serial.println("SIM is ready!");
-  } else if (cpinStatus == "SIM PIN") {
-    Serial.println("SIM PIN required. Entering PIN...");
-    sim7600.print("AT+CPIN=\"");
-    sim7600.print(simPin);
-    sim7600.println("\"");
-    delay(1000);
-    readWhileAvailable();
-  } else if (cpinStatus == "SIM PUK") {
-    Serial.println("SIM PUK required. Cannot proceed.");
-  } else {
-    Serial.println("Unknown CPIN status: " + cpinStatus);
+  switch(cpinStatus) {
+    case READY:
+      Serial.println("SIM is ready!");
+    break;
+    case SIM_PIN:
+      Serial.println("SIM PIN required. Entering PIN...");
+      sim7600.print("AT+CPIN=\"");
+      sim7600.print(simPin);
+      sim7600.println("\"");
+      delay(1000);
+      readWhileAvailable();
+    break;
+    case SIM_PUK:
+      Serial.println("SIM PUK required. Cannot proceed.");
+    break;
+    default:
+      Serial.println("CPIN status: " + cpinStatus);
+    break;
   }
 }
-  /*
-  Serial.println("AT+CPIN?");
-  sim7600.println("AT+CPIN?");
-  delay(1000);
-  readWhileAvailable();
-
-  Serial.println("AT+CPIN=\"0135\""); 
-  sim7600.println("AT+CPIN=\"0135\"");
-  delay(1000);
-  readWhileAvailable();
-  */
 
 void loop() {
 
+  if(newMessage) {
+    newMessage = false;
+
+    sim7600.println("AT+CMGL=\"ALL\"");
+    delay(1000);
   
+    readWhileAvailable();  
+  }
 
   while(counter < 1) {
   sim7600.println("AT+CMGS=\"+41786939406\"");
@@ -115,16 +118,16 @@ bool responseEqualsGiven(const char *expected = nullptr) {
   return false;
 }
 
-String checkCPINStatus() {
+SimStatus checkCPINStatus() {
   String response = sendCommandAndGetResponse("AT+CPIN?");
   if (response.indexOf("READY") != -1) {
-    return "READY";
+    return READY;
   } else if (response.indexOf("SIM PIN") != -1) {
-    return "SIM PIN";
+    return SIM_PIN;
   } else if (response.indexOf("SIM PUK") != -1) {
-    return "SIM PUK";
+    return SIM_PUK;
   }
-  return "UNKNOWN";
+  return UNKNOWN;
 }
 
 String sendCommandAndGetResponse(const char* command, unsigned long timeout) {
