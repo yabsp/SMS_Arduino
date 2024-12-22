@@ -1,6 +1,8 @@
 #define CLOCK 7 //D-
 #define DATA 6  //D+
 
+#define MAX_MESSAGE_LENGTH 1024
+
 #include <LiquidCrystal.h>  //Best imported by library manager
 
 const char keymapUS[] = {   // US Keyboard
@@ -90,6 +92,8 @@ unsigned long altgrLastTime = 0;
 
 const unsigned long timeout = 100; // Timeout for Shift and AltGR in ms
 
+char message[MAX_MESSAGE_LENGTH + 1] = ""; // Message buffer
+
 void setup()
 {
   Serial.begin(115200);
@@ -106,7 +110,7 @@ void setup()
 uint8_t lastscan = 0;
 uint8_t lastlastscan = 0;
 uint8_t line = 0, col = 0;
-char output = NULL;
+char input = NULL;
 
 
 ISR(PCINT2_vect)
@@ -139,52 +143,90 @@ ISR(PCINT2_vect)
 	  switch(scanval)
 	  {
 		case 0x5A: //Enter
+      handle_enter_key();
 		  lcd.setCursor(0, ++line & 0x03);
 		  col = 0;
 		  break;
 		case 0x66: //Backspace
+      delete_last_char_from_message();
 		  lcd.setCursor(--col, line);
 		  lcd.write(' ');
 		  lcd.setCursor(col, line);
 		break;
+    /*
     case 0x4C: //Ö
-      output = "oe";
+      input = "oe";
       col++;
     case 0x52: //Ä
-      output = "ae";
+      input = "ae";
       col++;
     case 0x54: //Ü
-      output = "ue";
+      input = "ue";
       col++;
+    */
 		default:
       if (shiftActive) {
-        output = keymapGERShift[scanval]; // output = shift + key
+        input = keymapGERShift[scanval]; // input = shift + key
       } else if (altgrActive) {
-        output = keymapGERAltGR[scanval]; // output = AltGR + key
+        input = keymapGERAltGR[scanval]; // input = AltGR + key
       } else if (capsActive) {
-        output = keymapGERShift[scanval]; 
+        input = keymapGERShift[scanval]; 
       }else {
         if (scanval == 0x58) {
-          output = 0;
+          input = 0;
         } else {
-          output = keymapGER[scanval];      // output = key
+          input = keymapGER[scanval];      // input = key
         }
       }
-      if (output != 0) { // only print if valod key is pressed
+      if (input != 0) { // only print if valod key is pressed
         if (scanval == 0x58) {
-          output = 0;
+          input = 0;
         } else {
-          lcd.write(output);
-          Serial.println(output);
+          add_char_to_message(input);
+          lcd.write(input);
+          Serial.println(input);
           col++;
         }
       }
 	  }
   }
+
+  // Combine input to String
+
+  
+
   lastlastscan = lastscan;
   lastscan = scanval;
   bitSet(PCIFR, PCIF2);
 }
+
+// char combining tests
+
+void add_char_to_message(char ch) {
+    int len = strlen(message);
+    if (len < MAX_MESSAGE_LENGTH) { // Ensure we don't exceed buffer size
+        message[len] = ch;
+        message[len + 1] = '\0';
+    }
+}
+
+void delete_last_char_from_message() {
+    int len = strlen(message);
+    if (len > 0) {
+        message[len - 1] = '\0';
+    }
+}
+
+void handle_enter_key() {
+    // Simulate sending the message
+    Serial.println("Message sent:");
+    Serial.println(message);
+
+    // Reset the message
+    message[0] = '\0';
+}
+
+
 
 void loop()
 {
