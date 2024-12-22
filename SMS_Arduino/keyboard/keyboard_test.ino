@@ -1,5 +1,5 @@
-#define CLOCK 6 //D-
-#define DATA 7  //D+
+#define CLOCK 7 //D-
+#define DATA 6  //D+
 
 #include <LiquidCrystal.h>  //Best imported by library manager
 
@@ -24,7 +24,7 @@ const char keymapUS[] = {   // US Keyboard
 
   const char keymapGER[] = {   // German Keyboard
   0, 'F9',  0,  'F5',  'F3',  'F1',  'F6',  'F12',      // 08
-  0, 'F10',  'F8',  'F6',  'F4',  'TAB', '`', 0,        // 10
+  0, 'F10',  'F8',  'F6',  'F4',  'TAB', '^', 0,        // 10
   0, 'ALTGR' , 'LSHIFT' , 0,  'LCTRL', 'q','1', 0,      // 18
   0, 0, 'y','s','a','w','2', 0,                         // 20
   0,'c','x','d','e','4','3', 0,                         // 28
@@ -33,9 +33,9 @@ const char keymapUS[] = {   // US Keyboard
   0, 0, 'm','j','u','7','8', 0,                         // 40
   0,',','k','i','o','0','9', 0,                         // 48
   0,'.','-','l','ö','p','ß', 0,                         // 50
-  0, 0,'ä', 0,'ü', '`', '<', 0,                         // 58   '<' maybe elsewhere
-  'CAPSLOCK', 'RSHIFT','ENTER', '+', 0, 'ENTER', 0, 0,  // 60 Maybo 'ENTER' should be 0 or '#' and where <>|
-  0, 0, 0, 0, 0, 0, 'BACKSPACE', 0,                     // 68
+  0, 0,'ä', 0,'ü', '`', 0, 0,                           // 58 
+  'CAPSLOCK', 'RSHIFT','ENTER', '+', 0, '#', 0, 0,      // 60 Maybo 'ENTER' should be 0 or '#'
+  0, '<', 0, 0, 0, 0, 'BACKSPACE', 0,                   // 68
   0,'1', 0,'4','7', 0, 'ESC', 0,                        // 70
   '0','.','2','5','6','8', 0, 'NUMLOCK',                // 78
   'F11','+','3','-','*','9', 0, 0,                      // 80
@@ -43,18 +43,18 @@ const char keymapUS[] = {   // US Keyboard
 
 const char keymapGERShift[] = {    // for pressing ALTGR
   0, 0,  0,  0,  0, 0, 0,  0,                           // 08
-  0, 0, 0, 0, 0, 0, '´', 0,                             // 10
+  0, 0, 0, 0, 0, 0, '°', 0,                             // 10
   0, 0, 0, 0, 0, 'Q', '!', 0,                           // 18
   0, 0, 'Y', 'S', 'A', 'W', '"', 0,                     // 20
   0, 'C', 'X', 'D', 'E', '$', '§', 0,                   // 28
-  0, 0, 'V', 'F', 'T', 'R', '%', 0,                     // 30
+  0, ' ', 'V', 'F', 'T', 'R', '%', 0,                   // 30
   0, 'N', 'B', 'H', 'G', 'Z', '&', 0,                   // 38
   0, 0, 'M', 'J', 'U', '/', '(', 0,                     // 40
   0, ';', 'K', 'I', 'O', '=', ')', 0,                   // 48
   0, ':', '_', 'L', 'Ö', 'P', '?', 0,                   // 50
-  0, 0, 'Ä', 0, 'Ü', '`', '>', 0,                       // 58
-  0, 0, 0, '*', 0, 0, 0, 0,                             // 60
-  0, 0, 0, 0, 0, 0, 0, 0,                               // 68
+  0, 0, 'Ä', 0, 'Ü', '`', 0, 0,                         // 58
+  'CAPSLOCK', 0, 0, '*', 0, '`', 0, 0,                    // 60
+  0, '>', 0, 0, 0, 0, 0, 0,                             // 68
   0, 0, 0, 0, 0, 0, 0, 0,                               // 70
   0, 0, 0, 0, 0, 0, 0, 0,                               // 78
   0, 0, 0, 0, 0, 0, 0, 0,                               // 80
@@ -70,9 +70,9 @@ const char keymapGERAltGR [] = {  // for pressing shift
   0, 0, 'µ', 0, 0, '{', '[', 0,                         // 40
   0, 0, 0, 0, 0, '}', ']', 0,                           // 48
   0, 0, 0, 0, 0, 0, '\\', 0,                            // 50
-  0, 0, 0, 0, 0, 0, '|', 0,                             // 58
+  0, 0, 0, 0, 0, 0, 0, 0,                               // 58
   0, 0, 0, '~', 0, 0, 0, 0,                             // 60
-  0, 0, 0, 0, 0, 0, 0, 0,                               // 68
+  0, '|', 0, 0, 0, 0, 0, 0,                             // 68
   0, 0, 0, 0, 0, 0, 0, 0,                               // 70
   0, 0, 0, 0, 0, 0, 0, 0,                               // 78
   0, 0, 0, 0, 0, 0, 0, 0,                               // 80
@@ -83,6 +83,12 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 bool altgrActive = false;
 bool shiftActive = false;
+bool capsActive = false;
+
+unsigned long shiftLastTime = 0;
+unsigned long altgrLastTime = 0;
+
+const unsigned long timeout = 100; // Timeout for Shift and AltGR in ms
 
 void setup()
 {
@@ -97,8 +103,10 @@ void setup()
   bitSet(PCMSK2, CLOCK); // Pin change interrupt on Clock pin
  }
 
-uint8_t lastscan;
+uint8_t lastscan = 0;
+uint8_t lastlastscan = 0;
 uint8_t line = 0, col = 0;
+char output = NULL;
 
 
 ISR(PCINT2_vect)
@@ -110,20 +118,22 @@ ISR(PCINT2_vect)
     scanval |= digitalRead(DATA) << i; // 1 start, 8 data bits, 1 parity, 1 stop bit
     while(!digitalRead(CLOCK));
   }
+
   scanval >>= 1; // ignore the start bit
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
   
   if(lastscan != 0xF0 && scanval != 0xF0){
   Serial.println(scanval, HEX);
-    if (scanval == 0x12 || scanval = 0x59) { // Shift press
+    if (scanval == 0x12 || scanval == 0x59) { // Shift press
+      shiftLastTime = millis(); // Reset Shift timer
       shiftActive = true;
-    } else if (lastscan == 0xF0 && (canval == 0x12 || scanval = 0x59)) { // Shift release
-      shiftActive = false;
-    } else if (scanval == 0x11) { // AltGR press
+      //output = keymapGERShift[scanval];
+    } else if (scanval == 0x11 && lastscan == 0xE0) { // AltGR press
       altgrActive = true;
-    } else if (lastscan == 0xF0 && scanval == 0x11) { // AltGR release
-      altgrActive = false;
-    } else {
+      altgrLastTime = millis();
+    } else if (scanval == 0x58){
+      capsActive = !capsActive;
+    }else {
       char output;
     }
 	  switch(scanval)
@@ -138,38 +148,61 @@ ISR(PCINT2_vect)
 		  lcd.setCursor(col, line);
 		break;
     case 0x4C: //Ö
-      lcd.wrote("oe");
+      output = "oe";
       col++;
-		default:
     case 0x52: //Ä
-      lcd.wrote("ae");
+      output = "ae";
       col++;
-		default:
     case 0x54: //Ü
-      lcd.wrote("ue");
+      output = "ue";
       col++;
 		default:
       if (shiftActive) {
         output = keymapGERShift[scanval]; // output = shift + key
       } else if (altgrActive) {
-        output = keymapGERaltGR[scanval]; // output = AltGR + key
-      } else {
-        output = keymapGER[scanval];      // output = key
+        output = keymapGERAltGR[scanval]; // output = AltGR + key
+      } else if (capsActive) {
+        output = keymapGERShift[scanval]; 
+      }else {
+        if (scanval == 0x58) {
+          output = 0;
+        } else {
+          output = keymapGER[scanval];      // output = key
+        }
       }
       if (output != 0) { // only print if valod key is pressed
-        lcd.write(output);
-        col++;
+        if (scanval == 0x58) {
+          output = 0;
+        } else {
+          lcd.write(output);
+          Serial.println(output);
+          col++;
+        }
       }
 	  }
   }
+  lastlastscan = lastscan;
   lastscan = scanval;
   bitSet(PCIFR, PCIF2);
 }
 
 void loop()
 {
-  /*digitalWrite(13, LOW);
+  unsigned long currentTime = millis();
+  
+  // Deactivate Shift if no input for the timeout duration
+  if (shiftActive && (currentTime - shiftLastTime > timeout)) {
+    shiftActive = false;
+  }
+
+  // Deactivate AltGR if no input for the timeout duration
+  if (altgrActive && (currentTime - altgrLastTime > timeout)) {
+    altgrActive = false;
+  }
+
+
+  digitalWrite(13, LOW);
   delay(500);  
   digitalWrite(13, HIGH);
-  delay(500);*/
+  delay(500);
 }
