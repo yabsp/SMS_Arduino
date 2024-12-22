@@ -2,16 +2,26 @@
 
 #define RX_PIN 7 // Connect to TX of SIM7600, should be 7
 #define TX_PIN 8  // Connect to RX of SIM7600, should be 8
+#define RI_PIN 2 // SMS interrupt pin
+
 SoftwareSerial sim7600(RX_PIN, TX_PIN);
-int counter = 0;
 const char simPin[] = "0135";
+volatile bool newMessage = false;
+
+int counter = 1;
 
 bool responseEqualsGiven(const char*);
 void readWhileAvailable();
+String checkCPINStatus();
+String sendCommandAndGetResponse(const char* command, unsigned long timeout = 1000);
+
 
 void setup() {
   Serial.begin(4800);        
   sim7600.begin(115200); //initialize at 115200 which is the default of the sim7600g-h module
+
+  pinMode(RI_PIN, INPUT); 
+  attachInterrupt(digitalPinToInterrupt(RI_PIN), isrRI, FALLING);
 
   Serial.println("Initializing SIM7600...");
   delay(1000);
@@ -39,7 +49,26 @@ void setup() {
   sim7600.println("AT");
   delay(1000);
   readWhileAvailable();
-  
+
+  Serial.println("Checking CPIN status...");
+  String cpinStatus = checkCPINStatus();
+
+  if (cpinStatus == "READY") {
+    Serial.println("SIM is ready!");
+  } else if (cpinStatus == "SIM PIN") {
+    Serial.println("SIM PIN required. Entering PIN...");
+    sim7600.print("AT+CPIN=\"");
+    sim7600.print(simPin);
+    sim7600.println("\"");
+    delay(1000);
+    readWhileAvailable();
+  } else if (cpinStatus == "SIM PUK") {
+    Serial.println("SIM PUK required. Cannot proceed.");
+  } else {
+    Serial.println("Unknown CPIN status: " + cpinStatus);
+  }
+}
+  /*
   Serial.println("AT+CPIN?");
   sim7600.println("AT+CPIN?");
   delay(1000);
@@ -49,10 +78,12 @@ void setup() {
   sim7600.println("AT+CPIN=\"0135\"");
   delay(1000);
   readWhileAvailable();
-  
-}
+  */
 
 void loop() {
+
+  
+
   while(counter < 1) {
   sim7600.println("AT+CMGS=\"+41786939406\"");
   delay(100);
@@ -82,4 +113,34 @@ bool responseEqualsGiven(const char *expected = nullptr) {
       }
   }
   return false;
+}
+
+String checkCPINStatus() {
+  String response = sendCommandAndGetResponse("AT+CPIN?");
+  if (response.indexOf("READY") != -1) {
+    return "READY";
+  } else if (response.indexOf("SIM PIN") != -1) {
+    return "SIM PIN";
+  } else if (response.indexOf("SIM PUK") != -1) {
+    return "SIM PUK";
+  }
+  return "UNKNOWN";
+}
+
+String sendCommandAndGetResponse(const char* command, unsigned long timeout) {
+  sim7600.println(command);
+  unsigned long start = millis();
+  String response = "";
+
+  while (millis() - start < timeout) {
+    if (sim7600.available()) { 
+      char c = sim7600.read();
+      response += c;
+    }
+  }
+  return response;
+}
+
+void isrRI() {
+  newMessage = true;
 }
