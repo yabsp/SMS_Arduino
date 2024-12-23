@@ -7,10 +7,10 @@
 #include "KeyboardFlags.h"
 #include "KeyboardVariables.h"
 #include "KeyboardFunctions.h"
-
+/*
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
+*/
 volatile bool enterKeyPressed = false;
 volatile bool deleteKeyPressed = false;
 volatile bool keyPressDetected = false;
@@ -22,10 +22,12 @@ void setup()
   Serial.begin(115200);
   pinMode(CLOCK, INPUT_PULLUP); //For most keyboards the builtin pullups are sufficient, so the 10k pullups can be omitted
   pinMode(DATA, INPUT_PULLUP);
-  pinMode(13, OUTPUT);
+  //pinMode(13, OUTPUT);
+  /*
   lcd.begin(20, 4);
   lcd.cursor();
   lcd.blink();
+  */
   bitSet(PCICR, PCIE2); // Enable pin change interrupts on pin D0-D7
   bitSet(PCMSK2, CLOCK); // Pin change interrupt on Clock pin
  }
@@ -62,17 +64,19 @@ ISR(PCINT2_vect)
       enterKeyPressed = true;
       handle_enter_key();
       Serial.println("ENTER_FOR_NEW_LINE");
-		  lcd.setCursor(0, ++line & 0x03);
-		  col = 0;
+		  //lcd.setCursor(0, ++line & 0x03);
+		  //col = 0;
 		  break;
 		case 0x66: //Backspace
       if (strlen(message) > 0) {
         deleteKeyPressed = true;
         delete_last_char_from_message();
         Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
+        /*
         lcd.setCursor(--col, line);
         lcd.write(' ');
         lcd.setCursor(col, line);
+        */
       }
 		break;
     
@@ -107,10 +111,10 @@ ISR(PCINT2_vect)
           input = 0;
         } else {
           add_char_to_message(input);
-          lcd.write(input);
+          //lcd.write(input);
           Serial.println(input);
 
-          col++;
+          //col++;
         }
       }
 	  }
