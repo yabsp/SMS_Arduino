@@ -8,7 +8,7 @@ SoftwareSerial sim7600(RX_PIN, TX_PIN);
 const char simPin[] = "0135";
 volatile bool newMessage = false;
 
-int counter = 1;
+int counter = 2;
 
 enum SimStatus {READY, SIM_PIN, SIM_PUK, UNKNOWN};
 
@@ -16,10 +16,14 @@ bool responseEqualsGiven(const char*);
 void readWhileAvailable();
 SimStatus checkCPINStatus();
 String sendCommandAndGetResponse(const char* command, unsigned long timeout = 1000);
+void displayLastMessage(String rawResponse);
+void displayAllMessages(String rawResponse);
+void readWhileAvailableMessage();
+
 
 
 void setup() {
-  Serial.begin(4800);        
+  Serial.begin(115200);        
   sim7600.begin(115200); //initialize at 115200 which is the default of the sim7600g-h module
 
   pinMode(RI_PIN, INPUT); 
@@ -31,13 +35,13 @@ void setup() {
   // Routine to change baud rate, from default to 9600.
   // This is done as the default baud rate causes decoding errors.
   int count = 0;
-  do{
+  /* do{
     sim7600.println("AT");
     Serial.println("Checking connection, please wait...");
     delay(100);
     count++;
   } while(!responseEqualsGiven("OK") && count < 4);
-
+  */
   count = 0;
   do {
     Serial.println("Configuring baud rate to 9600, please wait...");
@@ -47,7 +51,7 @@ void setup() {
     count++;
   } while(!responseEqualsGiven("OK") && count < 4);
   
-  Serial.println("AT");
+  Serial.println("Checking Connection");
   sim7600.println("AT");
   delay(1000);
   readWhileAvailable();
@@ -55,6 +59,7 @@ void setup() {
   Serial.println("Checking CPIN status...");
   SimStatus cpinStatus = checkCPINStatus();
 
+  // Checks if the SIM card is already unlocked, if not, it unlocks it
   switch(cpinStatus) {
     case READY:
       Serial.println("SIM is ready!");
@@ -74,17 +79,27 @@ void setup() {
       Serial.println("CPIN status: " + cpinStatus);
     break;
   }
+
+  // Deletes all old messages
+    Serial.println("Deletes all old messages...");
+    sim7600.println("AT+CMGD=1,4"); 
+    delay(200);
+    readWhileAvailable();
 }
 
 void loop() {
 
   if(newMessage) {
     newMessage = false;
-
+    readWhileAvailable();
+    delay(200);
     sim7600.println("AT+CMGL=\"ALL\"");
-    delay(1000);
-  
-    readWhileAvailable();  
+    readWhileAvailableMessage();
+    // Deletes all old messages
+    Serial.println("Deletes all old messages...");
+    sim7600.println("AT+CMGD=1,4"); 
+    delay(200);
+    readWhileAvailable();
   }
 
   while(counter < 1) {
@@ -102,7 +117,15 @@ void readWhileAvailable() {
   while(sim7600.available()) {
     Serial.println(sim7600.readString());
   }
-  
+}
+
+void readWhileAvailableMessage() {
+  String rawResponse = "";
+  while(sim7600.available()) {
+    rawResponse = (sim7600.readString());
+  }
+  delay(200);
+  displayLastMessage(rawResponse);
 }
 
 bool responseEqualsGiven(const char *expected = nullptr) {
@@ -146,4 +169,90 @@ String sendCommandAndGetResponse(const char* command, unsigned long timeout) {
 
 void isrRI() {
   newMessage = true;
+}
+
+void displayLastMessage(String rawResponse) {
+  Serial.println("You received a new message:");
+  int currentIndex = 0;
+
+  String lastPhoneNumber = "";
+  String lastDate = "";
+  String lastTime = "";
+  String lastMessageContent = "";
+
+  while (currentIndex < rawResponse.length()) {
+    // Find the next "+CMGL:" header
+    int cmglIndex = rawResponse.indexOf("+CMGL:", currentIndex);
+    if (cmglIndex == -1) break;
+
+    // Extract and parse the "+CMGL" line
+    int headerEnd = rawResponse.indexOf('\n', cmglIndex);
+    if (headerEnd == -1) break;
+    String headerLine = rawResponse.substring(cmglIndex, headerEnd);
+
+    // Extract fields
+    String phoneNumber = headerLine.substring(23, 35);
+    String date = headerLine.substring(41, 49);
+    String time = headerLine.substring(50, 61);
+
+    // Extract message content (handle multiline)
+    int messageStart = headerEnd + 1;
+    int nextHeader = rawResponse.indexOf("+CMGL:", messageStart);
+    int messageEnd = (nextHeader != -1) ? nextHeader - 1 : rawResponse.length();
+    String messageContent = rawResponse.substring(messageStart, messageEnd);
+
+    // Combine all lines of the message content
+    lastPhoneNumber = phoneNumber;
+    lastDate = date;
+    lastTime = time;
+    lastMessageContent = messageContent;
+
+    // Move to the next "+CMGL" header
+    currentIndex = messageEnd + 1;
+  }
+
+  // Print the last message
+  Serial.println("Last Message Details:");
+  Serial.println("Phone: " + lastPhoneNumber);
+  Serial.println("Date: " + lastDate);
+  Serial.println("Time: " + lastTime);
+  Serial.println("Message: " + lastMessageContent);
+  Serial.println("-------------------------");
+}
+
+
+void displayAllMessages(String rawResponse) {
+  Serial.println("In method displayMessage");
+  delay(2000);
+  Serial.println("Raw Response");
+  Serial.println(rawResponse);
+  int currentIndex = 0;
+
+  while (currentIndex < rawResponse.length()) {
+    int cmglIndex = rawResponse.indexOf("+CMGL:", currentIndex);
+    if (cmglIndex == -1) break;
+
+    int headerEnd = rawResponse.indexOf('\n', cmglIndex);
+    if (headerEnd == -1) break;
+    String headerLine = rawResponse.substring(cmglIndex, headerEnd);
+    Serial.println(headerLine);
+
+    String phoneNumber = headerLine.substring(20, 35); 
+    String date = headerLine.substring(41, 49);
+    String time = headerLine.substring(50, 61);
+
+    int messageStart = headerEnd + 1;
+    int messageEnd = rawResponse.indexOf('\n', messageStart);
+    if (messageEnd == -1) messageEnd = rawResponse.length();
+    String messageContent = rawResponse.substring(messageStart, messageEnd);
+
+    Serial.println("Phone: " + phoneNumber);
+    Serial.println("Date: " + date);
+    Serial.println("Time: " + time);
+    Serial.println("Message: " + messageContent);
+    Serial.println("-------------------------");
+
+    currentIndex = messageEnd + 1;
+  }
+  delay(200);
 }
