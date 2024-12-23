@@ -1,3 +1,4 @@
+#ifndef KEYMAPS_H
 #define KEYMAPS_H
 
 const char keymapUS[] = {   // US Keyboard
@@ -31,7 +32,7 @@ const char keymapUS[] = {   // US Keyboard
   0,',','k','i','o','0','9', 0,                         // 48
   0,'.','-','l','ö','p','ß', 0,                         // 50
   0, 0,'ä', 0,'ü', '`', 0, 0,                           // 58 
-  'CAPSLOCK', 'RSHIFT','ENTER', '+', 0, '#', 0, 0,      // 60 Maybo 'ENTER' should be 0 or '#'
+  'CAPSLOCK', 'RSHIFT','ENTER', '+', 0, '#', 0, 0,      // 60
   0, '<', 0, 0, 0, 0, 'BACKSPACE', 0,                   // 68
   0,'1', 0,'4','7', 0, 'ESC', 0,                        // 70
   '0','.','2','5','6','8', 0, 'NUMLOCK',                // 78
@@ -75,3 +76,5 @@ const char keymapGERAltGR [] = {  // for pressing shift
   0, 0, 0, 0, 0, 0, 0, 0,                               // 78
   0, 0, 0, 0, 0, 0, 0, 0,                               // 80
   0, 0, 0, 0};                                          // 84
+
+  #endif
