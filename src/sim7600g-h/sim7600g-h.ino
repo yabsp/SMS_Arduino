@@ -12,8 +12,16 @@ int counter = 2;
 
 enum SimStatus {READY, SIM_PIN, SIM_PUK, UNKNOWN};
 
+struct SMSMessage {
+  int index;
+  String status;
+  String number;
+  String timestamp;
+  String content;
+};
+
 bool responseEqualsGiven(const char*);
-void readWhileAvailable();
+String readWhileAvailable();
 SimStatus checkCPINStatus();
 String sendCommandAndGetResponse(const char* command, unsigned long timeout = 1000);
 void displayLastMessage(String rawResponse);
@@ -54,7 +62,7 @@ void setup() {
   Serial.println("Checking Connection");
   sim7600.println("AT");
   delay(1000);
-  readWhileAvailable();
+  Serial.println(readWhileAvailable());
 
   Serial.println("Checking CPIN status...");
   SimStatus cpinStatus = checkCPINStatus();
@@ -70,7 +78,7 @@ void setup() {
       sim7600.print(simPin);
       sim7600.println("\"");
       delay(1000);
-      readWhileAvailable();
+      Serial.println(readWhileAvailable());
     break;
     case SIM_PUK:
       Serial.println("SIM PUK required. Cannot proceed.");
@@ -113,9 +121,10 @@ void loop() {
   }
 }
 
-void readWhileAvailable() {
-  while(sim7600.available()) {
-    Serial.println(sim7600.readString());
+String readWhileAvailable() {
+  while (sim7600.available()) {
+    Serial.println("in method readwhile available");
+    return sim7600.readString();
   }
 }
 
@@ -127,6 +136,36 @@ void readWhileAvailableMessage() {
   delay(200);
   displayLastMessage(rawResponse);
 }
+
+void fetchLastSMS() {
+  // Query the total number of messages
+  sim7600.println("AT+CPMS?");
+  delay(1000);
+  String response = readWhileAvailable();
+
+  // Parse total message count
+  int lastIndex = parseMessageCount(response);
+
+  // Fetch the last message
+  if (lastIndex > 0) {
+    String command = "AT+CMGR=" + String(lastIndex);
+    sim7600.println(command);
+    delay(1000);
+    Serial.println(readWhileAvailable()); // Reads and prints the last message
+  } else {
+    Serial.println("No messages found.");
+  }
+}
+
+int parseMessageCount(String response) {
+  int start = response.indexOf(":") + 1;
+  int end = response.indexOf(",");
+  if (start > 0 && end > start) {
+    return response.substring(start, end).toInt();
+  }
+  return 0;
+}
+
 
 bool responseEqualsGiven(const char *expected = nullptr) {
   unsigned long timeout = 500;
