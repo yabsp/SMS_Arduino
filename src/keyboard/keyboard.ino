@@ -88,6 +88,9 @@ bool altgrActive = false;
 bool shiftActive = false;
 bool capsActive = false;
 
+volatile bool enterKeyPressed = false;
+volatile bool deleteKeyPressed = false;
+
 unsigned long shiftLastTime = 0;
 unsigned long altgrLastTime = 0;
 
@@ -128,11 +131,9 @@ ISR(PCINT2_vect)
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
   
   if(lastscan != 0xF0 && scanval != 0xF0){
-  //Serial.println(scanval, HEX);
     if (scanval == 0x12 || scanval == 0x59) { // Shift press
       shiftLastTime = millis(); // Reset Shift timer
       shiftActive = true;
-      //output = keymapGERShift[scanval];
     } else if (scanval == 0x11 && lastscan == 0xE0) { // AltGR press
       altgrActive = true;
       altgrLastTime = millis();
@@ -144,12 +145,15 @@ ISR(PCINT2_vect)
 	  switch(scanval)
 	  {
 		case 0x5A: //Enter
+      enterKeyPressed = true;
       handle_enter_key();
+      Serial.println("ENTER_FOR_NEW_LINE");
 		  lcd.setCursor(0, ++line & 0x03);
 		  col = 0;
 		  break;
 		case 0x66: //Backspace
       if (strlen(message) > 0) {
+        deleteKeyPressed = true;
         delete_last_char_from_message();
         Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
         lcd.setCursor(--col, line);
@@ -189,22 +193,17 @@ ISR(PCINT2_vect)
           add_char_to_message(input);
           lcd.write(input);
           Serial.println(input);
+
           col++;
         }
       }
 	  }
-  }
-
-  // Combine input to String
-
-  
+  } 
 
   lastlastscan = lastscan;
   lastscan = scanval;
   bitSet(PCIFR, PCIF2);
 }
-
-// char combining tests
 
 void add_char_to_message(char ch) {
     int len = strlen(message);
@@ -222,11 +221,9 @@ void delete_last_char_from_message() {
 }
 
 void handle_enter_key() {
-    // Simulate sending the message
     Serial.println("Message sent:");
     Serial.println(message);
 
-    // Reset the message
     message[0] = '\0';
 }
 
@@ -240,7 +237,7 @@ void handle_enter_key() {
 void loop()
 {
   unsigned long currentTime = millis();
-  
+
   // Deactivate Shift if no input for the timeout duration
   if (shiftActive && (currentTime - shiftLastTime > timeout)) {
     shiftActive = false;
@@ -251,9 +248,19 @@ void loop()
     altgrActive = false;
   }
 
-
   digitalWrite(13, LOW);
   delay(500);  
   digitalWrite(13, HIGH);
   delay(500);
+
+  /*
+  if (enterKeyPressed) {
+    Serial.println("ENTER_DETECTED");
+    enterKeyPressed = false; // Reset the flag
+  }
+  if (deleteKeyPressed) {
+     Serial.println("DELETE_DETECTED");
+    deleteKeyPressed = false; // Reset the flag
+  }
+  */
 }
