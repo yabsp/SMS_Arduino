@@ -55,12 +55,13 @@ const char keymapGERShift[] = {    // for pressing ALTGR
   0, ';', 'K', 'I', 'O', '=', ')', 0,                   // 48
   0, ':', '_', 'L', 'Ö', 'P', '?', 0,                   // 50
   0, 0, 'Ä', 0, 'Ü', '`', 0, 0,                         // 58
-  'CAPSLOCK', 0, 0, '*', 0, '`', 0, 0,                    // 60
+  'CAPSLOCK', 0, 0, '*', 0, '`', 0, 0,                  // 60
   0, '>', 0, 0, 0, 0, 0, 0,                             // 68
   0, 0, 0, 0, 0, 0, 0, 0,                               // 70
   0, 0, 0, 0, 0, 0, 0, 0,                               // 78
   0, 0, 0, 0, 0, 0, 0, 0,                               // 80
   0, 0, 0, 0};                                          // 84 
+
 const char keymapGERAltGR [] = {  // for pressing shift
   0, 0,  0,  0, 0, 0, 0,  0,                            // 08
   0, 0, 0, 0, 0, 0, '|', 0,                             // 10
@@ -127,7 +128,7 @@ ISR(PCINT2_vect)
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
   
   if(lastscan != 0xF0 && scanval != 0xF0){
-  Serial.println(scanval, HEX);
+  //Serial.println(scanval, HEX);
     if (scanval == 0x12 || scanval == 0x59) { // Shift press
       shiftLastTime = millis(); // Reset Shift timer
       shiftActive = true;
@@ -148,10 +149,13 @@ ISR(PCINT2_vect)
 		  col = 0;
 		  break;
 		case 0x66: //Backspace
-      delete_last_char_from_message();
-		  lcd.setCursor(--col, line);
-		  lcd.write(' ');
-		  lcd.setCursor(col, line);
+      if (strlen(message) > 0) {
+        delete_last_char_from_message();
+        Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
+        lcd.setCursor(--col, line);
+        lcd.write(' ');
+        lcd.setCursor(col, line);
+      }
 		break;
     /*
     case 0x4C: //Ö
@@ -178,7 +182,7 @@ ISR(PCINT2_vect)
           input = keymapGER[scanval];      // input = key
         }
       }
-      if (input != 0) { // only print if valod key is pressed
+      if (input != 0) { // only print if valid key is pressed
         if (scanval == 0x58) {
           input = 0;
         } else {
@@ -225,6 +229,11 @@ void handle_enter_key() {
     // Reset the message
     message[0] = '\0';
 }
+
+
+
+
+
 
 
 
