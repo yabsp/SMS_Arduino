@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+// Flags for functionality
+extern volatile bool keyboardActive;
+
 // Flags for special keys
 extern volatile bool enterKeyPressed; // Send SMS when in chat window
 extern volatile bool deleteKeyPressed; // Delete last typed character
