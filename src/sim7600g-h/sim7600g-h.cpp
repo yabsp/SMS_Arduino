@@ -3,8 +3,10 @@
 SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
 const char simPin[] = "0135";
+int counter = 1;
 
 void setupSim7600() {
+
     Serial.begin(115200);
     sim7600.begin(115200);
 
@@ -62,11 +64,14 @@ void setupSim7600() {
 }
 
 void loopSim7600() {
-    if (newMessage) {
-        newMessage = false;
-        sim7600.println("AT+CMGL=\"ALL\"");
-        readWhileAvailableMessage();
-    }
+  if (newMessage) {
+      newMessage = false;
+      sim7600.println("AT+CMGL=\"ALL\"");
+      readWhileAvailableMessage();
+  }
+  while(counter < 1){
+    sendSMS("0041794410255", "test1");
+  }
 }
 
 void readWhileAvailableMessage() {
@@ -177,4 +182,45 @@ void readWhileAvailable() {
 
 void isrRI() {
     newMessage = true;
+}
+
+bool sendSMS(const String &phoneNumber, const String &message) {
+  counter++;
+
+  Serial.println("Checking Connection...");
+  sim7600.println("AT");
+  delay(200);
+  if (!responseEqualsGiven("OK")){
+    Serial.println("There is no connection");
+    return false;
+  }
+  Serial.println("OK");
+
+  Serial.println("Sending SMS..."); 
+  
+  sim7600.println("AT+CMGF=1");   // Set SMS to text mode
+  delay(100);
+  if (!responseEqualsGiven("OK")){
+    Serial.println("Failed to set SMS mode to text.");
+    return false;
+  } 
+
+  sim7600.print("AT+CMGS=\"");
+  sim7600.print(phoneNumber);
+  sim7600.println("\"");
+  delay(100);
+
+  sim7600.print(message);
+  delay(100);
+
+  sim7600.write(26); // Send termination character
+  delay(5000);
+
+  if (responseEqualsGiven("OK")) {
+      Serial.println("SMS sent successfully.");
+      return true;
+  } else {
+      Serial.println("Failed to send SMS.");
+      return false;
+  }
 }
