@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <SD.h>
 
 #include "Config.h"
 #include "Menu.h"
@@ -16,6 +17,7 @@ int Cursor_X = 0;
 int Cursor_Y = 0;
 bool Cursor_Pressed = false;
 uint8_t Current_Menu = 0;
+int testing = 0;
 
 
 // Create objects --------------------------------------------------------------
@@ -32,15 +34,22 @@ void setup() {
   Serial.println("Initialized all");
   Change_Menu(0); // Start in Main_Menu
   
-  newContact("+1678543590", "Yanick");
-  newContact("+9876543210", "Osman");
-  newContact("+3781293733", "Tschudin");
-  newContact("+1234567320", "Mike");
-  newContact("+2813792183", "Max");
-  newContact("+4857983455", "Gioia");
+  newContact("+41786936406", "Yanick");
+  newContact("+41796299706", "Mike");
+  newContact("+491605895978", "Max");
+  newContact("+41794410255", "Gioia");
+
+  Serial.println("Initializing SD card...");
+
+  if (!SD.begin(chipSelect)){
+    Serial.println("SD card initialization failed!");
+        // Optional: Add error-handling code here
+        return;
+    }
+    Serial.println("SD card initialized successfully.");
+}
   /*addMessageToChat("+1678543590", "Hallo");
   sendMessage("+1678543590", "Hello Back");*/
-}
 
 
 // Main loop -------------------------------------------------------------------
@@ -48,4 +57,11 @@ void loop() {
   Cursor_Pressed = Touch_getXY(Cursor_X, Cursor_Y);
   Refresh_Menu(); // refresh on press
   Blink_Underscore();
+  while (testing < 1){
+    saveMessageInMemory("+41786936406","TestSpichty","2025");
+    saveMessageInMemory("+41794410255", "TestGioia", "2025");
+    saveMessageInMemory("+491605895978", "TestMax", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia2", "2025");
+    saveMessageInMemory("+491605895978", "TestMax2", "2025");
+  }
 }

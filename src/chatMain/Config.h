@@ -3,9 +3,10 @@
 
 #include <MCUFRIEND_kbv.h> 
 
-// Constants for touchscreen calibration -----------------------------------------------
+// Constants for touchscreen calibration & SD-card -------------------------------------
 const int XP = 8, XM = A2, YP = A3, YM = 9; // Pin assignments
 const int TS_LEFT = 27, TS_RT = 907, TS_TOP = 101, TS_BOT = 932; // Display calibration
+const int chipSelect = 53;
 
 
 // Declare shared variables ------------------------------------------------------------

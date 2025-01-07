@@ -1,9 +1,30 @@
 #include "ChatHandler.h"
+#include <SD.h>
+
+// A structure to hold message details
+struct Message {
+    String timestamp;
+    String phoneNumber;
+    String content;
+};
+
+struct StoredChat {
+    String phoneNumber; // Key
+    Message messages[MAX_MESSAGES]; // Messages for this chat
+    uint8_t messageCount; // Number of messages
+};
+
+StoredChat storedChats[MAX_CHATS]; // Simulate a map
+uint8_t storedChatCount = 0; // Current number of stored chats
+
+
 
 // initialize variables -----------------------------------------------------------------------
 Chat chatList[MAX_CHATS];               // Storage of all chats
 uint8_t chatCount = 0;                  // Current amount of chats
 uint8_t unknownChatCounter = 0;         // Current amount of unknown chats
+
+extern int testing;
 
 // Add a new chat -----------------------------------------------------------------------------
 void newContact(String phoneNumber, String contactName) {
@@ -43,53 +64,59 @@ void setChat(String phoneNumber, String contactName) {
 
 
 // Add a message to a chat ----------------------------------------------------------------------
-bool addMessageToChat(const String& phoneNumber, const String& message) {
-    uint8_t index = findChatIndexByPhoneNumber(phoneNumber);
-    if (index >= chatCount) {
-        // Add unknown chat if not found
-        String unknownName = "Unknown_" + String(++unknownChatCounter);
-        newContact(phoneNumber, unknownName);
-        index = findChatIndexByPhoneNumber(phoneNumber); // Recalculate the index after adding
-    }
-
-    Chat& chat = chatList[index];
-    if (chat.messageCount < MAX_MESSAGES) {
-        chat.messages[chat.messageCount] = message;
-        chat.messageCount++;
-        return true;
-    } else {
-        Serial.println("Max messages reached for this chat!");
-        return false;
-    }
-}
-
-
-// Send a message -------------------------------------------------------------------------------
-bool sendMessage(const String& phoneNumber, const String& message) {
-    uint8_t index = findChatIndexByPhoneNumber(phoneNumber);
-    if (index < chatCount) {
-        Serial.print("Sending message to ");
-        Serial.print(chatList[index].contactName);
-        Serial.print(" (");
-        Serial.print(phoneNumber);
-        Serial.println(")...");
-
-        // Simulate sending the message
-        bool success = true; // Assume the message is sent successfully
-
-        if (success) {
-            Serial.println("Message sent successfully!");
-            return addMessageToChat(phoneNumber, message); // Add to chat history
-        } else {
-            Serial.println("Failed to send message.");
-            return false;
+void saveMessageInMemory(const String &phoneNumber, const String &message, const String &timestamp) {
+    testing++;
+    // Find existing chat
+    for (uint8_t i = 0; i < storedChatCount; i++) {
+        if (storedChats[i].phoneNumber == phoneNumber) {
+            // Add message to existing chat
+            if (storedChats[i].messageCount < MAX_MESSAGES) {
+                storedChats[i].messages[storedChats[i].messageCount++] = {timestamp, phoneNumber, message};
+                Serial.println("Message added to existing chat for: " + phoneNumber);
+                return;
+            } else {
+                Serial.println("Max messages reached for chat: " + phoneNumber);
+                return;
+            }
         }
+    }
+
+    // Create new chat if not found
+    if (storedChatCount < MAX_CHATS) {
+        storedChats[storedChatCount].phoneNumber = phoneNumber;
+        storedChats[storedChatCount].messageCount = 0;
+        storedChats[storedChatCount].messages[storedChats[storedChatCount].messageCount++] = {timestamp, phoneNumber, message};
+        storedChatCount++;
+        Serial.println("New chat created and message added for: " + phoneNumber);
     } else {
-        Serial.println("Chat not found. Adding a new chat.");
-        newContact(phoneNumber, "Unknown");
-        return sendMessage(phoneNumber, message); // Retry sending the message
+        Serial.println("Max chats reached, cannot save message!");
     }
 }
+
+
+
+
+// new version
+String getChatMessages(const String &phoneNumber) {
+    // Find the chat
+    for (uint8_t i = 0; i < storedChatCount; i++) {
+        if (storedChats[i].phoneNumber == phoneNumber) {
+            String messages = "Chat history for: " + phoneNumber + "\n";
+            messages += "--------------------------------\n";
+
+            // Concatenate all messages
+            for (uint8_t j = 0; j < storedChats[i].messageCount; j++) {
+                messages += storedChats[i].messages[j].timestamp + "; " + storedChats[i].messages[j].phoneNumber + "\n";
+                messages += storedChats[i].messages[j].content + "\n";
+            }
+            messages += "--------------------------------\n";
+            return messages; // Return the concatenated messages
+        }
+    }
+    // If no chat found
+    return "No chat history found for: " + phoneNumber + "\n";
+}
+
 
 // Increment unread message counter by phone number ---------------------------------------------
 void incrementUnreadMessages(const String& phoneNumber) {

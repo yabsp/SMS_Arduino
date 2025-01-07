@@ -1,4 +1,12 @@
 #include "Menu.h"
+// ChatHandler.h
+#ifndef CHATHANDLER_H
+#define CHATHANDLER_H
+
+#include <Arduino.h>
+String getChatMessages(const String &phoneNumber);
+
+#endif
 
 // Clickable Buttons ----------------------------------------------------------------------------------------
 Adafruit_GFX_Button Main_Menu;
@@ -108,7 +116,36 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
   tft.print(contactName);
   tft.drawLine(0, 56, 320, 56, BLACK);
   Back_Button.drawButton(true);
+
   //Draw_Chat_Messages(phoneNumber, contactName);
+  String messages = getChatMessages(phoneNumber);
+
+// Display the messages line by line
+    tft.setTextSize(1); // Set text size to small
+    tft.setTextColor(BLACK);
+    int cursorX = 4; // Starting X position
+    int cursorY = 60; // Starting Y position
+
+    for (uint16_t i = 0; i < messages.length(); i++) {
+        if (messages[i] == '\n') {
+            // Move to the next line if newline character is found
+            cursorY += 10; // Adjust line spacing
+            cursorX = 4; // Reset X position
+        } else {
+            // Print the character
+            tft.setCursor(cursorX, cursorY);
+            tft.print(messages[i]);
+            cursorX += 6; // Move X position for next character (adjust for text size)
+        }
+
+        // Handle scrolling if content exceeds screen height
+        /*if (cursorY > tft.height() - 10) {
+            delay(2000); // Pause to view the current page
+            tft.fillRect(0, 60, tft.width(), tft.height() - 60, WHITE); // Clear message area
+            cursorY = 60; // Reset to the top of the message area
+        }
+        */
+    }
 }
 
 void Draw_Phone_Number_Selector() {
