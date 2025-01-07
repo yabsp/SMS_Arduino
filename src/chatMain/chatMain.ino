@@ -63,5 +63,11 @@ void loop() {
     saveMessageInMemory("+491605895978", "TestMax", "2025");
     saveMessageInMemory("+41794410255", "TestGioia2", "2025");
     saveMessageInMemory("+491605895978", "TestMax2", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia3", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia4", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia5", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia6", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia7", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia8", "2025");
   }
 }

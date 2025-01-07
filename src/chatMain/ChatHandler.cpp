@@ -63,58 +63,56 @@ void setChat(String phoneNumber, String contactName) {
 }
 
 
-// Add a message to a chat ----------------------------------------------------------------------
+// Saves a new received message to the memory ----------------------------------------------------
 void saveMessageInMemory(const String &phoneNumber, const String &message, const String &timestamp) {
-    testing++;
-    // Find existing chat
-    for (uint8_t i = 0; i < storedChatCount; i++) {
-        if (storedChats[i].phoneNumber == phoneNumber) {
-            // Add message to existing chat
-            if (storedChats[i].messageCount < MAX_MESSAGES) {
-                storedChats[i].messages[storedChats[i].messageCount++] = {timestamp, phoneNumber, message};
-                Serial.println("Message added to existing chat for: " + phoneNumber);
-                return;
-            } else {
-                Serial.println("Max messages reached for chat: " + phoneNumber);
-                return;
-            }
-        }
-    }
+    
+  testing++; //for deleting later...
 
-    // Create new chat if not found
-    if (storedChatCount < MAX_CHATS) {
-        storedChats[storedChatCount].phoneNumber = phoneNumber;
-        storedChats[storedChatCount].messageCount = 0;
-        storedChats[storedChatCount].messages[storedChats[storedChatCount].messageCount++] = {timestamp, phoneNumber, message};
-        storedChatCount++;
-        Serial.println("New chat created and message added for: " + phoneNumber);
-    } else {
-        Serial.println("Max chats reached, cannot save message!");
-    }
+  for (uint8_t i = 0; i < storedChatCount; i++) {
+    if (storedChats[i].phoneNumber == phoneNumber) {
+      if (storedChats[i].messageCount >= MAX_MESSAGES) {  // MAX_MESSAGES for maximal number of messages in a chat
+        for (uint8_t j = 0; j < MAX_MESSAGES - 1; j++) {    // shifts messages for new space
+          storedChats[i].messages[j] = storedChats[i].messages[j + 1];
+        }
+      storedChats[i].messages[MAX_MESSAGES - 1] = {timestamp, phoneNumber, message};  // adds new message at the end
+      Serial.println("Oldest message removed. New message added to chat for: " + phoneNumber);
+      } else {
+        storedChats[i].messages[storedChats[i].messageCount++] = {timestamp, phoneNumber, message}; // adds message, if there is space
+        Serial.println("Message added to existing chat for: " + phoneNumber);
+      }
+    return;
+  }
+}
+  // Create new chat if not found
+  if (storedChatCount < MAX_CHATS) {
+    storedChats[storedChatCount].phoneNumber = phoneNumber;
+    storedChats[storedChatCount].messageCount = 0;
+    storedChats[storedChatCount].messages[storedChats[storedChatCount].messageCount++] = {timestamp, phoneNumber, message};
+    storedChatCount++;
+    Serial.println("New chat created and message added for: " + phoneNumber);
+  } else {
+      Serial.println("Max chats reached, cannot save message!");
+  }
 }
 
 
-
-
-// new version
+// Returns all messages for a specific phonenumber -----------------------------------------------
 String getChatMessages(const String &phoneNumber) {
-    // Find the chat
-    for (uint8_t i = 0; i < storedChatCount; i++) {
-        if (storedChats[i].phoneNumber == phoneNumber) {
-            String messages = "Chat history for: " + phoneNumber + "\n";
-            messages += "--------------------------------\n";
+  for (uint8_t i = 0; i < storedChatCount; i++) { // finds the correct chat
+    if (storedChats[i].phoneNumber == phoneNumber) {
+      String messages = "Chat history for: " + phoneNumber + "\n";
+      messages += "--------------------------------\n";
 
-            // Concatenate all messages
-            for (uint8_t j = 0; j < storedChats[i].messageCount; j++) {
-                messages += storedChats[i].messages[j].timestamp + "; " + storedChats[i].messages[j].phoneNumber + "\n";
-                messages += storedChats[i].messages[j].content + "\n";
-            }
-            messages += "--------------------------------\n";
-            return messages; // Return the concatenated messages
-        }
+    // Concatenate all messages
+    for (uint8_t j = 0; j < storedChats[i].messageCount; j++) {
+      messages += storedChats[i].messages[j].timestamp + ": " + storedChats[i].messages[j].phoneNumber + "\n";
+      messages += storedChats[i].messages[j].content + "\n";
     }
-    // If no chat found
-    return "No chat history found for: " + phoneNumber + "\n";
+    messages += "--------------------------------\n";
+    return messages;
+    }
+  }
+  return "No chat history found for: " + phoneNumber + "\n"; // If no chat found
 }
 
 
