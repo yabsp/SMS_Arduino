@@ -23,6 +23,15 @@
 #include "KeyboardVariables.h"
 #include "KeyboardFunctions.h"
 #include "sim7600g-h.h"
+/*
+#include "Utils.h"
+#include "ChatHandler.h"
+#include "Config.h"
+#include "Menu.h"
+#include "TouchHandler.h"
+
+*/
+#include "display.h"
 
 extern volatile bool keyboardActive = true;
 
@@ -51,6 +60,7 @@ void setup()
 {
   Serial.begin(115200);
   setupSim7600();
+  setupDisplay();
   pinMode(CLOCK, INPUT_PULLUP); //For most keyboards the builtin pullups are sufficient, so the 10k pullups can be omitted
   pinMode(DATA, INPUT_PULLUP);
 
@@ -234,6 +244,7 @@ ISR(PCINT0_vect)
 void loop()
 {
   loopSim7600();
+  loopDisplay();
   currentTime = millis();
 
   // Deactivate Shift if no input for the timeout duration
