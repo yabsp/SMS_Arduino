@@ -28,9 +28,9 @@ void delete_last_char_from_message() {
 
 void handle_enter_key() {
     Serial.println("Message sent:");
-    Serial.println(message);
+    //Serial.println(message);
 
-    message[0] = '\0';
+    //message[0] = '\0';
 }
 
 /*

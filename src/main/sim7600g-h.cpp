@@ -1,8 +1,10 @@
 #include "sim7600g-h.h"
+#include "KeyboardFlags.h"
 
 //SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
 const char simPin[] = "0135";
+const String const_phoneNumber = "+41794410255";
 int counter = 1;
 
 void setupSim7600() {
@@ -66,6 +68,12 @@ void loopSim7600() {
   while(counter < 1){
     sendSMS("0041794410255", "test1");
   }
+  if (enterKeyPressed) {
+    //Serial.println(message);
+    sendSMS(const_phoneNumber, message);
+    message[0] = '\0';
+    enterKeyPressed = false; // Reset the flag
+   }
 }
 
 void readWhileAvailableMessage() {
@@ -77,6 +85,7 @@ void readWhileAvailableMessage() {
         rawResponse = sim7600.readString();
     }
     displayLastMessage(rawResponse);
+
 }
 
 

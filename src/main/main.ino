@@ -69,7 +69,6 @@ void setup()
   bitSet(PCMSK2, PCINT23);
   */
 
-  
   bitSet(PCICR, PCIE0); 
   bitSet(PCMSK0, PCINT3); 
   
