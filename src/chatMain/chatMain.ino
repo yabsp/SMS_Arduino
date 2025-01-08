@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <SD.h>
+//#include <SD.h>
 
 #include "Config.h"
 #include "Menu.h"
@@ -34,11 +34,11 @@ void setup() {
   Serial.println("Initialized all");
   Change_Menu(0); // Start in Main_Menu
   
-  newContact("+41786936406", "Yanick");
-  newContact("+41796299706", "Mike");
+  //newContact("+41786936406", "Yanick");
+  //newContact("+41796299706", "Mike");
   newContact("+491605895978", "Max");
   newContact("+41794410255", "Gioia");
-
+  /*
   Serial.println("Initializing SD card...");
 
   if (!SD.begin(chipSelect)){
@@ -47,7 +47,9 @@ void setup() {
         return;
     }
     Serial.println("SD card initialized successfully.");
+    */
 }
+
   /*addMessageToChat("+1678543590", "Hallo");
   sendMessage("+1678543590", "Hello Back");*/
 
@@ -69,5 +71,6 @@ void loop() {
     saveMessageInMemory("+41794410255", "TestGioia6", "2025");
     saveMessageInMemory("+41794410255", "TestGioia7", "2025");
     saveMessageInMemory("+41794410255", "TestGioia8", "2025");
+    saveMessageInMemory("+41788802667", "TestGaby", "2025");
   }
 }

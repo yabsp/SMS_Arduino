@@ -144,7 +144,7 @@ void Draw_Phone_Number_Selector() {
   tft.setTextSize(2);
   tft.setTextColor(BLACK);
   tft.setCursor(6, 6);
-  tft.print("New Chat");
+  tft.print("New Contact");
   tft.drawLine(0, 56, 320, 56, BLACK);
   Back_Button.drawButton(true);
   Enter_Button.drawButton(true);
@@ -169,6 +169,8 @@ void Draw_Phone_Number_Selector() {
   tft.setTextSize(1);
   tft.setCursor(81, 175); // Adjusted Y-coordinate for centered text
   tft.print("Click to enter contact name");
+
+  //createChatFromSerialInput();
 }
 
 
@@ -254,35 +256,57 @@ void Refresh_Chat_Viewer() {
 }
 
 void Refresh_Phone_Number_Selector() {
-  Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
-  if (Back_Button.justPressed()){
-    Back_Button.drawButton(false);
-    activeInput = 0;
-    Change_Menu(2);
-  }
+    Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
+    if (Back_Button.justPressed()) {
+        Back_Button.drawButton(false);
+        activeInput = 0;
+        Change_Menu(2); // Return to Chat Menu
+    }
 
-  if (Cursor_Pressed) {
     // Check if Phone Number field is tapped
-    if (Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 80 && Cursor_Y < 125) {
-      tft.fillRect(5, 81, 310, 43, WHITE);
-      activeInput = 1; // Activate phone number inputfield
+    if (Cursor_Pressed && Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 80 && Cursor_Y < 125) {
+        Serial.println("Bitte geben Sie die Telefonnummer ein:");
+        phoneNumber = buildStringFromInput(); // Use Serial Monitor to input the phone number
+        tft.fillRect(5, 81, 310, 43, WHITE);  // Clear the field
+        tft.setCursor(10, 95);
+        tft.setTextSize(1);
+        tft.print(phoneNumber); // Display entered phone number on the screen
+        Serial.print("Eingegebene Telefonnummer: ");
+        Serial.println(phoneNumber); // Debugging output
     }
-    // Check if Contact Name field is tapped
-    else if (Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 160 && Cursor_Y < 205) {
-      tft.fillRect(5, 161, 310, 43, WHITE);
-      activeInput = 2; // Activate contact name inputfield
-    }
-  }
 
-  Enter_Button.press(Cursor_Pressed && Enter_Button.contains(Cursor_X, Cursor_Y));
-  if (Enter_Button.justPressed()){
-    Enter_Button.drawButton(false);
-    activeInput = 0; // reset inputfield
-    newContact(phoneNumber, contactName); // phoneNumber and contactName needs to be changed to the returned string
-    setChat(phoneNumber, contactName);
-    Change_Menu(3);
-  }
+    // Check if Contact Name field is tapped
+    if (Cursor_Pressed && Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 160 && Cursor_Y < 205) {
+        Serial.println("Bitte geben Sie den Kontaktnamen ein:");
+        contactName = buildStringFromInput(); // Use Serial Monitor to input the contact name
+        tft.fillRect(5, 161, 310, 43, WHITE); // Clear the field
+        tft.setCursor(10, 175);
+        tft.setTextSize(1);
+        tft.print(contactName); // Display entered contact name on the screen
+        Serial.print("Eingegebener Kontaktname: ");
+        Serial.println(contactName); // Debugging output
+    }
+
+    // Check if Enter Button is pressed
+    Enter_Button.press(Cursor_Pressed && Enter_Button.contains(Cursor_X, Cursor_Y));
+    if (Enter_Button.justPressed()) {
+        Enter_Button.drawButton(false);
+
+        // Ensure both fields are filled
+    if (phoneNumber.length() > 0 && contactName.length() > 0) {
+            newContact(phoneNumber, contactName); // Create new contact
+            Serial.println("Neuer Kontakt erfolgreich erstellt:");
+            Serial.print("Telefonnummer: ");
+            Serial.println(phoneNumber);
+            Serial.print("Kontaktname: ");
+            Serial.println(contactName);
+        } else {
+            Serial.println("Fehler: Telefonnummer oder Kontaktnamen fehlen!");
+        }
+        Change_Menu(2); // Return to Chat Menu
+    }
 }
+
 
 
 // Change Menus --------------------------------------------------------------------------------------------
@@ -343,7 +367,7 @@ void InitializeButtons(MCUFRIEND_kbv &tft) {
   );
   Settings_Menu.initButton(&tft, calculateLeft(145) + 10, calculateTop(24) + 175, 145, 24, BLACK, BLACK, WHITE, "Settings", 1);
   Chat_Menu.initButton(&tft, calculateRight(145) + 310, calculateTop(24) + 175, 145, 24, BLACK, BLACK, WHITE, "Chats", 1);
-  New_Chat_Button.initButton(&tft, calculateRight(80) + 316, calculateTop(20) + 32, 80, 20, BLACK, BLACK, WHITE, "New Chat", 1);
+  New_Chat_Button.initButton(&tft, calculateRight(100) + 316, calculateTop(20) + 32, 100, 20, BLACK, BLACK, WHITE, "New Contact", 1); // is now new contact
   Enter_Button.initButton(&tft, calculateRight(50) + 316 , calculateTop(20) + 32, 50, 20, BLACK, BLACK, WHITE, "Enter", 1);
 }
 
