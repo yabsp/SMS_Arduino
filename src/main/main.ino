@@ -3,15 +3,15 @@
 #define DATA 6  //D+
 */
 
-/*
+
 #define CLOCK 51  //D-
 #define DATA 50   //D+
-*/
 
 
+/*
 #define CLOCK 69  //D-
 #define DATA 68   //D+
-
+*/
 
 /*
 #define CLOCK 19    //D-
@@ -49,8 +49,8 @@ char message[MAX_MESSAGE_LENGTH + 1] = ""; // Message buffer
 
 void setup()
 {
+  Serial.begin(115200);
   setupSim7600();
-  //Serial.begin(115200);
   pinMode(CLOCK, INPUT_PULLUP); //For most keyboards the builtin pullups are sufficient, so the 10k pullups can be omitted
   pinMode(DATA, INPUT_PULLUP);
 
@@ -64,19 +64,19 @@ void setup()
   bitSet(PCMSK2, CLOCK); // Pin change interrupt on Clock pin
   */
 
-  
+  /*
   bitSet(PCICR, PCIE2);
   bitSet(PCMSK2, PCINT23);
-  
+  */
 
-  /*
+  
   bitSet(PCICR, PCIE0); 
   bitSet(PCMSK0, PCINT3); 
-  */
+  
  }
 
-//ISR(PCINT0_vect)
-ISR(PCINT2_vect)
+ISR(PCINT0_vect)
+//ISR(PCINT2_vect)
 {
   if(keyboardActive) {
     scanval = 0;
@@ -227,9 +227,9 @@ ISR(PCINT2_vect)
     lastscan = scanval;
   }
 
-  bitSet(PCIFR, PCIF2);
+  //bitSet(PCIFR, PCIF2);
   //PCIFR |= PCIF0;
-  //bitSet(PCIFR, PCIF0);
+  bitSet(PCIFR, PCIF0);
 }
 
 void loop()

@@ -7,7 +7,6 @@ int counter = 1;
 
 void setupSim7600() {
 
-    Serial.begin(2400);
     sim7600.begin(115200);
 
     pinMode(RI_PIN, INPUT);
@@ -20,9 +19,9 @@ void setupSim7600() {
     int count = 0;
     do {
         Serial.println("Configuring baud rate to 9600, please wait...");
-        sim7600.println("AT+IPREX=115200");
+        sim7600.println("AT+IPREX=9600");
         delay(100);
-        sim7600.begin(115200);
+        sim7600.begin(9600);
         count++;
     } while (!responseEqualsGiven("OK") && count < 4);
 
