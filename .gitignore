@@ -1,0 +1,9 @@
+# macOS spezifisch
+.DS_Store
+
+# Windows spezifisch
+Thumbs.db
+desktop.ini
+
+# Linux spezifisch
+*.swp
