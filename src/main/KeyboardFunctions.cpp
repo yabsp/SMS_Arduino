@@ -2,14 +2,16 @@
 #include "KeyboardFlags.h"
 #include "KeyboardFunctions.h"
 
-#define MAX_MESSAGE_LENGTH 1024
+//#define MAX_MESSAGE_LENGTH 1024
 
+/*
 extern bool shiftActive;
 extern bool altgrActive;
 extern bool capsActive;
 extern char input;
 extern int shiftLastTime;
 extern int altgrLastTime;
+*/
 
 void add_char_to_message(char ch) {
     int len = strlen(message);
