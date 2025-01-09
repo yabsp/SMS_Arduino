@@ -25,7 +25,7 @@ extern volatile bool brightnessUpKeyPressed; // Increase screen brightness      
 extern volatile bool brightnessDownKeyPressed; // decrease screen brightness    Key not known
 
 extern volatile bool keyPressDetected; // New flag for single key detection     
-extern char lastKeyPressed;            // Last key pressed
+extern String lastKeyPressed;            // Last key pressed
 extern String message;                 // Shared message buffer
 
 #endif

@@ -205,6 +205,71 @@ ISR(PCINT0_vect)
         }
       break;
       */
+
+     case 0x4C: //ö
+
+        if (shiftActive) {
+          add_char_to_message("O");
+          add_char_to_message("e");
+
+          lastKeyPressed = "Oe";
+        } else {
+          add_char_to_message("o");
+          add_char_to_message("e");
+
+          lastKeyPressed = "oe";
+        }
+
+      break;
+
+      case 0x54: //ü
+
+        if (shiftActive) {
+          add_char_to_message("U");
+          add_char_to_message("e");
+
+          lastKeyPressed = "Ue";
+        } else {
+          add_char_to_message("u");
+          add_char_to_message("e");
+
+          lastKeyPressed = "ue";
+        }
+      break;
+
+      case 0x52: //ä
+
+        if (shiftActive) {
+          add_char_to_message("A");
+          add_char_to_message("e");
+
+          lastKeyPressed = "Ae";
+          } else {
+          add_char_to_message("a");
+          add_char_to_message("e");
+
+          lastKeyPressed = "ae";
+        }
+      break;
+      
+      case 0x4E: //ß
+
+      if (shiftActive) {
+        add_char_to_message("?");
+
+        lastKeyPressed = "?";
+      } else if (altgrActive) {
+        add_char_to_message("\\");
+
+        lastKeyPressed = "\\";
+      } else {
+        add_char_to_message("s");
+        add_char_to_message("s");
+
+        lastKeyPressed = "ss";
+      }
+      break;
+
       default:
         if (shiftActive) {
           input = keymapGERShift[scanval]; // input = shift + key
