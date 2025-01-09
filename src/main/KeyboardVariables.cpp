@@ -1,6 +1,5 @@
 #include "KeyboardVariables.h"
 
-// Define variables
 bool altgrActive = false;
 bool shiftActive = false;
 bool capsActive = false;
@@ -8,7 +7,7 @@ bool capsActive = false;
 unsigned long shiftLastTime = 0;
 unsigned long altgrLastTime = 0;
 
-const unsigned long timeout = 200; // Timeout for Shift and AltGR in ms
+const unsigned long timeout = 200;
 unsigned long currentTime = 0;
 
 uint16_t scanval = 0;
