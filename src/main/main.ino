@@ -212,12 +212,12 @@ ISR(PCINT0_vect)
           add_char_to_message("O");
           add_char_to_message("e");
 
-          lastKeyPressed = "Ö";
+          lastKeyPressed = "Oe";
         } else {
           add_char_to_message("o");
           add_char_to_message("e");
 
-          lastKeyPressed = "ö";
+          lastKeyPressed = "oe";
         }
 
       break;
@@ -228,12 +228,12 @@ ISR(PCINT0_vect)
           add_char_to_message("U");
           add_char_to_message("e");
 
-          lastKeyPressed = "Ü";
+          lastKeyPressed = "Ue";
         } else {
           add_char_to_message("u");
           add_char_to_message("e");
 
-          lastKeyPressed = "ü";
+          lastKeyPressed = "ue";
         }
       break;
 
@@ -243,12 +243,12 @@ ISR(PCINT0_vect)
           add_char_to_message("A");
           add_char_to_message("e");
 
-          lastKeyPressed = "Ä";
+          lastKeyPressed = "Ae";
           } else {
           add_char_to_message("a");
           add_char_to_message("e");
 
-          lastKeyPressed = "ä";
+          lastKeyPressed = "ae";
         }
       break;
       
@@ -266,7 +266,7 @@ ISR(PCINT0_vect)
         add_char_to_message("s");
         add_char_to_message("s");
 
-        lastKeyPressed = "ß";
+        lastKeyPressed = "ss";
       }
       break;
 
