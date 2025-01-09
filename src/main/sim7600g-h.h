@@ -24,6 +24,6 @@ SimStatus checkCPINStatus();
 String sendCommandAndGetResponse(const char *command, unsigned long timeout = 1000);
 void readWhileAvailable();
 void isrRI();
-bool sendSMS(const String &phoneNumber, const String &message);
+bool sendSMS(const String &phoneNumber);
 
 #endif

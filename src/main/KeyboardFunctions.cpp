@@ -3,17 +3,14 @@
 #include "KeyboardFunctions.h"
 
 void add_char_to_message(char ch) {
-    int len = strlen(message);
-    if (len < MAX_MESSAGE_LENGTH) {
-        message[len] = ch;
-        message[len + 1] = '\0';
+    if (message.length() < MAX_MESSAGE_LENGTH) {
+        message += ch;
     }
 }
 
 void delete_last_char_from_message() {
-    int len = strlen(message);
-    if (len > 0) {
-        message[len - 1] = '\0';
+    if (message.length() > 0) {
+        message.remove(message.length() - 1);
     }
 }
 

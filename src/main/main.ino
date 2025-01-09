@@ -54,7 +54,7 @@ extern volatile bool brightnessDownKeyPressed = false; // decrease screen bright
 
 volatile bool keyPressDetected = false;
 char lastKeyPressed = '\0'; 
-char message[MAX_MESSAGE_LENGTH + 1] = ""; // Message buffer
+String message; // Message buffer
 
 void setup()
 {
@@ -116,12 +116,13 @@ ISR(PCINT0_vect)
       switch(scanval) // Cases for speccial keys
       {
       case 0x5A: //Enter
+        Serial.println("In 0x5A case");
         enterKeyPressed = true;
         handle_enter_key();
         Serial.println("ENTER_FOR_NEW_LINE");
         break;
       case 0x66: //Backspace
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           deleteKeyPressed = true;
           delete_last_char_from_message();
           Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
@@ -129,77 +130,77 @@ ISR(PCINT0_vect)
       break;
       
       case 0x76: //ESC
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           escKeyPressed = true;
 
         }
       break;
 
       case 0x0D: //TAB
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           tabKeyPressed = true;
 
         }
       break;
 
       case 0x77: //NUMLOCK
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           numLockKeyPressed = true;
 
         }
       break;
       
       case 0x75: //ARROW UP
-        if (strlen(message) > 0 && lastscan == 0xE0) {
+        if (message.length() > 0 && lastscan == 0xE0) {
           arrowUpPressed = true;
 
         }
       break;
       
       case 0x72: //ARROW DOWN
-        if (strlen(message) > 0 && lastscan == 0xE0) {
+        if (message.length() > 0 && lastscan == 0xE0) {
           arrowDownPressed = true;
 
         }
       break;
 
       case 0x74: //ARROW RIGHT
-        if (strlen(message) > 0 && lastscan == 0xE0) {
+        if (message.length() > 0 && lastscan == 0xE0) {
           arrowRightPressed = true;
 
         }
       break;
 
       case 0x6B: //ARROW LEFT
-        if (strlen(message) > 0 && lastscan == 0xE0) {
+        if (message.length() > 0 && lastscan == 0xE0) {
           arrowLeftPressed = true;
 
         }
       break;
       /*
       case 0x66: //FX Volume up
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           volumeUpKeyPressed = true;
 
         }
       break;
 
       case 0x66: //FX Volume down
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           volumeDownKeyPressed = true;
 
         }
       break;
 
       case 0x66: //FX Brightness up
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           brightnessUpKeyPressed = true;
 
         }
       break;
 
       case 0x66: //FX Brightness down
-        if (strlen(message) > 0) {
+        if (message.length() > 0) {
           brightnessDownKeyPressed = true;
         }
       break;

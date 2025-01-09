@@ -65,14 +65,11 @@ void loopSim7600() {
       sim7600.println("AT+CMGL=\"REC UNREAD\"");
       readWhileAvailableMessage();
   }
-  while(counter < 1){
-    sendSMS("0041794410255", "test1");
-  }
   if (enterKeyPressed) {
-    //Serial.println(message);
-    sendSMS(const_phoneNumber, message);
-    message[0] = '\0';
+    Serial.println(message);
     enterKeyPressed = false; // Reset the flag
+    sendSMS(const_phoneNumber);
+    message = "";
    }
 }
 
@@ -146,6 +143,7 @@ bool responseEqualsGiven(const char *expected) {
             }
         }
     }
+    Serial.println(response);
     return false;
 }
 
@@ -185,7 +183,7 @@ void isrRI() {
     newMessage = true;
 }
 
-bool sendSMS(const String &phoneNumber, const String &message) {
+bool sendSMS(const String &phoneNumber) {
   counter++;
 
   Serial.println("Checking Connection...");
@@ -206,16 +204,27 @@ bool sendSMS(const String &phoneNumber, const String &message) {
     return false;
   } 
 
+  Serial.println("Message in method: " + message);
+
+
   sim7600.print("AT+CMGS=\"");
   sim7600.print(phoneNumber);
   sim7600.println("\"");
-  delay(100);
+  delay(300);
 
   sim7600.print(message);
-  delay(100);
+
+  /*for (unsigned int i = 0; i < message.length(); i++) {
+    sim7600.print(message[i]);
+    delay(10); // Small delay to avoid buffer overflow
+  }
+  */
+
+  delay(300);
 
   sim7600.write(26); // Send termination character
-  delay(5000);
+  delay(10000);
+
 
   if (responseEqualsGiven("OK")) {
       Serial.println("SMS sent successfully.");
