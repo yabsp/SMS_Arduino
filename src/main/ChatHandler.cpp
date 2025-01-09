@@ -1,5 +1,6 @@
 #include "ChatHandler.h"
 #include "Utils.h"
+#include "Menu.h"
 
 
 //#include <SD.h>
@@ -116,6 +117,8 @@ void saveMessageInMemory(const String &phoneNumber, const String &message, const
         storedChats[i].messages[storedChats[i].messageCount++] = {timestamp, phoneNumber, message};
         Serial.println("Message added to existing chat for: " + phoneNumber);
       }
+      //Draw_Chat_Viewer(phoneNumber, findContactNameByPhoneNumber(phoneNumber));
+      Refresh_Chat_Viewer();
     return;
   }
 }
@@ -140,6 +143,8 @@ void saveMessageInMemory(const String &phoneNumber, const String &message, const
       String unknownName = "Unknown_" + String(unknownIndex);
       newContact(phoneNumber, unknownName);
     }
+    //Draw_Chat_Viewer(phoneNumber, findContactNameByPhoneNumber(phoneNumber));
+    Refresh_Chat_Viewer();
   } else {
     Serial.println("Max chats reached, cannot save message!");
   }
@@ -226,6 +231,16 @@ uint8_t findChatIndexByPhoneNumber(const String& phoneNumber) {
     }
   }
   return chatCount; // Return chatCount as an invalid index
+}
+
+// Find chat index by phone number ---------------------------------------------------------------
+String findContactNameByPhoneNumber(const String& phoneNumber) {
+  for (uint8_t i = 0; i < chatCount; i++) {
+    if (chatList[i].phoneNumber == phoneNumber) {
+      return chatList[i].contactName;
+    }
+  }
+  return "xx"; // Return chatCount as an invalid index
 }
 
 

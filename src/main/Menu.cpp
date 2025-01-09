@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "KeyboardFlags.h"
 // ChatHandler.h
 #ifndef CHATHANDLER_H
 #define CHATHANDLER_H
@@ -26,6 +27,8 @@ int inputLength = 0; // current length of the input
 String phoneNumber;
 String contactName;
 uint8_t chatOffset = 0; // Tracks the scroll position for visible chats
+int Chat_Cursor_X = 4;
+int Chat_Cursor_Y = 230;
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -249,9 +252,24 @@ void Refresh_Chat_Viewer() {
   Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
   activeInput = 3; // messageInput
   if (Back_Button.justPressed()){
-    Back_Button.drawButton(false);
     activeInput = 0;
+    keyboardActive = false;
+    Back_Button.drawButton(false);
     Change_Menu(2);
+  }
+  keyboardActive = true;
+  activeInput = 0;
+
+  if (keyPressDetected){
+    tft.setTextSize(1);
+    tft.setTextColor(BLACK);
+    if (!lastKeyPressed == NULL) {
+      Serial.println("in if statement");
+      tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
+      tft.print(lastKeyPressed);
+      lastKeyPressed = NULL;
+      Chat_Cursor_X += 6;
+    }
   }
 }
 
@@ -370,7 +388,6 @@ void InitializeButtons(MCUFRIEND_kbv &tft) {
   New_Chat_Button.initButton(&tft, calculateRight(100) + 316, calculateTop(20) + 32, 100, 20, BLACK, BLACK, WHITE, "New Contact", 1); // is now new contact
   Enter_Button.initButton(&tft, calculateRight(50) + 316 , calculateTop(20) + 32, 50, 20, BLACK, BLACK, WHITE, "Enter", 1);
 }
-
 // Function to show field selector ------------------------------------------------------------------------------------
 void Blink_Underscore() {
   static unsigned long lastBlink = 0;

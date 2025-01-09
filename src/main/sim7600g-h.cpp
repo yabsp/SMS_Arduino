@@ -1,5 +1,6 @@
 #include "sim7600g-h.h"
 #include "KeyboardFlags.h"
+#include "display.h"
 
 //SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
@@ -75,14 +76,11 @@ void loopSim7600() {
 
 void readWhileAvailableMessage() {
     String rawResponse = "";
-    while (!sim7600.available()){
-      Serial.println("waiting");
-    }
+    while (!sim7600.available());
     while (sim7600.available()) {
         rawResponse = sim7600.readString();
     }
     displayLastMessage(rawResponse);
-
 }
 
 
@@ -104,9 +102,9 @@ void displayLastMessage(String rawResponse) {
     if (headerEnd == -1) break;
     String headerLine = rawResponse.substring(cmglIndex, headerEnd);
 
-    String phoneNumber = headerLine.substring(23, 35);
-    String date = headerLine.substring(41, 49);
-    String time = headerLine.substring(50, 61);
+    String phoneNumber = headerLine.substring(24, 36);
+    String date = headerLine.substring(42, 50);
+    String time = headerLine.substring(51, 62);
 
     int messageStart = headerEnd + 1;
     int nextHeader = rawResponse.indexOf("+CMGL:", messageStart);
@@ -121,12 +119,24 @@ void displayLastMessage(String rawResponse) {
     currentIndex = messageEnd + 1;
   }
 
+    // Remove "OK"
+  int okIndex = lastMessageContent.indexOf("OK");
+  if (okIndex != -1) {
+      lastMessageContent.remove(okIndex, 2); // Remove "OK" (2 characters)
+  }
+
+  // Remove newlines and carriage returns
+  lastMessageContent.replace("\n", ""); // Replace all newline characters
+  lastMessageContent.replace("\r", ""); // Replace all carriage return characters
+
+
   Serial.println("Last Message Details:");
   Serial.println("Phone: " + lastPhoneNumber);
   Serial.println("Date: " + lastDate);
   Serial.println("Time: " + lastTime);
   Serial.println("Message: " + lastMessageContent);
   Serial.println("-------------------------");
+  saveMessageInMemory(lastPhoneNumber, lastMessageContent, lastDate + ", " + lastTime);
 }
 
 

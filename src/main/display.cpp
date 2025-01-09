@@ -19,7 +19,7 @@ void setupDisplay(){
   //newContact("+41786936406", "Yanick");
   //newContact("+41796299706", "Mike");
   newContact("+491605895978", "Max");
-  newContact("+41794410255", "Gioia");
+  //newContact("+41794410255", "Gioia");
   /*
   Serial.println("Initializing SD card...");
 
@@ -38,6 +38,7 @@ void loopDisplay(){
   Blink_Underscore();
   while (testing < 1){
     saveMessageInMemory("+41786936406","TestSpichty","2025");
+    /*
     saveMessageInMemory("+41794410255", "TestGioia", "2025");
     saveMessageInMemory("+491605895978", "TestMax", "2025");
     saveMessageInMemory("+41794410255", "TestGioia2", "2025");
@@ -49,5 +50,6 @@ void loopDisplay(){
     saveMessageInMemory("+41794410255", "TestGioia7", "2025");
     saveMessageInMemory("+41794410255", "TestGioia8", "2025");
     saveMessageInMemory("+41788802667", "TestGaby", "2025");
+    */
   }
 }
