@@ -66,9 +66,9 @@ void loopSim7600() {
       sim7600.println("AT+CMGL=\"REC UNREAD\"");
       readWhileAvailableMessage();
   }
-  if (enterKeyPressed) {
+  if (enterKeyPressed_SMS) {
     Serial.println(message);
-    enterKeyPressed = false; // Reset the flag
+    enterKeyPressed_SMS = false; // Reset the flag
     sendSMS(const_phoneNumber);
     message = "";
    }

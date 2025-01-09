@@ -35,7 +35,8 @@
 
 extern volatile bool keyboardActive = true;
 
-extern volatile bool enterKeyPressed = false; // Send SMS when in chat window
+extern volatile bool enterKeyPressed_SMS = false; // Send SMS when in chat window
+extern volatile bool enterKeyPressed_Screen = false;
 extern volatile bool deleteKeyPressed = false; // Delete last typed character
 extern volatile bool escKeyPressed = false; // Go back to last scene?
 extern volatile bool tabKeyPressed = false; // ?
@@ -53,7 +54,7 @@ extern volatile bool brightnessUpKeyPressed = false; // Increase screen brightne
 extern volatile bool brightnessDownKeyPressed = false; // decrease screen brightness
 
 volatile bool keyPressDetected = false;
-char lastKeyPressed = '\0'; 
+String lastKeyPressed; 
 String message; // Message buffer
 
 void setup()
@@ -117,7 +118,8 @@ ISR(PCINT0_vect)
       {
       case 0x5A: //Enter
         Serial.println("In 0x5A case");
-        enterKeyPressed = true;
+        enterKeyPressed_SMS = true;
+        enterKeyPressed_Screen = true;
         handle_enter_key();
         Serial.println("ENTER_FOR_NEW_LINE");
         break;
@@ -210,46 +212,72 @@ ISR(PCINT0_vect)
 
         if (shiftActive) {
           add_char_to_message("O");
+          delay(100);
           add_char_to_message("e");
 
           lastKeyPressed = "Oe";
-        } else {
+        } else if (capsActive) {
+          add_char_to_message("O");
+          delay(100);
+          add_char_to_message("E");
+
+          lastKeyPressed = "OE";
+        } else { 
           add_char_to_message("o");
+          delay(100);
           add_char_to_message("e");
 
           lastKeyPressed = "oe";
         }
-
+      keyPressDetected = true;
       break;
 
       case 0x54: //ü
-
+        Serial.println("In case ü");
         if (shiftActive) {
           add_char_to_message("U");
+          delay(100);
           add_char_to_message("e");
 
           lastKeyPressed = "Ue";
+          } else if (capsActive) {
+          add_char_to_message("U");
+          delay(100);
+          add_char_to_message("E");
+
+          lastKeyPressed = "UE";
         } else {
           add_char_to_message("u");
+          delay(100);
           add_char_to_message("e");
 
           lastKeyPressed = "ue";
         }
+        keyPressDetected = true;
       break;
 
       case 0x52: //ä
 
         if (shiftActive) {
           add_char_to_message("A");
+          delay(100);
           add_char_to_message("e");
 
           lastKeyPressed = "Ae";
+          } else if (capsActive) {
+          add_char_to_message("A");
+          delay(100);
+          add_char_to_message("E");
+
+          lastKeyPressed = "AE";
           } else {
           add_char_to_message("a");
+          delay(100);
           add_char_to_message("e");
 
           lastKeyPressed = "ae";
         }
+        keyPressDetected = true;
       break;
       
       case 0x4E: //ß
@@ -264,10 +292,12 @@ ISR(PCINT0_vect)
         lastKeyPressed = "\\";
       } else {
         add_char_to_message("s");
+        delay(100);
         add_char_to_message("s");
 
         lastKeyPressed = "ss";
       }
+      keyPressDetected = true;
       break;
 
       default:

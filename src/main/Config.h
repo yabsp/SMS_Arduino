@@ -30,6 +30,11 @@ extern int activeInput;              // Active Input (0: none, 1: phoneNumberInp
 #define MAX_INPUT_LENGTH 64
 
 
+// Screen dimensions -------------------------------------------------------------------
+#define SCREEN_HEIGHT 240
+#define SCREEN_WIDTH 320
+
+
 // Colors ------------------------------------------------------------------------------
 #define BLACK       0x0000
 #define BLUE        0x001F

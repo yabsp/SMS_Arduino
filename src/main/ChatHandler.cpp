@@ -22,7 +22,6 @@ StoredChat storedChats[MAX_CHATS]; // Simulate a map
 uint8_t storedChatCount = 0; // Current number of stored chats
 
 
-
 // initialize variables -----------------------------------------------------------------------
 Chat chatList[MAX_CHATS];               // Storage of all chats
 uint8_t chatCount = 0;                  // Current amount of chats
@@ -86,9 +85,6 @@ void newContact(String phoneNumber, String contactName) {
 }
 
 
-
-
-
 // Set the active chat -------------------------------------------------------------------------
 void setChat(String phoneNumber, String contactName) {
   uint8_t index = findChatIndexByPhoneNumber(phoneNumber);
@@ -149,7 +145,6 @@ void saveMessageInMemory(const String &phoneNumber, const String &message, const
     Serial.println("Max chats reached, cannot save message!");
   }
 }
-
 
 
 // Returns all messages for a specific phonenumber -----------------------------------------------

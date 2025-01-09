@@ -263,13 +263,33 @@ void Refresh_Chat_Viewer() {
   if (keyPressDetected){
     tft.setTextSize(1);
     tft.setTextColor(BLACK);
-    if (!lastKeyPressed == NULL) {
+    if (lastKeyPressed.length() == 1) {
       Serial.println("in if statement");
       tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
       tft.print(lastKeyPressed);
-      lastKeyPressed = NULL;
+      lastKeyPressed = "";
       Chat_Cursor_X += 6;
+    } else if (lastKeyPressed.length() == 2){
+      Serial.println("Doubleinput");
+      tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
+      tft.print(lastKeyPressed);
+      lastKeyPressed = "";
+      Chat_Cursor_X += 12;
     }
+  } 
+
+  if (deleteKeyPressed) {
+    Serial.println("in deleteKeyPressed statement");
+    deleteKeyPressed = false;
+    if (Chat_Cursor_X > 4) {
+      Chat_Cursor_X -= 6;
+      tft.fillRect(Chat_Cursor_X, Chat_Cursor_Y, 6, 12, WHITE);
+    }
+  } 
+  if (enterKeyPressed_Screen) {
+    enterKeyPressed_Screen = false;
+    Chat_Cursor_X = 4;
+    tft.fillRect(0, SCREEN_HEIGHT - 12 , SCREEN_WIDTH, 12, WHITE);
   }
 }
 
