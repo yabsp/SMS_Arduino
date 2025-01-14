@@ -211,21 +211,21 @@ ISR(PCINT0_vect)
      case 0x4C: //ö
 
         if (shiftActive) {
-          add_char_to_message("O");
+          add_char_to_message('O');
           delay(100);
-          add_char_to_message("e");
+          add_char_to_message('e');
 
           lastKeyPressed = "Oe";
         } else if (capsActive) {
-          add_char_to_message("O");
+          add_char_to_message('O');
           delay(100);
-          add_char_to_message("E");
+          add_char_to_message('E');
 
           lastKeyPressed = "OE";
         } else { 
-          add_char_to_message("o");
+          add_char_to_message('o');
           delay(100);
-          add_char_to_message("e");
+          add_char_to_message('e');
 
           lastKeyPressed = "oe";
         }
@@ -235,21 +235,21 @@ ISR(PCINT0_vect)
       case 0x54: //ü
         Serial.println("In case ü");
         if (shiftActive) {
-          add_char_to_message("U");
+          add_char_to_message('U');
           delay(100);
-          add_char_to_message("e");
+          add_char_to_message('e');
 
           lastKeyPressed = "Ue";
           } else if (capsActive) {
-          add_char_to_message("U");
+          add_char_to_message('U');
           delay(100);
-          add_char_to_message("E");
+          add_char_to_message('E');
 
           lastKeyPressed = "UE";
         } else {
-          add_char_to_message("u");
+          add_char_to_message('u');
           delay(100);
-          add_char_to_message("e");
+          add_char_to_message('e');
 
           lastKeyPressed = "ue";
         }
@@ -259,21 +259,21 @@ ISR(PCINT0_vect)
       case 0x52: //ä
 
         if (shiftActive) {
-          add_char_to_message("A");
+          add_char_to_message('A');
           delay(100);
-          add_char_to_message("e");
+          add_char_to_message('e');
 
           lastKeyPressed = "Ae";
           } else if (capsActive) {
-          add_char_to_message("A");
+          add_char_to_message('A');
           delay(100);
-          add_char_to_message("E");
+          add_char_to_message('E');
 
           lastKeyPressed = "AE";
           } else {
-          add_char_to_message("a");
+          add_char_to_message('a');
           delay(100);
-          add_char_to_message("e");
+          add_char_to_message('e');
 
           lastKeyPressed = "ae";
         }
@@ -283,17 +283,17 @@ ISR(PCINT0_vect)
       case 0x4E: //ß
 
       if (shiftActive) {
-        add_char_to_message("?");
+        add_char_to_message('?');
 
         lastKeyPressed = "?";
       } else if (altgrActive) {
-        add_char_to_message("\\");
+        add_char_to_message('\\');
 
         lastKeyPressed = "\\";
       } else {
-        add_char_to_message("s");
+        add_char_to_message('s');
         delay(100);
-        add_char_to_message("s");
+        add_char_to_message('s');
 
         lastKeyPressed = "ss";
       }
