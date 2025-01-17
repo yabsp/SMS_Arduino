@@ -35,7 +35,7 @@ void setupDisplay(){
 void loopDisplay(){
   Cursor_Pressed = Touch_getXY(Cursor_X, Cursor_Y);
   Refresh_Menu(); // refresh on press
-  Blink_Underscore();
+  Blink_Underscore(Cursor_X, Cursor_Y);
   while (testing < 1){
 
     // Contact 1
