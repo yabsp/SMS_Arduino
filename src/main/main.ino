@@ -338,16 +338,16 @@ ISR(PCINT0_vect)
       Serial.println("ESC_PRESSED");
   } else if (scanval == 0x75 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWUP press
       arrowUpPressed = true;
-      Serial.println("ARROWUPP_PRESSED");
+      Serial.println("ARROWUP_PRESSED");
   } else if (scanval == 0x72 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWDOWN press
-      arrowUpPressed = true;
-      Serial.println("ARROWUPP_PRESSED");
+      arrowDownPressed = true;
+      Serial.println("ARROWDOWN_PRESSED");
   } else if (scanval == 0x74 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWRIGHT press
-      arrowUpPressed = true;
-      Serial.println("ARROWUPP_PRESSED");
+      arrowRightPressed = true;
+      Serial.println("ARROWRIGHT_PRESSED");
   } else if (scanval == 0x6B && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWLEFT press
-      arrowUpPressed = true;
-      Serial.println("ARROWUPP_PRESSED");
+      arrowLeftPressed = true;
+      Serial.println("ARROWLEFT_PRESSED");
   } else if (scanval == 0x0D, lastscan == 0xF0) {
       tabKeyPressed = true;
       Serial.println("TAB_PRESSED");

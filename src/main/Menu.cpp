@@ -196,7 +196,8 @@ void Refresh_Main_Menu() {
 
 void Refresh_Settings_Menu() {
   Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
-  if (Back_Button.justPressed()) {
+  if (Back_Button.justPressed() || escKeyPressed) {
+    escKeyPressed = false;
     Back_Button.drawButton(false);
     Change_Menu(0);
   }
@@ -205,7 +206,8 @@ void Refresh_Settings_Menu() {
 
 void Refresh_Chat_Menu() {
     Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
-    if (Back_Button.justPressed()) {
+    if (Back_Button.justPressed() || escKeyPressed) {
+        escKeyPressed = false;
         Back_Button.drawButton(false);
         Change_Menu(0);
     }
@@ -217,7 +219,8 @@ void Refresh_Chat_Menu() {
     }
 
     scrollUpButton.press(Cursor_Pressed && scrollUpButton.contains(Cursor_X, Cursor_Y));
-    if (scrollUpButton.justPressed()) {
+    if (scrollUpButton.justPressed() || arrowUpPressed) {
+        arrowUpPressed = false;
         scrollUpButton.drawButton(false);
         if (chatOffset > 0) {
           chatOffset--; // Scroll up
@@ -226,7 +229,8 @@ void Refresh_Chat_Menu() {
     }
 
     scrollDownButton.press(Cursor_Pressed && scrollDownButton.contains(Cursor_X, Cursor_Y));
-    if (scrollDownButton.justPressed()) {
+    if (scrollDownButton.justPressed() || arrowDownPressed) {
+        arrowDownPressed = false;
         scrollDownButton.drawButton(false);
         if (chatOffset + 4 < chatCount) {
             chatOffset++; // Scroll down
@@ -479,7 +483,28 @@ void Refresh_Phone_Number_Selector() {
               Serial.print("Kontaktname: ");
               Serial.println(contactName);
       } else {
+          phoneNumber = "";
+          contactName = "";
+          message = "";
+          delay(100);
+          tft.fillScreen(WHITE);
+          tft.fillRect(0, 0, 340, 30, TURQUOISE);
+          tft.setTextColor(BLACK);
+          tft.setTextSize(2);
+          tft.setCursor(4, 7);
+          tft.print("Input Error");
+          tft.setCursor(20, 95);
+          tft.print("Missing Phone Number or");
+          tft.setCursor(40, 140);
+          tft.print("Missing Contact Name");
+          tft.setTextSize(1);
+          tft.setCursor(4, 225);
+          tft.print("Press Enter Key to continue!");
           Serial.println("Fehler: Telefonnummer oder Kontaktnamen fehlen!");
+          while (!enterKeyPressed_Screen) {
+
+          }
+          enterKeyPressed_Screen = false;
       }
       Change_Menu(2); // Return to Chat Menu
     }
