@@ -3,15 +3,15 @@
 #define DATA 6  //D+
 */
 
-
+/*
 #define CLOCK 51  //D-
 #define DATA 50   //D+
+*/
 
 
-/*
 #define CLOCK 69  //D-
 #define DATA 68   //D+
-*/
+
 
 /*
 #define CLOCK 19    //D-
@@ -75,18 +75,18 @@ void setup()
   bitSet(PCMSK2, CLOCK); // Pin change interrupt on Clock pin
   */
 
-  /*
+  
   bitSet(PCICR, PCIE2);
   bitSet(PCMSK2, PCINT23);
-  */
-
+  
+  /*
   bitSet(PCICR, PCIE0); 
   bitSet(PCMSK0, PCINT3); 
-  
+  */
  }
 
-ISR(PCINT0_vect)
-//ISR(PCINT2_vect)
+//ISR(PCINT0_vect)
+ISR(PCINT2_vect)
 {
   
   scanval = 0;
@@ -101,7 +101,7 @@ ISR(PCINT0_vect)
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
   //handle_key_press(scanval, lastscan, lastlastscan);
 
-  //Serial.println(scanval, HEX);
+  Serial.println(scanval, HEX);
   currentTime = millis();
   if(lastscan != 0xF0 && scanval != 0xF0){
     if (scanval == 0x12 || scanval == 0x59) { // Shift press
@@ -348,7 +348,7 @@ ISR(PCINT0_vect)
   } else if (scanval == 0x6B && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWLEFT press
       arrowLeftPressed = true;
       Serial.println("ARROWLEFT_PRESSED");
-  } else if (scanval == 0x0D, lastscan == 0xF0) {
+  } else if (scanval == 0x0D && lastscan == 0xF0) {
       tabKeyPressed = true;
       Serial.println("TAB_PRESSED");
   }
@@ -365,9 +365,9 @@ ISR(PCINT0_vect)
       altgrActive = false;
     }
 
-  //bitSet(PCIFR, PCIF2);
+  bitSet(PCIFR, PCIF2);
   //PCIFR |= PCIF0;
-  bitSet(PCIFR, PCIF0);
+  //bitSet(PCIFR, PCIF0);
 }
 
 void loop()

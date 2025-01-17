@@ -29,21 +29,165 @@ String contactName;
 uint8_t chatOffset = 0; // Tracks the scroll position for visible chats
 int Chat_Cursor_X = 4;
 int Chat_Cursor_Y = 230;
+int tabCount = 0; // Used to cycle buttons
+int logo_X = 40;  // X coordinate of the center of the logo
+int logo_Y = 160; // Y coordinate of the center of the logo
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
 void Draw_Main_Menu() {
+  
   // Background and Text
   tft.fillScreen(TURQUOISE);
   tft.setTextColor(BLACK);
   tft.setTextSize(2);
-  tft.setCursor(50,90);
+  tft.setCursor(48,90);
   tft.print("University of Basel");
-  tft.setCursor(50,120);
+  tft.setCursor(53,120);
   tft.print("Arduino SMS Sender");
-  tft.setCursor(50,150);
+  tft.setCursor(45,150);
   tft.setTextSize(1);
   tft.print("A Project by Max, Mike, Gioia and Yanick");
+  
+  // Logo
+  for (int i = 0; i < 15; i++) {
+    // Vertical lines
+    tft.drawPixel(logo_Y-13, logo_X-30 + i, BLACK);
+    tft.drawPixel(logo_Y-12, logo_X-30 + i, BLACK);
+    tft.drawPixel(logo_Y-11, logo_X-30 + i, BLACK);
+
+    tft.drawPixel(logo_Y-13, logo_X-6 + i, BLACK);
+    tft.drawPixel(logo_Y-12, logo_X-6 + i, BLACK);
+    tft.drawPixel(logo_Y-11, logo_X-6 + i, BLACK);
+
+    tft.drawPixel(logo_Y-13, logo_X+18 + i, BLACK);
+    tft.drawPixel(logo_Y-12, logo_X+18 + i, BLACK);
+    tft.drawPixel(logo_Y-11, logo_X+18 + i, BLACK);
+
+
+    tft.drawPixel(logo_Y+13, logo_X-30 + i, BLACK);
+    tft.drawPixel(logo_Y+12, logo_X-30 + i, BLACK);
+    tft.drawPixel(logo_Y+11, logo_X-30 + i, BLACK);
+
+    tft.drawPixel(logo_Y+13, logo_X-6 + i, BLACK);
+    tft.drawPixel(logo_Y+12, logo_X-6 + i, BLACK);
+    tft.drawPixel(logo_Y+11, logo_X-6 + i, BLACK);
+
+    tft.drawPixel(logo_Y+13, logo_X+18 + i, BLACK);
+    tft.drawPixel(logo_Y+12, logo_X+18 + i, BLACK);
+    tft.drawPixel(logo_Y+11, logo_X+18 + i, BLACK);
+
+    // Horizontal lines
+    tft.drawPixel(logo_Y-30 + i, logo_X-11, BLACK);
+    tft.drawPixel(logo_Y-30 + i, logo_X-12, BLACK);
+    tft.drawPixel(logo_Y-30 + i, logo_X-13, BLACK);
+
+    tft.drawPixel(logo_Y-6 + i, logo_X-11, BLACK);
+    tft.drawPixel(logo_Y-6 + i, logo_X-12, BLACK);
+    tft.drawPixel(logo_Y-6 + i, logo_X-13, BLACK);
+
+    tft.drawPixel(logo_Y+18 + i, logo_X-11, BLACK);
+    tft.drawPixel(logo_Y+18 + i, logo_X-12, BLACK);
+    tft.drawPixel(logo_Y+18 + i, logo_X-13, BLACK);
+
+
+    tft.drawPixel(logo_Y-30 + i, logo_X+11, BLACK);
+    tft.drawPixel(logo_Y-30 + i, logo_X+12, BLACK);
+    tft.drawPixel(logo_Y-30 + i, logo_X+13, BLACK);
+
+    tft.drawPixel(logo_Y-6 + i, logo_X+11, BLACK);
+    tft.drawPixel(logo_Y-6 + i, logo_X+12, BLACK);
+    tft.drawPixel(logo_Y-6 + i, logo_X+13, BLACK);
+
+    tft.drawPixel(logo_Y+18 + i, logo_X+11, BLACK);
+    tft.drawPixel(logo_Y+18 + i, logo_X+12, BLACK);
+    tft.drawPixel(logo_Y+18 + i, logo_X+13, BLACK);
+
+  }
+  // Middle Cross
+  for (int i = -1; i <=1 ; i++){
+    for(int j = -1; j <= 1; j++) {
+      tft.drawPixel(logo_Y-6+i, logo_X-6+j , BLACK);
+      tft.drawPixel(logo_Y-3+i, logo_X-3+j , BLACK);
+      tft.drawPixel(logo_Y-6+i, logo_X+6+j , BLACK);
+      tft.drawPixel(logo_Y-3+i, logo_X+3+j , BLACK);
+      tft.drawPixel(logo_Y+6+i, logo_X-6+j , BLACK);
+      tft.drawPixel(logo_Y+3+i, logo_X-3+j , BLACK);
+      tft.drawPixel(logo_Y+6+i, logo_X+6+j , BLACK);
+      tft.drawPixel(logo_Y+3+i, logo_X+3+j , BLACK);
+    }
+  }
+  //Diagonal Lines
+  for (int i = -1; i <= 1; i++) {
+    for (int j = -1; j <= 1; j++) {
+      // Top Left
+      tft.drawPixel(logo_Y-27+i, logo_X-27+j, BLACK);
+      tft.drawPixel(logo_Y-24+i, logo_X-24+j, BLACK);
+      tft.drawPixel(logo_Y-21+i, logo_X-21+j, BLACK);
+      tft.drawPixel(logo_Y-18+i, logo_X-18+j, BLACK);
+
+      // Top Right
+      tft.drawPixel(logo_Y+27+i, logo_X-27+j, BLACK);
+      tft.drawPixel(logo_Y+24+i, logo_X-24+j, BLACK);
+      tft.drawPixel(logo_Y+21+i, logo_X-21+j, BLACK);
+      tft.drawPixel(logo_Y+18+i, logo_X-18+j, BLACK);
+
+      // Bottom Left
+      tft.drawPixel(logo_Y-27+i, logo_X+27+j, BLACK);
+      tft.drawPixel(logo_Y-24+i, logo_X+24+j, BLACK);
+      tft.drawPixel(logo_Y-21+i, logo_X+21+j, BLACK);
+      tft.drawPixel(logo_Y-18+i, logo_X+18+j, BLACK);
+
+      // Bottom Right
+      tft.drawPixel(logo_Y+27+i, logo_X+27+j, BLACK);
+      tft.drawPixel(logo_Y+24+i, logo_X+24+j, BLACK);
+      tft.drawPixel(logo_Y+21+i, logo_X+21+j, BLACK);
+      tft.drawPixel(logo_Y+18+i, logo_X+18+j, BLACK);
+    }
+  }
+
+  // Outter Crosses
+  for (int i = -1; i <= 1; i++){
+    for (int j = -1; j <= 1; j++){
+      // Top
+      tft.drawPixel(logo_Y-3+i, logo_X-27+j, BLACK);
+      tft.drawPixel(logo_Y+3+i, logo_X-27+j, BLACK);
+      tft.drawPixel(logo_Y-3+i, logo_X-21+j, BLACK);
+      tft.drawPixel(logo_Y+3+i, logo_X-21+j, BLACK);
+      tft.drawPixel(logo_Y-6+i, logo_X-18+j, BLACK);
+      tft.drawPixel(logo_Y+6+i, logo_X-18+j, BLACK);
+
+      // Right
+      tft.drawPixel(logo_Y-27+i, logo_X-3+j, BLACK);
+      tft.drawPixel(logo_Y-27+i, logo_X+3+j, BLACK);
+      tft.drawPixel(logo_Y-21+i, logo_X-3+j, BLACK);
+      tft.drawPixel(logo_Y-21+i, logo_X+3+j, BLACK);
+      tft.drawPixel(logo_Y-18+i, logo_X-6+j, BLACK);
+      tft.drawPixel(logo_Y-18+i, logo_X+6+j, BLACK);
+
+      // Bottom
+      tft.drawPixel(logo_Y-3+i, logo_X+27+j, BLACK);
+      tft.drawPixel(logo_Y+3+i, logo_X+27+j, BLACK);
+      tft.drawPixel(logo_Y-3+i, logo_X+21+j, BLACK);
+      tft.drawPixel(logo_Y+3+i, logo_X+21+j, BLACK);
+      tft.drawPixel(logo_Y-6+i, logo_X+18+j, BLACK);
+      tft.drawPixel(logo_Y+6+i, logo_X+18+j, BLACK);
+
+      // Left
+      tft.drawPixel(logo_Y+27+i, logo_X-3+j, BLACK);
+      tft.drawPixel(logo_Y+27+i, logo_X+3+j, BLACK);
+      tft.drawPixel(logo_Y+21+i, logo_X-3+j, BLACK);
+      tft.drawPixel(logo_Y+21+i, logo_X+3+j, BLACK);
+      tft.drawPixel(logo_Y+18+i, logo_X-6+j, BLACK);
+      tft.drawPixel(logo_Y+18+i, logo_X+6+j, BLACK);
+
+
+    }
+  }
+
+
+
+
   //Buttons
   Settings_Menu.drawButton(true);
   Chat_Menu.drawButton(true);
@@ -179,15 +323,37 @@ void Draw_Phone_Number_Selector() {
 
 // Handle Menu Functions --------------------------------------------------------------------------------------
 void Refresh_Main_Menu() {
+  if (tabCount == 0 && enterKeyPressed_Screen) {
+    enterKeyPressed_Screen = false;
+  }
+  if (tabKeyPressed){
+    tabKeyPressed = false;
+    tabCount++;
+    if(tabCount != 0 && tabCount % 2 == 1){ // In Settings Button
+      Serial.println("tabCount Even");
+      Serial.println(tabCount);
+      Cursor_X = 83;
+      Cursor_Y = 187;
+    } else if (tabCount != 0 && tabCount % 2 == 0){ // In Chats Button
+      Serial.println("tabCount Odd");
+      Serial.println(tabCount);
+      Cursor_X = 207;
+      Cursor_Y = 187;
+    }
+  }
   // Settings_Menu
-  Settings_Menu.press(Cursor_Pressed && Settings_Menu.contains(Cursor_X, Cursor_Y));
+  Settings_Menu.press((Cursor_Pressed || enterKeyPressed_Screen)&& Settings_Menu.contains(Cursor_X, Cursor_Y));
   if (Settings_Menu.justPressed()){
+    enterKeyPressed_Screen = false;
+    tabCount = 0;
     Settings_Menu.drawButton(false);
     Change_Menu(1);
   }
 
-  Chat_Menu.press(Cursor_Pressed && Chat_Menu.contains(Cursor_X, Cursor_Y));
+  Chat_Menu.press((Cursor_Pressed || enterKeyPressed_Screen) && Chat_Menu.contains(Cursor_X, Cursor_Y));
   if (Chat_Menu.justPressed()){
+    enterKeyPressed_Screen = false;
+    tabCount = 0;
     Chat_Menu.drawButton(false);
     Change_Menu(2);
   }
@@ -256,6 +422,9 @@ void Refresh_Chat_Viewer() {
   Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
   activeInput = 3; // messageInput
   if (Back_Button.justPressed()){
+    message = "";
+    phoneNumber = "";
+    contactName = "";
     activeInput = 0;
     Back_Button.drawButton(false);
     Change_Menu(2);
@@ -297,6 +466,9 @@ void Refresh_Chat_Viewer() {
   
   if (escKeyPressed) {
     activeInput = 0;
+    message = "";
+    phoneNumber = "";
+    contactName = "";
     Back_Button.drawButton(false);
     Change_Menu(2);
   }
