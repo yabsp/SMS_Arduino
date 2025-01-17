@@ -37,19 +37,36 @@ void loopDisplay(){
   Refresh_Menu(); // refresh on press
   Blink_Underscore();
   while (testing < 1){
+
+    // Contact 1
     saveMessageInMemory("+41786936406","TestSpichty","2025");
-    /*
-    saveMessageInMemory("+41794410255", "TestGioia", "2025");
+    
+    // Contact 2
     saveMessageInMemory("+491605895978", "TestMax", "2025");
-    saveMessageInMemory("+41794410255", "TestGioia2", "2025");
     saveMessageInMemory("+491605895978", "TestMax2", "2025");
+
+    // Contact 3
+    saveMessageInMemory("+41794410255", "TestGioia2", "2025");
+    saveMessageInMemory("+41794410255", "TestGioia", "2025");
     saveMessageInMemory("+41794410255", "TestGioia3", "2025");
     saveMessageInMemory("+41794410255", "TestGioia4", "2025");
     saveMessageInMemory("+41794410255", "TestGioia5", "2025");
     saveMessageInMemory("+41794410255", "TestGioia6", "2025");
     saveMessageInMemory("+41794410255", "TestGioia7", "2025");
     saveMessageInMemory("+41794410255", "TestGioia8", "2025");
+
+    // Contact 4
     saveMessageInMemory("+41788802667", "TestGaby", "2025");
-    */
+
+    // Contact 5
+    saveMessageInMemory("+41786666689", "TestGaby", "2025");
+
+    // Contact 6
+    saveMessageInMemory("+41786666684", "TestGaby", "2025");
+
+    // Contact 7
+    saveMessageInMemory("+41756894322123", "Fudin", "2024-2025 Skiferien");
+
+
   }
 }

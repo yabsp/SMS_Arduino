@@ -10,10 +10,16 @@ struct Message {
   String timestamp;
   String phoneNumber;
   String content;
+  /*
+  char timestamp[25]; 
+  char phoneNumber[16];
+  char content[64];
+  */
 };
 
 struct StoredChat {
   String phoneNumber; // Key
+  //char phoneNumer[16];
   Message messages[MAX_MESSAGES]; // Messages for this chat
   uint8_t messageCount; // Number of messages
 };
@@ -204,7 +210,7 @@ Chat* getChatByName(const String& contactName) {
 }
 
 
-// List all chats --------------------------------------------------------------------------------
+// List all chats (debug)--------------------------------------------------------------------------------
 void listChats() {
   Serial.println("Chat List:");
   for (uint8_t i = 0; i < chatCount; i++) {
@@ -249,7 +255,7 @@ uint8_t findChatIndexByName(const String& contactName) {
   return chatCount; // Return chatCount as an invalid index
 }
 
-// Creates a new Chat from Serial Input, needs to be changed later-------------------------------
+// Creates a new Chat from Serial Input, needs to be changed later (debug, testing) -------------------------------
 void createChatFromSerialInput() {
     // Prompt for phone number
     Serial.println("Bitte geben Sie die Telefonnummer ein:");

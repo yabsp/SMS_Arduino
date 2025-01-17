@@ -8,9 +8,16 @@
 struct Chat {
   String phoneNumber;               // Phone number of the chat contact
   String contactName;               // Name of the contact
-  String messages[MAX_MESSAGES];    // Array to store chat messages
+  //String messages[MAX_MESSAGES];    // Array to store chat messages
   uint8_t messageCount;             // Number of messages in the chat
   uint8_t unreadMessages;           // Counter for unread messages
+
+  /* Heap problems uncomment and change necessary code
+  char phoneNumber[16];
+  char contactName[20];
+  uint8_t messageCount;
+  uint8_t unreadMessages;
+  */
 };
 
 // Global variables ---------------------------------------------------------------------------

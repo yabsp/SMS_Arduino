@@ -1,7 +1,7 @@
 #ifndef KEYBOARDVARIABLES_H
 #define KEYBOARDVARIABLES_H
 
-#define MAX_MESSAGE_LENGTH 200
+#define MAX_MESSAGE_LENGTH 100
 #include <stdint.h>
 
 extern bool altgrActive;

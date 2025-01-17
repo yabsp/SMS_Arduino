@@ -14,7 +14,7 @@ Adafruit_GFX_Button Main_Menu;
 Adafruit_GFX_Button Settings_Menu;
 Adafruit_GFX_Button Back_Button;
 Adafruit_GFX_Button Chat_Menu;
-Adafruit_GFX_Button New_Chat_Button;
+Adafruit_GFX_Button New_Chat_Button; // For creating new Contact not chat
 Adafruit_GFX_Button Enter_Button;
 Adafruit_GFX_Button chatButtons[MAX_CHATS];
 Adafruit_GFX_Button scrollDownButton;
@@ -86,7 +86,7 @@ void Draw_Chat_Menu() {
   scrollDownButton.initButton(&tft, 290, calculateBottom(30) + 236 , 50, 30, BLACK, BLACK, LIGHTGREY, "Down", 1);
 
   // Create buttons for each visible chat (based on chatOffset)
-  uint8_t visibleChats = 5; // Number of chats visible at a time
+  uint8_t visibleChats = 4; // Number of chats visible at a time
   for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
     String label = chatList[i + chatOffset].contactName;
     if (chatList[i + chatOffset].unreadMessages > 0) {
@@ -228,14 +228,14 @@ void Refresh_Chat_Menu() {
     scrollDownButton.press(Cursor_Pressed && scrollDownButton.contains(Cursor_X, Cursor_Y));
     if (scrollDownButton.justPressed()) {
         scrollDownButton.drawButton(false);
-        if (chatOffset + 5 < chatCount) {
+        if (chatOffset + 4 < chatCount) {
             chatOffset++; // Scroll down
             Draw_Chat_Menu(); // Redraw menu
         }
     }
 
     // Check for button presses on visible chat buttons
-    uint8_t visibleChats = 5; // Number of chats visible at a time
+    uint8_t visibleChats = 4; // Number of chats visible at a time
     for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
         chatButtons[i].press(Cursor_Pressed && chatButtons[i].contains(Cursor_X, Cursor_Y));
         if (chatButtons[i].justPressed()) {
@@ -253,11 +253,9 @@ void Refresh_Chat_Viewer() {
   activeInput = 3; // messageInput
   if (Back_Button.justPressed()){
     activeInput = 0;
-    keyboardActive = false;
     Back_Button.drawButton(false);
     Change_Menu(2);
   }
-  keyboardActive = true;
   activeInput = 0;
 
   if (keyPressDetected){
@@ -291,6 +289,13 @@ void Refresh_Chat_Viewer() {
     Chat_Cursor_X = 4;
     tft.fillRect(0, SCREEN_HEIGHT - 12 , SCREEN_WIDTH, 12, WHITE);
   }
+  
+  if (escKeyPressed) {
+    activeInput = 0;
+    Back_Button.drawButton(false);
+    Change_Menu(2);
+  }
+  
 }
 
 void Refresh_Phone_Number_Selector() {
@@ -304,8 +309,58 @@ void Refresh_Phone_Number_Selector() {
     // Check if Phone Number field is tapped
     if (Cursor_Pressed && Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 80 && Cursor_Y < 125) {
         Serial.println("Bitte geben Sie die Telefonnummer ein:");
-        phoneNumber = buildStringFromInput(); // Use Serial Monitor to input the phone number
+
         tft.fillRect(5, 81, 310, 43, WHITE);  // Clear the field
+
+        keyboardActive = true;
+
+        Chat_Cursor_X = 10;
+        Chat_Cursor_Y = 95;
+        while(keyboardActive) {
+          if (keyPressDetected){
+            tft.setTextSize(1);
+            tft.setTextColor(BLACK);
+            if (lastKeyPressed.length() == 1) {
+              Serial.println("in if statement");
+              tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
+              tft.print(lastKeyPressed);
+              lastKeyPressed = "";
+              Chat_Cursor_X += 6;
+            } else if (lastKeyPressed.length() == 2){
+              Serial.println("Doubleinput");
+              //tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
+              tft.print(lastKeyPressed);
+              lastKeyPressed = "";
+              Chat_Cursor_X += 12;
+            }
+          } 
+
+          if (deleteKeyPressed) {
+            Serial.println("in deleteKeyPressed statement");
+            deleteKeyPressed = false;
+            if (Chat_Cursor_X > 4) {
+              Chat_Cursor_X -= 6;
+              tft.fillRect(Chat_Cursor_X, Chat_Cursor_Y, 6, 12, WHITE);
+            }
+          } 
+          if (enterKeyPressed_Screen) {
+            phoneNumber = message; // Use Serial Monitor to input the phone number
+            message = "";
+            enterKeyPressed_Screen = false;
+            keyboardActive = false;
+            tft.fillRect(0, SCREEN_HEIGHT - 12 , SCREEN_WIDTH, 12, WHITE);
+            Chat_Cursor_X = 4;
+            Chat_Cursor_Y = 230;
+          }
+          
+          if (escKeyPressed) {
+            activeInput = 0;
+            Back_Button.drawButton(false);
+            Change_Menu(2);
+          }
+
+        }
+
         tft.setCursor(10, 95);
         tft.setTextSize(1);
         tft.print(phoneNumber); // Display entered phone number on the screen
@@ -316,8 +371,56 @@ void Refresh_Phone_Number_Selector() {
     // Check if Contact Name field is tapped
     if (Cursor_Pressed && Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 160 && Cursor_Y < 205) {
         Serial.println("Bitte geben Sie den Kontaktnamen ein:");
-        contactName = buildStringFromInput(); // Use Serial Monitor to input the contact name
+
         tft.fillRect(5, 161, 310, 43, WHITE); // Clear the field
+
+        keyboardActive = true; // Enter to confirm -> deactivate keyboard again
+
+        Chat_Cursor_X = 10;
+        Chat_Cursor_Y = 175;
+        while(keyboardActive) {
+          if (keyPressDetected){
+            tft.setTextSize(1);
+            tft.setTextColor(BLACK);
+            if (lastKeyPressed.length() == 1) {
+              Serial.println("in if statement");
+              tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
+              tft.print(lastKeyPressed);
+              lastKeyPressed = "";
+              Chat_Cursor_X += 6;
+            } else if (lastKeyPressed.length() == 2){
+              Serial.println("Doubleinput");
+              tft.setCursor(Chat_Cursor_X, Chat_Cursor_Y);
+              tft.print(lastKeyPressed);
+              lastKeyPressed = "";
+              Chat_Cursor_X += 12;
+            }
+          } 
+
+          if (deleteKeyPressed) {
+            Serial.println("in deleteKeyPressed statement");
+            deleteKeyPressed = false;
+            if (Chat_Cursor_X > 4) {
+              Chat_Cursor_X -= 6;
+              tft.fillRect(Chat_Cursor_X, Chat_Cursor_Y, 6, 12, WHITE);
+            }
+          } 
+          if (enterKeyPressed_Screen) {
+            contactName = message; // Use Serial Monitor to input the contact name
+            message = "";
+            enterKeyPressed_Screen = false;
+            keyboardActive = false;
+            tft.fillRect(0, SCREEN_HEIGHT - 12 , SCREEN_WIDTH, 12, WHITE);
+            Chat_Cursor_X = 4;
+            Chat_Cursor_Y = 230;
+          }
+          
+          if (escKeyPressed) {
+            activeInput = 0;
+            Back_Button.drawButton(false);
+            Change_Menu(2);
+          }
+        }
         tft.setCursor(10, 175);
         tft.setTextSize(1);
         tft.print(contactName); // Display entered contact name on the screen
@@ -352,18 +455,23 @@ void Change_Menu(uint8_t no){
     Current_Menu = no;
     switch(no){ // Change to the drawn menu
       case 0:
+        keyboardActive = false;
         Draw_Main_Menu();
         break;
       case 1:
+        keyboardActive = false;
         Draw_Settings_Menu();
         break;
       case 2:
+        keyboardActive = false;
         Draw_Chat_Menu();
         break;
       case 3:
+        keyboardActive = true;
         Draw_Chat_Viewer(phoneNumber, contactName);
         break;
       case 4:
+        keyboardActive = false;
         Draw_Phone_Number_Selector();
         break;
     }
@@ -405,7 +513,7 @@ void InitializeButtons(MCUFRIEND_kbv &tft) {
   );
   Settings_Menu.initButton(&tft, calculateLeft(145) + 10, calculateTop(24) + 175, 145, 24, BLACK, BLACK, WHITE, "Settings", 1);
   Chat_Menu.initButton(&tft, calculateRight(145) + 310, calculateTop(24) + 175, 145, 24, BLACK, BLACK, WHITE, "Chats", 1);
-  New_Chat_Button.initButton(&tft, calculateRight(100) + 316, calculateTop(20) + 32, 100, 20, BLACK, BLACK, WHITE, "New Contact", 1); // is now new contact
+  New_Chat_Button.initButton(&tft, calculateRight(100) + 316, calculateTop(20) + 32, 100, 20, BLACK, BLACK, WHITE, "New Contact", 1);
   Enter_Button.initButton(&tft, calculateRight(50) + 316 , calculateTop(20) + 32, 50, 20, BLACK, BLACK, WHITE, "Enter", 1);
 }
 // Function to show field selector ------------------------------------------------------------------------------------

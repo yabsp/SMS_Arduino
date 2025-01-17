@@ -33,7 +33,7 @@
 */
 #include "display.h"
 
-extern volatile bool keyboardActive = true;
+extern volatile bool keyboardActive = false;
 
 extern volatile bool enterKeyPressed_SMS = false; // Send SMS when in chat window
 extern volatile bool enterKeyPressed_Screen = false;
@@ -118,7 +118,7 @@ ISR(PCINT0_vect)
       {
       case 0x5A: //Enter
         Serial.println("In 0x5A case");
-        enterKeyPressed_SMS = true;
+        //enterKeyPressed_SMS = true;
         enterKeyPressed_Screen = true;
         handle_enter_key();
         Serial.println("ENTER_FOR_NEW_LINE");
