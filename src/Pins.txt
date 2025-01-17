@@ -1,7 +1,14 @@
-Mega		SIM Module
+Mega		    SIM Module
 --------------------------
-53		7
-52		8
-21		R1
+TX (D18)		RX
+RX (D19)    TX
+SCL (D21)   RI
 GND		GND
 5V		5V
+
+Mega       Keyboard
+--------------------------
+D51        CLOCK
+D50        DATA
+GND        GND
+5V         5V
