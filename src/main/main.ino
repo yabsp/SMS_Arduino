@@ -88,97 +88,97 @@ void setup()
 ISR(PCINT0_vect)
 //ISR(PCINT2_vect)
 {
-  if(keyboardActive) {
-    scanval = 0;
-    for(int i = 0; i<11; i++)
-    {
-      while(digitalRead(CLOCK));
-      scanval |= digitalRead(DATA) << i; // 1 start, 8 data bits, 1 parity, 1 stop bit
-      while(!digitalRead(CLOCK));
+  
+  scanval = 0;
+  for(int i = 0; i<11; i++)
+  {
+    while(digitalRead(CLOCK));
+    scanval |= digitalRead(DATA) << i; // 1 start, 8 data bits, 1 parity, 1 stop bit
+    while(!digitalRead(CLOCK));
+  }
+
+  scanval >>= 1; // ignore the start bit
+  scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
+  //handle_key_press(scanval, lastscan, lastlastscan);
+
+  //Serial.println(scanval, HEX);
+  currentTime = millis();
+  if(lastscan != 0xF0 && scanval != 0xF0){
+    if (scanval == 0x12 || scanval == 0x59) { // Shift press
+      shiftLastTime = millis(); // Reset Shift timer
+      shiftActive = true;
+    } else if (scanval == 0x11 && lastscan == 0xE0) { // AltGR press
+      altgrActive = true;
+      altgrLastTime = millis();
+    } else if (scanval == 0x58){
+      capsActive = !capsActive;
     }
 
-    scanval >>= 1; // ignore the start bit
-    scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
-    //handle_key_press(scanval, lastscan, lastlastscan);
-
-    //Serial.println(scanval, HEX);
-    
-    if(lastscan != 0xF0 && scanval != 0xF0){
-      if (scanval == 0x12 || scanval == 0x59) { // Shift press
-        shiftLastTime = millis(); // Reset Shift timer
-        shiftActive = true;
-      } else if (scanval == 0x11 && lastscan == 0xE0) { // AltGR press
-        altgrActive = true;
-        altgrLastTime = millis();
-      } else if(scanval == 0x58){
-        capsActive = !capsActive;
+    switch(scanval) // Cases for speccial keys
+    {
+    case 0x5A: //Enter
+      Serial.println("In 0x5A case");
+      //enterKeyPressed_SMS = true;
+      enterKeyPressed_Screen = true;
+      handle_enter_key();
+      Serial.println("ENTER_FOR_NEW_LINE");
+      break;
+    case 0x66: //Backspace
+      if (message.length() > 0) {
+        deleteKeyPressed = true;
+        delete_last_char_from_message();
+        Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
       }
-
-      switch(scanval) // Cases for speccial keys
-      {
-      case 0x5A: //Enter
-        Serial.println("In 0x5A case");
-        //enterKeyPressed_SMS = true;
-        enterKeyPressed_Screen = true;
-        handle_enter_key();
-        Serial.println("ENTER_FOR_NEW_LINE");
-        break;
-      case 0x66: //Backspace
-        if (message.length() > 0) {
-          deleteKeyPressed = true;
-          delete_last_char_from_message();
-          Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
-        }
-      break;
+    break;
       
-      case 0x76: //ESC
-        if (message.length() > 0) {
-          escKeyPressed = true;
+    case 0x76: //ESC
+      if (message.length() > 0) {
+        escKeyPressed = true;
+        Serial.println("ESC_PRESSED");
+      }
+    break;
 
-        }
-      break;
+    case 0x0D: //TAB
+      if (message.length() > 0) {
+        tabKeyPressed = true;
 
-      case 0x0D: //TAB
-        if (message.length() > 0) {
-          tabKeyPressed = true;
+      }
+    break;
 
-        }
-      break;
+    case 0x77: //NUMLOCK
+      if (message.length() > 0) {
+        numLockKeyPressed = true;
 
-      case 0x77: //NUMLOCK
-        if (message.length() > 0) {
-          numLockKeyPressed = true;
-
-        }
-      break;
+      }
+    break;
       
-      case 0x75: //ARROW UP
-        if (message.length() > 0 && lastscan == 0xE0) {
-          arrowUpPressed = true;
+    case 0x75: //ARROW UP
+      if (message.length() > 0 && lastscan == 0xE0) {
+        arrowUpPressed = true;
 
-        }
-      break;
+      }
+    break;
       
-      case 0x72: //ARROW DOWN
-        if (message.length() > 0 && lastscan == 0xE0) {
-          arrowDownPressed = true;
+    case 0x72: //ARROW DOWN
+      if (message.length() > 0 && lastscan == 0xE0) {
+        arrowDownPressed = true;
 
-        }
-      break;
+      }
+    break;
 
-      case 0x74: //ARROW RIGHT
-        if (message.length() > 0 && lastscan == 0xE0) {
-          arrowRightPressed = true;
+    case 0x74: //ARROW RIGHT
+      if (message.length() > 0 && lastscan == 0xE0) {
+        arrowRightPressed = true;
 
-        }
-      break;
+      }
+    break;
 
-      case 0x6B: //ARROW LEFT
-        if (message.length() > 0 && lastscan == 0xE0) {
-          arrowLeftPressed = true;
+    case 0x6B: //ARROW LEFT
+      if (message.length() > 0 && lastscan == 0xE0) {
+        arrowLeftPressed = true;
 
-        }
-      break;
+      }
+    break;
       /*
       case 0x66: //FX Volume up
         if (message.length() > 0) {
@@ -208,8 +208,8 @@ ISR(PCINT0_vect)
       break;
       */
 
-     case 0x4C: //ö
-
+    case 0x4C: //ö
+      if (keyboardActive) {
         if (shiftActive) {
           add_char_to_message('O');
           delay(100);
@@ -229,10 +229,12 @@ ISR(PCINT0_vect)
 
           lastKeyPressed = "oe";
         }
-      keyPressDetected = true;
-      break;
+        keyPressDetected = true;
+      }
+    break;
 
-      case 0x54: //ü
+    case 0x54: //ü
+      if (keyboardActive) {
         Serial.println("In case ü");
         if (shiftActive) {
           add_char_to_message('U');
@@ -240,7 +242,7 @@ ISR(PCINT0_vect)
           add_char_to_message('e');
 
           lastKeyPressed = "Ue";
-          } else if (capsActive) {
+        } else if (capsActive) {
           add_char_to_message('U');
           delay(100);
           add_char_to_message('E');
@@ -253,54 +255,58 @@ ISR(PCINT0_vect)
 
           lastKeyPressed = "ue";
         }
-        keyPressDetected = true;
-      break;
+          keyPressDetected = true;
+      }
+    break;
 
-      case 0x52: //ä
-
+    case 0x52: //ä
+      if (keyboardActive) {
         if (shiftActive) {
           add_char_to_message('A');
           delay(100);
           add_char_to_message('e');
 
           lastKeyPressed = "Ae";
-          } else if (capsActive) {
+        } else if (capsActive) {
           add_char_to_message('A');
           delay(100);
           add_char_to_message('E');
 
           lastKeyPressed = "AE";
-          } else {
+        } else {
           add_char_to_message('a');
           delay(100);
           add_char_to_message('e');
 
           lastKeyPressed = "ae";
         }
-        keyPressDetected = true;
-      break;
-      
-      case 0x4E: //ß
-
-      if (shiftActive) {
-        add_char_to_message('?');
-
-        lastKeyPressed = "?";
-      } else if (altgrActive) {
-        add_char_to_message('\\');
-
-        lastKeyPressed = "\\";
-      } else {
-        add_char_to_message('s');
-        delay(100);
-        add_char_to_message('s');
-
-        lastKeyPressed = "ss";
+          keyPressDetected = true;
       }
-      keyPressDetected = true;
-      break;
+    break;
+      
+    case 0x4E: //ß
+      if (keyboardActive) {
+        if (shiftActive) {
+          add_char_to_message('?');
 
-      default:
+          lastKeyPressed = "?";
+        } else if (altgrActive) {
+          add_char_to_message('\\');
+
+          lastKeyPressed = "\\";
+        } else {
+          add_char_to_message('s');
+          delay(100);
+          add_char_to_message('s');
+
+          lastKeyPressed = "ss";
+        }
+        keyPressDetected = true;
+      }
+    break;
+
+    default:
+      if (keyboardActive){
         if (shiftActive) {
           input = keymapGERShift[scanval]; // input = shift + key
         } else if (altgrActive) {
@@ -326,11 +332,38 @@ ISR(PCINT0_vect)
           }
         }
       }
-    } 
-    
-    lastlastscan = lastscan;
-    lastscan = scanval;
+    }
+  } else if (scanval == 0x76 && lastscan == 0xF0) { // ESC press
+      escKeyPressed = true;
+      Serial.println("ESC_PRESSED");
+  } else if (scanval == 0x75 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWUP press
+      arrowUpPressed = true;
+      Serial.println("ARROWUPP_PRESSED");
+  } else if (scanval == 0x72 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWDOWN press
+      arrowUpPressed = true;
+      Serial.println("ARROWUPP_PRESSED");
+  } else if (scanval == 0x74 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWRIGHT press
+      arrowUpPressed = true;
+      Serial.println("ARROWUPP_PRESSED");
+  } else if (scanval == 0x6B && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWLEFT press
+      arrowUpPressed = true;
+      Serial.println("ARROWUPP_PRESSED");
+  } else if (scanval == 0x0D, lastscan == 0xF0) {
+      tabKeyPressed = true;
+      Serial.println("TAB_PRESSED");
   }
+    
+  lastlastscan = lastscan;
+  lastscan = scanval;
+
+    // Deactivate Shift if no input for the timeout duration
+    if (shiftActive && (currentTime - shiftLastTime > timeout)) {
+      shiftActive = false;
+      }
+    // Deactivate AltGR if no input for the timeout duration
+    if (altgrActive && (currentTime - altgrLastTime > timeout)) {
+      altgrActive = false;
+    }
 
   //bitSet(PCIFR, PCIF2);
   //PCIFR |= PCIF0;
@@ -341,8 +374,7 @@ void loop()
 {
   loopSim7600();
   loopDisplay();
-  currentTime = millis();
-
+  /*
   // Deactivate Shift if no input for the timeout duration
   if (shiftActive && (currentTime - shiftLastTime > timeout)) {
     shiftActive = false;
@@ -352,6 +384,7 @@ void loop()
   if (altgrActive && (currentTime - altgrLastTime > timeout)) {
     altgrActive = false;
   }
+  /*
 
   /*
   //Test for other .ino files

@@ -27,6 +27,6 @@ void Refresh_Menu();
 
 void InitializeButtons(MCUFRIEND_kbv &tft);
 
-void Blink_Underscore();
+void Blink_Underscore(uint16_t x, uint16_t y);
 
 #endif

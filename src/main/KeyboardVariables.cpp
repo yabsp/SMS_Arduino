@@ -11,6 +11,6 @@ const unsigned long timeout = 200;
 unsigned long currentTime = 0;
 
 uint16_t scanval = 0;
-uint8_t lastscan = 0;
-uint8_t lastlastscan = 0;
+uint8_t lastscan = 0xE0;
+uint8_t lastlastscan = 0xE0;
 char input = '\0';
