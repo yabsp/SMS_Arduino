@@ -23,6 +23,8 @@
 #include "KeyboardVariables.h"
 #include "KeyboardFunctions.h"
 #include "sim7600g-h.h"
+#include "SDReaderWriter.h"
+
 /*
 #include "Utils.h"
 #include "ChatHandler.h"
@@ -53,6 +55,8 @@ extern volatile bool volumeDownKeyPressed = false; // decrease speaker volume;
 extern volatile bool brightnessUpKeyPressed = false; // Increase screen brightness
 extern volatile bool brightnessDownKeyPressed = false; // decrease screen brightness
 
+SdFat SD;
+
 volatile bool keyPressDetected = false;
 String lastKeyPressed; 
 String message; // Message buffer
@@ -60,6 +64,7 @@ String message; // Message buffer
 void setup()
 {
   Serial.begin(115200);
+  setupSDAndFolderStruct();
   setupSim7600();
   setupDisplay();
   pinMode(CLOCK, INPUT_PULLUP); //For most keyboards the builtin pullups are sufficient, so the 10k pullups can be omitted
