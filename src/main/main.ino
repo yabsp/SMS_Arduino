@@ -65,6 +65,7 @@ void setup()
 {
   Serial.begin(115200);
   setupSDAndFolderStruct();
+  setupSim7600();
   setupDisplay();
   pinMode(CLOCK, INPUT_PULLUP); //For most keyboards the builtin pullups are sufficient, so the 10k pullups can be omitted
   pinMode(DATA, INPUT_PULLUP);
