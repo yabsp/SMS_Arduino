@@ -58,6 +58,7 @@ void setupSim7600() {
             break;
     }
     readWhileAvailable();
+    sim7600.print("AT+CFUN=1");
 }
 
 void loopSim7600() {
