@@ -32,6 +32,7 @@ int tabCount = 0; // Used to cycle buttons
 int logo_X = 40;  // X coordinate of the center of the logo
 int logo_Y = 160; // Y coordinate of the center of the logo
 extern volatile bool keyboardActive;
+int selectedChat = 0;
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -368,6 +369,8 @@ void Refresh_Main_Menu() {
   if (Chat_Menu.justPressed()){
     enterKeyPressed_Screen = false;
     tabCount = 0;
+    chatOffset = 0;
+    selectedChat = -1;
     Chat_Menu.drawButton(false);
     Change_Menu(2);
   }
@@ -392,27 +395,176 @@ void Refresh_Chat_Menu() {
 
     if (tabKeyPressed) {
 
+      if (selectedChat >= 0) {
+        chatButtons[selectedChat].drawButton(true);
+      }
+
       tabKeyPressed = false;
       tabCount++;
 
-      if (tabCount != 0 && tabCount % (2) == 1) { // Back Button
+      if (tabCount != 0 && tabCount % 4 == 1) { // Back Button
 
         Cursor_X = 29;
         Cursor_Y = 42;
 
         Back_Button.drawButton(false);
         New_Chat_Button.drawButton(true);
+        scrollUpButton.drawButton(true);
+        scrollDownButton.drawButton(true);
         
-      } else if (tabCount != 0 && tabCount % (2) == 0) { // New Contact Button
+      } else if (tabCount != 0 && tabCount % 4 == 2) { // New Contact Button
 
         Cursor_X = 266;
         Cursor_Y = 42;
 
         Back_Button.drawButton(true);
         New_Chat_Button.drawButton(false);
+        scrollUpButton.drawButton(true);
+        scrollDownButton.drawButton(true);
+
+      } else if (tabCount != 0 && tabCount % 4 == 3) { // Up Button
+
+        Cursor_X = 290;
+        Cursor_Y = 78;
+
+        Back_Button.drawButton(true);
+        New_Chat_Button.drawButton(true);
+        scrollUpButton.drawButton(false);
+        scrollDownButton.drawButton(true);
+
+        
+      } else if (tabCount != 0 && tabCount % 4 == 0) { // Down Button
+        
+        Cursor_X = 290;
+        Cursor_Y = 221;
+
+        Back_Button.drawButton(true);
+        New_Chat_Button.drawButton(true);
+        scrollUpButton.drawButton(true);
+        scrollDownButton.drawButton(false);
 
       }
-        
+
+    }
+
+    
+    if (arrowDownPressed) { // Scroll one chat down
+
+      if(tabCount !=0) {
+        if (selectedChat >= 0) {
+          chatButtons[selectedChat].drawButton(true);
+        }
+        tabCount = 0;
+        selectedChat = -1;
+        chatOffset = 0;
+        Draw_Chat_Menu();
+      }
+
+      arrowDownPressed = false;
+
+      if(selectedChat < 3) {
+
+        selectedChat++;
+
+        if(selectedChat > 0) {
+          Serial.println("in selectedChat != 0 case");
+
+          chatButtons[(selectedChat - 1)].drawButton(true);
+        }
+
+        if(selectedChat > -1) {
+          chatButtons[selectedChat].drawButton(false);
+        }
+
+        Cursor_X = 129;
+        Cursor_Y = 70 + selectedChat * 40;
+
+      } else if(selectedChat == chatCount - 1) {
+        Serial.println("in selectedChat == chatCount case");
+
+        Cursor_X = 129;
+        Cursor_Y = 70;
+
+        selectedChat = 0;
+        chatOffset = 0;
+
+        Draw_Chat_Menu();
+
+        chatButtons[3].drawButton(true);
+        chatButtons[0].drawButton(false);
+
+      } else if (selectedChat >= 3) {
+
+        Cursor_X = 129;
+        Cursor_Y = 190;
+
+        Serial.println("in selectedChat >= 3 case");
+        selectedChat++; // 3
+        chatOffset++; // 0
+        Draw_Chat_Menu();
+        chatButtons[2].drawButton(true);
+        chatButtons[3].drawButton(false);
+      }
+      
+    }
+    
+    if (arrowUpPressed) {
+
+      arrowUpPressed = false;
+
+      if (selectedChat <= 0) {
+        Serial.println("in selectedChat <= 0 case");
+
+        Serial.println(selectedChat);
+        Serial.println(chatOffset);
+
+        Cursor_X = 129;
+        Cursor_Y = 190;
+
+        selectedChat = chatCount - 1;
+        chatOffset = chatCount - 4;
+
+        Draw_Chat_Menu();
+
+        chatButtons[3].drawButton(false);
+
+      } else if (selectedChat > 4) {
+        Serial.println("in selectedChat > 3 case");
+
+        Cursor_X = 129;
+        Cursor_Y = 190;
+
+        selectedChat--;
+        chatOffset--;
+
+        //chatButtons[chatCount - selectedChat].drawButton(false);
+        //chatButtons[chatCount - selectedChat + 1].drawButton(true);
+
+      } else if (selectedChat <= 4) {
+
+        Serial.println("in selectedChat <= 4 case");
+
+        selectedChat--;
+        if(chatOffset > 0) {
+          chatOffset--;
+        }
+
+        Cursor_X = 129;
+        Cursor_Y = 70 + selectedChat * 40;
+
+        Draw_Chat_Menu();
+
+        chatButtons[selectedChat-1].drawButton(true);
+        if (selectedChat < 4){
+          chatButtons[selectedChat].drawButton(false);
+        }
+
+      }
+
+      Serial.println(selectedChat);
+      Serial.println(chatOffset);
+      Serial.println(Cursor_Y);
+
     }
 
     Back_Button.press((Cursor_Pressed || enterKeyPressed_Screen) && Back_Button.contains(Cursor_X, Cursor_Y));
@@ -430,30 +582,43 @@ void Refresh_Chat_Menu() {
         Change_Menu(4);
     }
 
-    scrollUpButton.press(Cursor_Pressed && scrollUpButton.contains(Cursor_X, Cursor_Y));
-    if (scrollUpButton.justPressed() || arrowUpPressed) {
+    scrollUpButton.press((Cursor_Pressed || enterKeyPressed_Screen) && scrollUpButton.contains(Cursor_X, Cursor_Y));
+    if (scrollUpButton.justPressed()) {
+        enterKeyPressed_Screen = false;
         arrowUpPressed = false;
         scrollUpButton.drawButton(false);
         if (chatOffset > 0) {
           chatOffset--; // Scroll up
           Draw_Chat_Menu();
-        }
+          scrollUpButton.drawButton(false);
+        } else if (chatOffset == 0) {
+          chatOffset = chatCount - 4;
+          Draw_Chat_Menu();
+          scrollUpButton.drawButton(false);
+        } 
     }
 
-    scrollDownButton.press(Cursor_Pressed && scrollDownButton.contains(Cursor_X, Cursor_Y));
-    if (scrollDownButton.justPressed() || arrowDownPressed) {
+    scrollDownButton.press((Cursor_Pressed || enterKeyPressed_Screen) && scrollDownButton.contains(Cursor_X, Cursor_Y));
+    if (scrollDownButton.justPressed()) {
+        enterKeyPressed_Screen = false;
         arrowDownPressed = false;
         scrollDownButton.drawButton(false);
         if (chatOffset + 4 < chatCount) {
             chatOffset++; // Scroll down
             Draw_Chat_Menu(); // Redraw menu
+            scrollDownButton.drawButton(false);
+        } else if (chatOffset + 4 == chatCount) {
+            chatOffset = 0;
+            Draw_Chat_Menu();
+            scrollDownButton.drawButton(false);
         }
     }
-
+    
     // Check for button presses on visible chat buttons
     uint8_t visibleChats = 4; // Number of chats visible at a time
     for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
-        chatButtons[i].press(Cursor_Pressed && chatButtons[i].contains(Cursor_X, Cursor_Y));
+        chatButtons[i].press((Cursor_Pressed || enterKeyPressed_Screen) && chatButtons[i].contains(Cursor_X, Cursor_Y));
+        enterKeyPressed_Screen = false;
         if (chatButtons[i].justPressed()) {
             chatButtons[i].drawButton(false);
             phoneNumber = chatList[i + chatOffset].phoneNumber;
@@ -461,7 +626,9 @@ void Refresh_Chat_Menu() {
             Change_Menu(3); // Go to chat viewer
         }
     }
-}
+
+    enterKeyPressed_Screen = false;
+  }
 
 
 void Refresh_Chat_Viewer() {
@@ -529,8 +696,6 @@ void Refresh_Chat_Viewer() {
 }
 
 void Refresh_Phone_Number_Selector() {
-
-    escKeyPressed= false;
 
     if (tabCount == 0 && enterKeyPressed_Screen) {
       enterKeyPressed_Screen = false;
@@ -887,6 +1052,9 @@ void Refresh_Phone_Number_Selector() {
       }
       Change_Menu(2); // Return to Chat Menu
     }
+
+  escKeyPressed= false;
+
 }
 
 

@@ -101,7 +101,7 @@ ISR(PCINT2_vect)
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
   //handle_key_press(scanval, lastscan, lastlastscan);
 
-  Serial.println(scanval, HEX);
+  //Serial.println(scanval, HEX);
   currentTime = millis();
   if(lastscan != 0xF0 && scanval != 0xF0){
     if (scanval == 0x12 || scanval == 0x59) { // Shift press
