@@ -1,6 +1,7 @@
 #include "sim7600g-h.h"
 #include "KeyboardFlags.h"
 #include "display.h"
+#include "RickSong.h"
 
 //SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
@@ -64,6 +65,7 @@ void setupSim7600() {
 void loopSim7600() {
   if (newMessage) {
       newMessage = false;
+      playRick();
       sim7600.println("AT+CMGL=\"REC UNREAD\"");
       readWhileAvailableMessage();
   }
