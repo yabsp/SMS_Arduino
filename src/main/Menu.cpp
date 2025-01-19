@@ -508,6 +508,7 @@ void Refresh_Chat_Menu() {
       
     }
     
+    /* Not working properly
     if (arrowUpPressed) {
 
       arrowUpPressed = false;
@@ -515,6 +516,7 @@ void Refresh_Chat_Menu() {
       if (selectedChat <= 0) {
         Serial.println("in selectedChat <= 0 case");
 
+        Serial.println(chatCount);
         Serial.println(selectedChat);
         Serial.println(chatOffset);
 
@@ -537,8 +539,10 @@ void Refresh_Chat_Menu() {
         selectedChat--;
         chatOffset--;
 
-        //chatButtons[chatCount - selectedChat].drawButton(false);
-        //chatButtons[chatCount - selectedChat + 1].drawButton(true);
+         //Wrong Index
+        chatButtons[selectedChat - 2 - 1].drawButton(false);
+        chatButtons[selectedChat - 2].drawButton(true);
+        
 
       } else if (selectedChat <= 4) {
 
@@ -566,6 +570,7 @@ void Refresh_Chat_Menu() {
       Serial.println(Cursor_Y);
 
     }
+    */
 
     Back_Button.press((Cursor_Pressed || enterKeyPressed_Screen) && Back_Button.contains(Cursor_X, Cursor_Y));
     if (Back_Button.justPressed() || escKeyPressed) {
@@ -613,12 +618,11 @@ void Refresh_Chat_Menu() {
             scrollDownButton.drawButton(false);
         }
     }
-    
+
     // Check for button presses on visible chat buttons
     uint8_t visibleChats = 4; // Number of chats visible at a time
     for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
-        chatButtons[i].press((Cursor_Pressed || enterKeyPressed_Screen) && chatButtons[i].contains(Cursor_X, Cursor_Y));
-        enterKeyPressed_Screen = false;
+        chatButtons[i].press(Cursor_Pressed && chatButtons[i].contains(Cursor_X, Cursor_Y));
         if (chatButtons[i].justPressed()) {
             chatButtons[i].drawButton(false);
             phoneNumber = chatList[i + chatOffset].phoneNumber;
