@@ -6,6 +6,10 @@ bool Cursor_Pressed = false;
 uint8_t Current_Menu = 0;
 int testing = 0;
 
+extern volatile bool keyboardActive;
+extern int Chat_Cursor_X;
+extern int Chat_Cursor_Y;
+
 MCUFRIEND_kbv tft; // Create display object
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
@@ -35,7 +39,12 @@ void setupDisplay(){
 void loopDisplay(){
   Cursor_Pressed = Touch_getXY(Cursor_X, Cursor_Y);
   Refresh_Menu(); // refresh on press
-  Blink_Underscore(Cursor_X, Cursor_Y);
+
+  if (keyboardActive) {
+    
+   Blink_Underscore(Chat_Cursor_X, Chat_Cursor_Y);
+  }
+
   while (testing < 1){
 
     // Contact 1
