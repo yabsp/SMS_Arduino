@@ -467,6 +467,8 @@ void Refresh_Chat_Menu() {
 void Refresh_Chat_Viewer() {
   Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
 
+  Blink_Underscore(Chat_Cursor_X, Chat_Cursor_Y);
+
   if (Back_Button.justPressed()){
     
     message = "";
@@ -513,6 +515,8 @@ void Refresh_Chat_Viewer() {
   }
   
   if (escKeyPressed) {
+
+    escKeyPressed = false;
     
     message = "";
     phoneNumber = "";
@@ -526,10 +530,12 @@ void Refresh_Chat_Viewer() {
 
 void Refresh_Phone_Number_Selector() {
 
+    escKeyPressed= false;
+
     if (tabCount == 0 && enterKeyPressed_Screen) {
       enterKeyPressed_Screen = false;
     }
-    if (tabKeyPressed){
+    if (tabKeyPressed && !keyboardActive){
 
       tabKeyPressed = false;
       tabCount++;
@@ -603,7 +609,7 @@ void Refresh_Phone_Number_Selector() {
     }
 
     Back_Button.press((Cursor_Pressed || enterKeyPressed_Screen)&& Back_Button.contains(Cursor_X, Cursor_Y));
-    if (Back_Button.justPressed() || escKeyPressed) {
+    if ((Back_Button.justPressed() || escKeyPressed) && !keyboardActive) {
         Back_Button.drawButton(false);
         enterKeyPressed_Screen = false;
         escKeyPressed = false;
@@ -614,7 +620,23 @@ void Refresh_Phone_Number_Selector() {
 
     // Check if Phone Number field is tapped
     if ((Cursor_Pressed || enterKeyPressed_Screen) && Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 80 && Cursor_Y < 125) {
+
+        tft.drawRect(3, 79, 314, 47, TURQUOISE);
+        tft.drawRect(4, 80, 312, 45, TURQUOISE);
+        tft.drawRect(5, 81, 310, 43, TURQUOISE);
+
+        tft.drawRect(3, 159, 314, 47, WHITE);
+        tft.drawRect(4, 160, 312, 45, BLACK);
+        tft.drawRect(5, 161, 310, 43, WHITE);
+
+        tabCount = 1;
         enterKeyPressed_Screen = false;
+        escKeyPressed = false;
+
+        tft.drawRect(3, 159, 314, 47, WHITE);
+        tft.drawRect(4, 160, 312, 45, BLACK);
+        tft.drawRect(5, 161, 310, 43, WHITE);
+
         Serial.println("Bitte geben Sie die Telefonnummer ein:");
 
         tft.fillRect(5, 81, 310, 43, WHITE);  // Clear the field
@@ -671,7 +693,6 @@ void Refresh_Phone_Number_Selector() {
           }
           
           if (escKeyPressed) {
-            keyboardActive = false;
             escKeyPressed = false;
             Chat_Cursor_X = 4;
             Chat_Cursor_Y = 230;
@@ -685,10 +706,11 @@ void Refresh_Phone_Number_Selector() {
             tft.setCursor(81, 95); // Adjusted Y-coordinate for centered text
             tft.print("Click to enter phone number");
 
-            tft.drawRect(3, 79, 314, 47, WHITE);
-            tft.drawRect(4, 80, 312, 45, BLACK);
-            tft.drawRect(5, 81, 310, 43, WHITE);
-            
+            tft.drawRect(3, 79, 314, 47, TURQUOISE);
+            tft.drawRect(4, 80, 312, 45, TURQUOISE);
+            tft.drawRect(5, 81, 310, 43, TURQUOISE);
+
+            keyboardActive = false;
           }
 
         }
@@ -708,8 +730,23 @@ void Refresh_Phone_Number_Selector() {
 
     // Check if Contact Name field is tapped
     if ((Cursor_Pressed || enterKeyPressed_Screen) && Cursor_X > 4 && Cursor_X < 316 && Cursor_Y > 160 && Cursor_Y < 205) {
+
+        tft.drawRect(3, 79, 314, 47, WHITE);
+        tft.drawRect(4, 80, 312, 45, BLACK);
+        tft.drawRect(5, 81, 310, 43, WHITE);
+
+        tft.drawRect(3, 159, 314, 47, TURQUOISE);
+        tft.drawRect(4, 160, 312, 45, TURQUOISE);
+        tft.drawRect(5, 161, 310, 43, TURQUOISE);
+
+        tabCount = 2;
         enterKeyPressed_Screen = false;
+        escKeyPressed = false;
         Serial.println("Bitte geben Sie den Kontaktnamen ein:");
+
+        tft.drawRect(3, 79, 314, 47, WHITE);
+        tft.drawRect(4, 80, 312, 45, BLACK);
+        tft.drawRect(5, 81, 310, 43, WHITE);
 
         tft.fillRect(5, 161, 310, 43, WHITE); // Clear the field
 
@@ -771,7 +808,6 @@ void Refresh_Phone_Number_Selector() {
           }
           
           if (escKeyPressed) {
-            keyboardActive = false;
             escKeyPressed = false;
             Chat_Cursor_X = 4;
             Chat_Cursor_Y = 230;
@@ -785,14 +821,17 @@ void Refresh_Phone_Number_Selector() {
             tft.setCursor(81, 175); // Adjusted Y-coordinate for centered text
             tft.print("Click to enter contact name");
 
-            tft.drawRect(3, 159, 314, 47, WHITE);
-            tft.drawRect(4, 160, 312, 45, BLACK);
-            tft.drawRect(5, 161, 310, 43, WHITE);
+            tft.drawRect(3, 159, 314, 47, TURQUOISE);
+            tft.drawRect(4, 160, 312, 45, TURQUOISE);
+            tft.drawRect(5, 161, 310, 43, TURQUOISE);
+
+            keyboardActive = false;
             
           }
         }
 
         if(!escKeyPressed && contactName.length() > 0) {
+          escKeyPressed = false;
           tft.fillRect(5, 161, 310, 43, WHITE); // Clear the field
           tft.setCursor(18, 175);
           tft.setTextSize(2);
@@ -820,7 +859,7 @@ void Refresh_Phone_Number_Selector() {
               Serial.println(phoneNumber);
               Serial.print("Kontaktname: ");
               Serial.println(contactName);
-      } else {
+      } else { // Error Window for missing Phone Number/Contact Name
           
           phoneNumber = "";
           contactName = "";
@@ -929,6 +968,8 @@ void InitializeButtons(MCUFRIEND_kbv &tft) {
 void Blink_Underscore(uint16_t x, uint16_t y) {
   static unsigned long lastBlink = 0;
   static bool underscoreVisible = false;
+
+  tft.fillRect(x + 6, y + 7, 8, 2, WHITE);
 
   if (millis() - lastBlink > 500) { // Toggle every 500ms
     lastBlink = millis();
