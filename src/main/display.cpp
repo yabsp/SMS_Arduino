@@ -75,6 +75,7 @@ void loopDisplay(){
 
   //while (testing < 1){
 
+/*
     // Contact 1
     //saveMessageInMemory("+41786936406","TestSpichty","2025");
     
