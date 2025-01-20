@@ -288,3 +288,71 @@ String formatDateString(String filename) {
   // If not ending with "_0" or "_1", return an empty string or error
   return "";
 }
+
+
+int getContactsCount() {
+  SdFile dir, entry;
+  
+  int counter = 0;
+
+  if (!dir.open("/contacts/")) {
+    Serial.println("Failed to open directory: " + String("/contacts/"));
+    return 0;
+  }
+
+  while (entry.openNext(&dir, O_RDONLY)) {
+    if (entry.isDir()) { 
+      counter++;
+    }
+	entry.rewind();
+    entry.close();
+  }
+  dir.rewind();
+  dir.close();
+  return counter;
+}
+
+
+Chat getContactByIndex(int index) {
+  SdFile dir, entry;
+  int currentIndex = 0;
+  Chat contact = {"", ""};
+
+  if (!dir.open("/contacts/")) {
+    Serial.println("Failed to open directory: " + String("/contacts/"));
+    return contact;
+  }
+
+  while (entry.openNext(&dir, O_RDONLY)) {
+    if (entry.isDir()) { 
+      if (currentIndex == index) {
+        char dirName[50];
+        entry.getName(dirName, sizeof(dirName));
+        contact.phoneNumber = String(dirName);
+
+        String infoFilePath = String("/contacts/") + String(dirName) + "/info";
+        SdFile infoFile;
+        if (infoFile.open(infoFilePath.c_str(), O_RDONLY)) {
+          char name[100];
+          infoFile.fgets(name, sizeof(name)); 
+          String nameString = String(name);
+          nameString.trim();
+          contact.contactName = nameString;
+          infoFile.close();
+        } else {
+          Serial.println("Failed to open info file: " + infoFilePath);
+        }
+        entry.close();
+        dir.close();
+		entry.rewind();
+		dir.rewind();
+        return contact;
+      }
+      currentIndex++;
+    }
+    entry.close();
+  }
+  dir.rewind();
+  dir.close();
+  return contact;
+}
