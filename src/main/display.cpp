@@ -24,6 +24,7 @@ void setupDisplay(){
   newContact("+411605895978", "Dummy1");
   newContact("+421605895978", "Fuck");
   newContact("+431605895978", "Foodin");
+  
   /*
   Serial.println("Initializing SD card...");
 
@@ -34,7 +35,7 @@ void setupDisplay(){
     }
     Serial.println("SD card initialized successfully.");
     */
-
+    /*
     storeContact("+491605895978", "Max");
     storeMessage("+491605895978", "2025-01-03_14-51-43_0", "Test 1");
     storeMessage("+491605895978", "2025-01-03_14-51-48_1", "Test 2");
@@ -70,7 +71,7 @@ void setupDisplay(){
     storeMessage("+41794410255", "2025-01-03_14-51-57_0", "Test 5");
     storeMessage("+41794410255", "2025-01-03_14-51-59_1", "Test 6");
     storeMessage("+41794410255", "2025-01-03_14-52-23_1", "Test 7");
-
+    */
     InitializeTouchscreen(tft);
     InitializeButtons(tft);
     Serial.println("Initialized all");
