@@ -20,13 +20,18 @@ void playRick() {
     // Arranged by Chlorondria
 
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,4, //1
+    /*
     NOTE_E5,-4, NOTE_FS5,-4, NOTE_A5,16, NOTE_G5,16, NOTE_FS5,8,
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,2,
     NOTE_A4,16, NOTE_A4,16, NOTE_B4,16, NOTE_D5,8, NOTE_D5,16,
+    */
+
+    /*
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,4, //repeat from 1
     NOTE_E5,-4, NOTE_FS5,-4, NOTE_A5,16, NOTE_G5,16, NOTE_FS5,8,
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,2,
     NOTE_A4,16, NOTE_A4,16, NOTE_B4,16, NOTE_D5,8, NOTE_D5,16,
+    */
   };
 
   // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
