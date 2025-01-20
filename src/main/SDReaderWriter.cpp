@@ -1,4 +1,5 @@
 #include "SDReaderWriter.h"
+#include "Menu.h"
 
 
 void setupSDAndFolderStruct(){
@@ -91,6 +92,17 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
     Serial.println(fileName);
     file.close();
     offset++;
+    
+    tft.setCursor(message_Cursor_X, message_Cursor_Y);
+    // Display timestamp + name
+    message_Cursor_X += 8;
+    message_Cursor_Y += 8;
+    
+    tft.setCursor(message_Cursor_X, message_Cursor_Y);
+    // Display message
+    message_Cursor_X += 8;
+    message_Cursor_Y += 8;
+
   }
   dir.close();
 }

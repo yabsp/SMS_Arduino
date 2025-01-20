@@ -7,6 +7,8 @@
 #include <SdFat.h>
 
 extern SdFat SD;
+extern uint16_t message_Cursor_X;
+extern uint16_t message_Cursor_Y;
 
 void setupSDAndFolderStruct();
 void storeMessage(const char*, const char*, const char*);
