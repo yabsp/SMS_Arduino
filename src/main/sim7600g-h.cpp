@@ -5,7 +5,7 @@
 
 //SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
-const char simPin[] = "0135";
+const char simPin[] = "4824";
 const String const_phoneNumber = "+41794410255";
 int counter = 1;
 
@@ -35,6 +35,10 @@ void setupSim7600() {
     delay(200);
     readWhileAvailable();
 
+    // set to text mode
+    sim7600.println("AT+CMGF=1");
+
+
     // Checks if SIM card is unlocked, if not, it unlocks it
     Serial.println("Checking CPIN status...");
     SimStatus cpinStatus = checkCPINStatus();
@@ -59,7 +63,11 @@ void setupSim7600() {
             break;
     }
     readWhileAvailable();
-    sim7600.print("AT+CFUN=1");
+    sim7600.println("AT+CFUN?");
+    if (responseEqualsGiven("0")) {
+       sim7600.println("AT+CFUN=1");
+    }
+    
 }
 
 void loopSim7600() {
