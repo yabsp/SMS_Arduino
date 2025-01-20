@@ -25,5 +25,6 @@ String sendCommandAndGetResponse(const char *command, unsigned long timeout = 10
 void readWhileAvailable();
 void isrRI();
 bool sendSMS(const String &phoneNumber);
+String getCurrentTime();
 
 #endif

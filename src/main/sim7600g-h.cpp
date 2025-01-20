@@ -39,7 +39,10 @@ void setupSim7600() {
 
     // set to text mode
     sim7600.println("AT+CMGF=1");
+    delay(500);
 
+    // connect to network time protocol server of the server pool
+    sim7600.println("AT+CNTP=\"ch.pool.ntp.org\", 0");
 
     // Checks if SIM card is unlocked, if not, it unlocks it
     Serial.println("Checking CPIN status...");
@@ -68,8 +71,7 @@ void setupSim7600() {
     sim7600.println("AT+CFUN?");
     if (responseEqualsGiven("0")) {
        sim7600.println("AT+CFUN=1");
-    }
-    
+    }    
 }
 
 void loopSim7600() {
@@ -274,3 +276,23 @@ bool sendSMS(const String &phoneNumber) {
       return false;
   }
 }
+String getCurrentTime() {
+  sim7600.println("AT+CCLK?");
+  delay(500);
+  String rawTime = "";
+  while (!sim7600.available());
+  while (sim7600.available()) {
+    rawTime = sim7600.readString();
+  }
+  //int indexCCLK = indexOf("+CCLK:", currentIndex);
+  Serial.println("ROHE ZEIT: "+ rawTime);
+
+  String formattedTimestamp = "20" + rawTime.substring(9, 11) + "-" + 
+    rawTime.substring(12, 14) + "-" +          
+    rawTime.substring(15, 17) + "_" +         
+    rawTime.substring(18, 20) + "-" +        
+    rawTime.substring(21, 23) + "-" +
+    rawTime.substring(24, 26);
+    return formattedTimestamp;
+}
+
