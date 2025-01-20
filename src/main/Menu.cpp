@@ -37,7 +37,7 @@ int16_t logo_X = 40;  // X coordinate of the center of the logo
 int16_t logo_Y = 160; // Y coordinate of the center of the logo
 extern volatile bool keyboardActive;
 int8_t selectedChat = 0;
-int8_t startIndex = getStoredMessagesCount(phoneNumber.c_str()) - 3; // starting index for messages in chat
+int8_t startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4; // starting index for messages in chat
 uint16_t message_Cursor_X = 4;
 uint16_t message_Cursor_Y = 66; // lower part of the character on screen
 extern volatile bool refresh_Chat_View = false;
@@ -273,6 +273,8 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
   tft.drawLine(0, 56, 320, 56, BLACK);
   tft.drawLine(0, 225, 320, 225, BLACK);
   Back_Button.drawButton(true);
+  Serial.println(contactName);
+  Serial.println(phoneNumber);
 
   scroll_Up_Chat_Button.initButton(&tft, 235, 42, 50, 20, BLACK, BLACK, WHITE, "Up", 1);
   scroll_Down_Chat_Button.initButton(&tft, 290, 42, 50, 20, BLACK, BLACK, WHITE, "Down", 1);
@@ -300,9 +302,17 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
     }
   }
   */
-  loadMessages(phoneNumber.c_str(), getStoredMessagesCount(phoneNumber.c_str()) - 3, 4);
-  tft.drawLine(0, 56, 320, 56, BLACK);
-  tft.drawLine(0, 225, 320, 225, BLACK);
+
+  if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
+      tft.fillRect(0, 56, 320, 169, WHITE);
+      tft.drawLine(0, 56, 320, 56, BLACK);
+      tft.drawLine(0, 225, 320, 225, BLACK);
+      loadMessages(phoneNumber.c_str(), 0, getStoredMessagesCount(phoneNumber.c_str()));
+    } else {
+      loadMessages(phoneNumber.c_str(), getStoredMessagesCount(phoneNumber.c_str()) - 4, 4);
+      tft.drawLine(0, 56, 320, 56, BLACK);
+      tft.drawLine(0, 225, 320, 225, BLACK);
+    }
 }
 
 void Draw_Phone_Number_Selector() {
@@ -697,15 +707,23 @@ void Refresh_Chat_Viewer() {
     arrowUpPressed = false;
     scroll_Up_Chat_Button.drawButton(false);
 
-    if (startIndex < getStoredMessagesCount(phoneNumber.c_str()) - 3) {
-      startIndex++;
+    if (startIndexChat < 0) {
+      tft.fillRect(0, 56, 320, 169, WHITE);
+      tft.drawLine(0, 56, 320, 56, BLACK);
+      tft.drawLine(0, 225, 320, 225, BLACK);
+      loadMessages(phoneNumber.c_str(), 0, getStoredMessagesCount(phoneNumber.c_str()));
+      startIndexChat = 0;
+    }
+
+    if (startIndexChat > 0) {
+      startIndexChat--;
       message_Cursor_X = 4;
       message_Cursor_Y = 66;
       tft.fillRect(0, 56, 320, 169, WHITE);
       tft.drawLine(0, 56, 320, 56, BLACK);
       tft.drawLine(0, 225, 320, 225, BLACK);
-      loadMessages(phoneNumber.c_str(), startIndex, 4);
-      Serial.println(startIndex);
+      loadMessages(phoneNumber.c_str(), startIndexChat, 4);
+      Serial.println(startIndexChat);
 
     }
 
@@ -732,15 +750,15 @@ void Refresh_Chat_Viewer() {
     arrowDownPressed = false;
     scroll_Down_Chat_Button.drawButton(false);
 
-    if (startIndex > 0) {
-      startIndex--;
+    if (startIndexChat < getStoredMessagesCount(phoneNumber.c_str()) - 4) {
+      startIndexChat++;
       message_Cursor_X = 4;
       message_Cursor_Y = 66;
       tft.fillRect(0, 56, 320, 169, WHITE);
       tft.drawLine(0, 56, 320, 56, BLACK);
       tft.drawLine(0, 225, 320, 225, BLACK);
-      loadMessages(phoneNumber, startIndex, 4);
-      Serial.println(startIndex);
+      loadMessages(phoneNumber, startIndexChat, 4);
+      Serial.println(startIndexChat);
     
     }
 
@@ -1193,6 +1211,7 @@ void Change_Menu(uint8_t no){
         break;
       case 3:
         keyboardActive = true;
+        startIndexChat = getStoredMessagesCount(phoneNumber.c_str())-4;
         Draw_Chat_Viewer(phoneNumber, contactName);
         break;
       case 4:

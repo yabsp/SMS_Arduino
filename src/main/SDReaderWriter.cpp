@@ -68,87 +68,80 @@ void storeContact(const char *phoneNumber, const char *contactName) {
 
 void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
   SdFile dir;
-  String path = "/contacts/" + phoneNumber + "/msgs/";
+  String path = String("/contacts/") + phoneNumber + String("/msgs/");
 
   Serial.println("Attempting to open file: " + path);
 
   if (!dir.open(path.c_str())) {
     Serial.println("Failed to open messages directory.");
+    return;
   } else if (startIndex < 0){
     return;
   }
 
-  int count = 0;
   Serial.println("Iterating through messages:");
   SdFile file;
 
-  while(file.openNext(&dir, O_RDONLY)) {
-    if (count == startIndex) {
-      file.close();
-      break;
-    }
-    count++;
-    file.close();
-  }
-  
-  int offset = startIndex;
-  while (file.openNext(&dir, O_RDONLY) && (offset - startIndex < messageAmount)) {
-    char fileName[50];
-    file.getName(fileName, sizeof(fileName));
-    Serial.print("Message ");
-    Serial.print(offset);
-    Serial.print(": ");
-    Serial.println(fileName);
+  int count = 0;
+  while (file.openNext(&dir, O_RDONLY)) {
+    if (count >= startIndex && count < startIndex + messageAmount) {
+      char fileName[50];
+      file.getName(fileName, sizeof(fileName));
+      Serial.print("Message ");
+      Serial.print(count);
+      Serial.print(": ");
+      Serial.println(fileName);
 
-    char buffer[MAX_MESSAGE_LENGTH]; 
-    while (file.available()) {
-      size_t bytesRead = file.fgets(buffer, sizeof(buffer));
-      if (bytesRead > 0) {
-
-        Serial.print(buffer); 
+      char buffer[MAX_MESSAGE_LENGTH]; 
+      while (file.available()) {
+        size_t bytesRead = file.fgets(buffer, sizeof(buffer));
+        if (bytesRead > 0) {
+          Serial.print(buffer); 
+        }
       }
-  }
 
-    file.close();
-    offset++;
+      if (String(fileName).endsWith("_0")) { // incoming message
 
-    if (String(fileName).endsWith("_0")) { // incoming message
+        tft.setTextColor(BLACK);
 
-      tft.setTextColor(BLACK);
+        tft.setCursor(message_Cursor_X, message_Cursor_Y);
+        // Display timestamp + name
+        tft.print(String(fileName) + ": "  + getNameByPhoneNumber(phoneNumber.c_str()));
+        //message_Cursor_X += 8;
+        message_Cursor_Y += 12;
+        
+        tft.setCursor(message_Cursor_X, message_Cursor_Y);
+        // Display message
+        tft.print(buffer);
+        //message_Cursor_X += 10;
+        message_Cursor_Y += 15;
 
-      tft.setCursor(message_Cursor_X, message_Cursor_Y);
-      // Display timestamp + name
-      tft.print(String(fileName) + ": "  + getNameByPhoneNumber(phoneNumber.c_str()));
-      //message_Cursor_X += 8;
-      message_Cursor_Y += 12;
-      
-      tft.setCursor(message_Cursor_X, message_Cursor_Y);
-      // Display message
-      tft.print(buffer);
-      //message_Cursor_X += 10;
-      message_Cursor_Y += 15;
+      } else if (String(fileName).endsWith("_1")) { // outgoing messages
 
-    } else if (String(fileName).endsWith("_1")) { // outgoing messages
+        tft.setTextColor(BLACK);
+        tft.fillRect(0, message_Cursor_Y - 3, 320, 27, LIGHTGREY);
 
-      tft.setTextColor(BLACK);
-      tft.fillRect(0, message_Cursor_Y - 3, 320, 27, LIGHTGREY);
+        tft.setCursor(message_Cursor_X, message_Cursor_Y);
+        // Display timestamp + name
+        tft.print(String(fileName) + ": "  + "You");
+        //message_Cursor_X += 8;
+        message_Cursor_Y += 12;
+        
+        tft.setCursor(message_Cursor_X, message_Cursor_Y);
+        // Display message
+        tft.print(buffer);
+        //message_Cursor_X += 10;
+        message_Cursor_Y += 15;
 
-      tft.setCursor(message_Cursor_X, message_Cursor_Y);
-      // Display timestamp + name
-      tft.print(String(fileName) + ": "  + "You");
-      //message_Cursor_X += 8;
-      message_Cursor_Y += 12;
-      
-      tft.setCursor(message_Cursor_X, message_Cursor_Y);
-      // Display message
-      tft.print(buffer);
-      //message_Cursor_X += 10;
-      message_Cursor_Y += 15;
-
+      }
+      file.close();
+      count++;
+    } else {
+      file.close();
+      count++;
     }
-  
-
   }
+  dir.rewind();
   dir.close();
 }
 
@@ -168,6 +161,7 @@ void loadContacts() {
       Serial.println("Contact Directory: " + String(dirName));
 
       String infoFilePath = String("/contacts/") + String(dirName) + "/info";
+
       SdFile infoFile;
       if (infoFile.open(infoFilePath.c_str(), O_RDONLY)) {
         char infoContent[100];
@@ -235,9 +229,11 @@ String getNameByPhoneNumber(const char* phoneNumber) {
         }
       }
     }
+    entry.rewind();
     entry.close();
   }
-   contactsDir.close();
+  contactsDir.rewind();
+  contactsDir.close();
    return "";
 }
 
@@ -258,7 +254,9 @@ int getStoredMessagesCount(const char* phoneNumber) {
   
   while (file.openNext(&dir, O_RDONLY)) {
     count++;
+    file.close();
   }
+  dir.rewind();
   dir.close();
   return count;
 }
