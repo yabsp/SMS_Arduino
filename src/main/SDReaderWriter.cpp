@@ -23,6 +23,7 @@ void storeMessage(const char* phoneNumber, const char* timestamp, const char* me
       Serial.println("contacts/phoneNumber directory created");
     } else {
       Serial.println("Failed to create contacts/phoneNumber directory");
+      return;
     }
   }
 
@@ -33,8 +34,7 @@ void storeMessage(const char* phoneNumber, const char* timestamp, const char* me
       Serial.println("Message directory created");
     }else {
     Serial.println("Could not create messages directory");
-  }
-    
+    } 
   } 
 
   filePath = filePath + String(timestamp);
@@ -89,6 +89,15 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
     Serial.print(offset);
     Serial.print(": ");
     Serial.println(fileName);
+
+    char buffer[MAX_MESSAGE_LENGTH]; 
+    while (file.available()) {
+      size_t bytesRead = file.fgets(buffer, sizeof(buffer));
+      if (bytesRead > 0) {
+        Serial.print(buffer); 
+      }
+  }
+
     file.close();
     offset++;
   }
@@ -135,4 +144,71 @@ void loadContacts() {
   }
 
   contactsDir.close();
+}
+
+void getNameByPhoneNumber(const char* phoneNumber) {
+  bool contactFound = false;
+
+  SdFile contactsDir;
+
+  if (!contactsDir.open("/contacts/")) {
+    Serial.println("Failed to open /contacts directory.");
+  }
+
+  SdFile entry;
+  while (entry.openNext(&contactsDir, O_RDONLY) && contactFound == false) {
+    if (entry.isDir()) {
+
+      char dirName[50];
+      entry.getName(dirName, sizeof(dirName));
+      String dirNameString = String(dirName);
+      Serial.println("Contact Directory: " + String(dirName));
+
+      if (dirNameString.equals(String(phoneNumber))) {
+        String infoFilePath = String("/contacts/") + dirNameString + "/info";
+        SdFile infoFile;
+
+        if (infoFile.open(infoFilePath.c_str(), O_RDONLY)) {
+          contactFound = true;
+          char contactName[100];
+          infoFile.fgets(contactName, sizeof(contactName));
+          infoFile.close();
+
+  // Optional, trims first and last name
+          String contactNameString = String(contactName);
+          int spaceIndex = contactNameString.indexOf(' ');
+          String firstName = contactNameString.substring(0, spaceIndex);
+          String lastName = contactNameString.substring(spaceIndex + 1);
+          lastName.trim();
+
+          Serial.print("Info: ");
+          Serial.println(contactName);
+        }
+      }
+    }
+    entry.close();
+  }
+   contactsDir.close();
+}
+
+int getStoredMessagesCount(const char* phoneNumber) {
+  SdFile dir;
+  String path = "/contacts/" + String(phoneNumber) + "/msgs/";
+  int count = 0;
+
+  Serial.println("Attempting to open file: " + path);
+
+  if (!dir.open(path.c_str())) {
+    Serial.println("Failed to open messages directory.");
+    return count;
+  }
+
+  Serial.println("Iterating through messages:");
+  SdFile file;
+  
+  while (file.openNext(&dir, O_RDONLY)) {
+    count++;
+  }
+  dir.close();
+  return count;
 }
