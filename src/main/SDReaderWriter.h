@@ -5,6 +5,7 @@
 
 #include <SPI.h>
 #include <SdFat.h>
+#include "Config.h"
 
 extern SdFat SD;
 

@@ -89,6 +89,15 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
     Serial.print(offset);
     Serial.print(": ");
     Serial.println(fileName);
+
+    char buffer[MAX_MESSAGE_LENGTH]; 
+    while (file.available()) {
+      size_t bytesRead = file.fgets(buffer, sizeof(buffer));
+      if (bytesRead > 0) {
+        Serial.print(buffer); 
+      }
+  }
+
     file.close();
     offset++;
   }
