@@ -122,24 +122,24 @@ ISR(PCINT2_vect)
     switch(scanval) // Cases for speccial keys
     {
     case 0x5A: //Enter
-      Serial.println("In 0x5A case");
+      //Serial.println("In 0x5A case");
       //enterKeyPressed_SMS = true;
       enterKeyPressed_Screen = true;
       handle_enter_key();
-      Serial.println("ENTER_FOR_NEW_LINE");
+      //Serial.println("ENTER_FOR_NEW_LINE");
       break;
     case 0x66: //Backspace
       if (message.length() > 0) {
         deleteKeyPressed = true;
         delete_last_char_from_message();
-        Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
+        //Serial.println("DELETE_LAST_CHAR_ON_LCD_SCREEN");
       }
     break;
       
     case 0x76: //ESC
       if (message.length() > 0) {
         escKeyPressed = true;
-        Serial.println("ESC_PRESSED");
+        //Serial.println("ESC_PRESSED");
       }
     break;
 
@@ -330,7 +330,7 @@ ISR(PCINT2_vect)
             input = 0;
           } else {
             add_char_to_message(input);
-            Serial.println(input);
+            //Serial.println(input);
 
             lastKeyPressed = input;
             keyPressDetected = true;
@@ -340,22 +340,16 @@ ISR(PCINT2_vect)
     }
   } else if (scanval == 0x76 && lastscan == 0xF0) { // ESC press
       escKeyPressed = true;
-      Serial.println("ESC_PRESSED");
   } else if (scanval == 0x75 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWUP press
       arrowUpPressed = true;
-      Serial.println("ARROWUP_PRESSED");
   } else if (scanval == 0x72 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWDOWN press
       arrowDownPressed = true;
-      Serial.println("ARROWDOWN_PRESSED");
   } else if (scanval == 0x74 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWRIGHT press
       arrowRightPressed = true;
-      Serial.println("ARROWRIGHT_PRESSED");
   } else if (scanval == 0x6B && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWLEFT press
       arrowLeftPressed = true;
-      Serial.println("ARROWLEFT_PRESSED");
   } else if (scanval == 0x0D && lastscan == 0xF0) {
       tabKeyPressed = true;
-      Serial.println("TAB_PRESSED");
   }
     
   lastlastscan = lastscan;
@@ -410,7 +404,7 @@ void loop()
   }
   */
 
- 
+ /*
  if (escKeyPressed) {
     Serial.println("ESC_DETECTED");
     escKeyPressed = false; // Reset the flag
@@ -449,7 +443,8 @@ void loop()
   if (volumeUpKeyPressed) {
     Serial.println("VOLUME_UP_DETECTED");
     volumeUpKeyPressed = false; // Reset the flag
-  }
+  }*/
+
   /*
   if (volumeDownKeyPressed) {
     Serial.println("VOLUME_DOWN_DETECTED");
