@@ -2,6 +2,7 @@
 #include "KeyboardFlags.h"
 #include "display.h"
 #include "RickSong.h"
+#include "SDReaderWriter.h"
 
 //SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
@@ -73,7 +74,6 @@ void setupSim7600() {
 void loopSim7600() {
   if (newMessage) {
       newMessage = false;
-      playRick();
       sim7600.println("AT+CMGL=\"REC UNREAD\"");
       readWhileAvailableMessage();
   }
@@ -92,6 +92,7 @@ void readWhileAvailableMessage() {
         rawResponse = sim7600.readString();
     }
     displayLastMessage(rawResponse);
+    playRick();
 }
 
 
@@ -113,9 +114,13 @@ void displayLastMessage(String rawResponse) {
     if (headerEnd == -1) break;
     String headerLine = rawResponse.substring(cmglIndex, headerEnd);
 
-    String phoneNumber = headerLine.substring(24, 36);
-    String date = headerLine.substring(42, 50);
-    String time = headerLine.substring(51, 62);
+    String phoneNumber = headerLine.substring(23, 35);
+    String date = headerLine.substring(41, 49);
+    String time = headerLine.substring(50, 61);
+
+    if (phoneNumber.startsWith("00")) {
+      phoneNumber = "+" + phoneNumber.substring(2);
+    }
 
     int messageStart = headerEnd + 1;
     int nextHeader = rawResponse.indexOf("+CMGL:", messageStart);
@@ -130,17 +135,22 @@ void displayLastMessage(String rawResponse) {
     currentIndex = messageEnd + 1;
   }
 
-    // Remove "OK"
-  int okIndex = lastMessageContent.indexOf("OK");
-  if (okIndex != -1) {
-      lastMessageContent.remove(okIndex, 2); // Remove "OK" (2 characters)
+  String formattedTimestamp = "20" + lastDate.substring(0, 2) + "-" + 
+    lastDate.substring(3, 5) + "-" +          
+    lastDate.substring(6, 8) + "_" +         
+    lastTime.substring(0, 2) + "-" +        
+    lastTime.substring(3, 5) + "-" +
+    lastTime.substring(6, 8) + "_0";
+
+
+  if (lastMessageContent.endsWith("\r\n\r\nOK\r\n")) {
+    Serial.println("in case 1");
+    lastMessageContent.remove(lastMessageContent.length() - 6, 6); // Adjust to remove 6 chars
   }
 
-  // Remove newlines and carriage returns
-  lastMessageContent.replace("\n", ""); // Replace all newline characters
-  lastMessageContent.replace("\r", ""); // Replace all carriage return characters
+  lastMessageContent.trim();
 
-
+  Serial.println();
   Serial.println("Last Message Details:");
   Serial.println("Phone: " + lastPhoneNumber);
   Serial.println("Date: " + lastDate);
@@ -148,6 +158,7 @@ void displayLastMessage(String rawResponse) {
   Serial.println("Message: " + lastMessageContent);
   Serial.println("-------------------------");
   saveMessageInMemory(lastPhoneNumber, lastMessageContent, lastDate + ", " + lastTime);
+  storeMessage(lastPhoneNumber.c_str(), formattedTimestamp.c_str(), lastMessageContent.c_str());
 }
 
 
@@ -201,7 +212,7 @@ void readWhileAvailable() {
 }
 
 void isrRI() {
-    newMessage = true;
+  newMessage = true;
 }
 
 bool sendSMS(const String &phoneNumber) {
