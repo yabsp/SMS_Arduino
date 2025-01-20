@@ -79,7 +79,7 @@ void newContact(String phoneNumber, String contactName) {
   if (chatCount < MAX_CHATS) {
     chatList[chatCount].phoneNumber = phoneNumber;
     chatList[chatCount].contactName = contactName;
-    chatList[chatCount].messageCount = 0; // Initialisiere ohne Nachrichten
+    //chatList[chatCount].messageCount = 0; // Initialisiere ohne Nachrichten
     chatCount++;
     Serial.println("Neuer Kontakt erstellt:");
     Serial.print("Telefonnummer: ");
@@ -176,6 +176,7 @@ String getChatMessages(const String &phoneNumber) {
 }
 */
 
+/*
 // Increment unread message counter by phone number ---------------------------------------------
 void incrementUnreadMessages(const String& phoneNumber) {
   uint8_t index = findChatIndexByPhoneNumber(phoneNumber);
@@ -189,7 +190,7 @@ void incrementUnreadMessages(const String& phoneNumber) {
     Serial.println("Chat not found!");
   }
 }
-
+*/
 
 // Retrieve chat by phone number -----------------------------------------------------------------
 Chat* getChatByPhoneNumber(const String& phoneNumber) {

@@ -240,12 +240,14 @@ void Draw_Chat_Menu() {
 
   // Create buttons for each visible chat (based on chatOffset)
   //uint8_t visibleChats = 4; // Number of chats visible at a time
+
   for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
     String label = chatList[i + chatOffset].contactName;
+    /*
     if (chatList[i + chatOffset].unreadMessages > 0) {
       label += " (" + String(chatList[i + chatOffset].unreadMessages) + ")";
-    }
-        
+    }*/
+
     chatButtons[i].initButton(
       &tft,
       calculateLeft(250) + 4,     // X-Coordinate

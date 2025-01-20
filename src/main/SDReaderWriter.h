@@ -6,6 +6,7 @@
 #include <SPI.h>
 #include <SdFat.h>
 #include "Config.h"
+#include "ChatHandler.h"
 
 extern SdFat SD;
 extern uint16_t message_Cursor_X;
@@ -19,5 +20,7 @@ void loadContacts();
 String getNameByPhoneNumber(const char*);
 int getStoredMessagesCount(const char*);
 String formatDateString(String);
+int getContactsCount();
+Chat getContactByIndex(int);
 
 #endif
