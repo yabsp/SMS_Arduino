@@ -24,6 +24,8 @@ void setupDisplay(){
   newContact("+411605895978", "Dummy1");
   newContact("+421605895978", "Fuck");
   newContact("+431605895978", "Foodin");
+  storeContact("+41794410255", "Gioia");
+
   
   /*
   Serial.println("Initializing SD card...");

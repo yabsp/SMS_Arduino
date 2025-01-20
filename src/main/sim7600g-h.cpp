@@ -78,6 +78,7 @@ void setupSim7600() {
 void loopSim7600() {
   if (newMessage) {
       newMessage = false;
+      Serial.println("TIME: " +getCurrentTime());
       sim7600.println("AT+CMGL=\"REC UNREAD\"");
       readWhileAvailableMessage();
   }
@@ -269,7 +270,7 @@ bool sendSMS(const String &phoneNumber) {
 
       Serial.println("SMS sent successfully.");
 
-      String temp = String("2025") + "_1";
+      String temp = getCurrentTime() + "_1";
       storeMessage(phoneNumber.c_str(), temp.c_str(), message.c_str());
       refresh_Chat_View = true;
       
@@ -279,6 +280,7 @@ bool sendSMS(const String &phoneNumber) {
       return false;
   }
 }
+
 String getCurrentTime() {
   sim7600.println("AT+CCLK?");
   delay(500);
@@ -288,14 +290,21 @@ String getCurrentTime() {
     rawTime = sim7600.readString();
   }
   //int indexCCLK = indexOf("+CCLK:", currentIndex);
-  Serial.println("ROHE ZEIT: "+ rawTime);
+  
 
-  String formattedTimestamp = "20" + rawTime.substring(9, 11) + "-" + 
-    rawTime.substring(12, 14) + "-" +          
-    rawTime.substring(15, 17) + "_" +         
-    rawTime.substring(18, 20) + "-" +        
-    rawTime.substring(21, 23) + "-" +
-    rawTime.substring(24, 26);
+  int cclkIndex = rawTime.indexOf("+CCLK:", 0);
+ 
+  int endIndex = rawTime.indexOf('\n', cclkIndex);
+  String timeStamp = rawTime.substring(cclkIndex, endIndex);
+
+  Serial.println("ROHE ZEIT: "+ timeStamp);
+
+  String formattedTimestamp = "20" + timeStamp.substring(8, 10) + "-" + 
+    timeStamp.substring(11, 13) + "-" +          
+    timeStamp.substring(14, 16) + "_" +         
+    timeStamp.substring(17, 19) + "-" +        
+    timeStamp.substring(20, 22) + "-" +
+    timeStamp.substring(23, 25);
     return formattedTimestamp;
 }
 
