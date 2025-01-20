@@ -29,4 +29,6 @@ extern volatile bool keyPressDetected; // New flag for single key detection
 extern String lastKeyPressed;            // Last key pressed
 extern String message;                 // Shared message buffer
 
+extern volatile bool refresh_Chat_View;
+
 #endif

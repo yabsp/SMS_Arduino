@@ -1,7 +1,6 @@
 #include "SDReaderWriter.h"
 #include "Menu.h"
 
-
 void setupSDAndFolderStruct(){
   if (!SD.begin(CHIPSELECT, SD_SCK_MHZ(50))) {
     Serial.println("SdFat initialization failed!");

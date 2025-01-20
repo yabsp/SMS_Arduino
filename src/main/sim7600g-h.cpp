@@ -9,6 +9,7 @@ volatile bool newMessage = false;
 const char simPin[] = "4824";
 const String const_phoneNumber = "+41794410255";
 int counter = 1;
+extern volatile bool refresh_Chat_View;
 
 void setupSim7600() {
 
@@ -159,6 +160,8 @@ void displayLastMessage(String rawResponse) {
   Serial.println("-------------------------");
   //saveMessageInMemory(lastPhoneNumber, lastMessageContent, lastDate + ", " + lastTime);
   storeMessage(lastPhoneNumber.c_str(), formattedTimestamp.c_str(), lastMessageContent.c_str());
+
+  refresh_Chat_View = true;
 }
 
 
@@ -257,9 +260,14 @@ bool sendSMS(const String &phoneNumber) {
   sim7600.write(26); // Send termination character
   delay(10000);
 
-
   if (responseEqualsGiven("OK")) {
+
       Serial.println("SMS sent successfully.");
+
+      String temp = String("2025") + "_1";
+      storeMessage(phoneNumber.c_str(), temp.c_str(), message.c_str());
+      refresh_Chat_View = true;
+      
       return true;
   } else {
       Serial.println("Failed to send SMS.");

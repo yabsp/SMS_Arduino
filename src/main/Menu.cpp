@@ -40,6 +40,7 @@ int8_t selectedChat = 0;
 int8_t startIndex = getStoredMessagesCount(phoneNumber.c_str()) - 3; // starting index for messages in chat
 uint16_t message_Cursor_X = 4;
 uint16_t message_Cursor_Y = 66; // lower part of the character on screen
+extern volatile bool refresh_Chat_View = false;
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -712,6 +713,18 @@ void Refresh_Chat_Viewer() {
     scroll_Up_Chat_Button.drawButton(true);
 
   }
+
+  if (refresh_Chat_View) { // add case if less than 4 messages
+      refresh_Chat_View = false;
+      startIndexChat = getStoredMessagesCount(phoneNumber.c_str() - 4);
+      
+      message_Cursor_X = 4;
+      message_Cursor_Y = 66;
+
+      loadMessages(phoneNumber, startIndexChat, 4);
+
+    }
+
 
   scroll_Down_Chat_Button.press((Cursor_Pressed && scroll_Down_Chat_Button.contains(Cursor_X, Cursor_Y)) || arrowDownPressed);
   if (scroll_Down_Chat_Button.justPressed()) {
