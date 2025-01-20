@@ -10,6 +10,7 @@ const char simPin[] = "4824";
 const String const_phoneNumber = "+41794410255";
 int counter = 1;
 extern volatile bool refresh_Chat_View;
+extern volatile bool sound_Switch_Active;
 
 void setupSim7600() {
 
@@ -95,7 +96,9 @@ void readWhileAvailableMessage() {
         rawResponse = sim7600.readString();
     }
     displayLastMessage(rawResponse);
-    playRick();
+    if (sound_Switch_Active) {
+      playRick();
+    }
 }
 
 

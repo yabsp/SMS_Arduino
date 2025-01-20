@@ -22,6 +22,7 @@ Adafruit_GFX_Button scrollDownButton;
 Adafruit_GFX_Button scrollUpButton;
 Adafruit_GFX_Button scroll_Up_Chat_Button;
 Adafruit_GFX_Button scroll_Down_Chat_Button;
+Adafruit_GFX_Button sound_Turned_On_Button;
 
 
 // Variables --------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ int8_t startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4; // star
 uint16_t message_Cursor_X = 4;
 uint16_t message_Cursor_Y = 66; // lower part of the character on screen
 extern volatile bool refresh_Chat_View = false;
+extern volatile bool sound_Switch_Active = true;
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -219,6 +221,19 @@ void Draw_Settings_Menu() {
   tft.print("Basel, 29 ° C");*/
   tft.drawLine(0, 56, 320, 56, BLACK);
   Back_Button.drawButton(true);
+
+
+  if (sound_Switch_Active) {
+    sound_Turned_On_Button.initButton(&tft,225, 98, 50, 30, BLACK, BLACK, LIGHTGREY, "On", 1);
+    sound_Turned_On_Button.drawButton(true);
+  } else {
+    sound_Turned_On_Button.initButton(&tft,225, 98, 50, 30, BLACK, BLACK, LIGHTGREY, "Off", 1);
+    sound_Turned_On_Button.drawButton(true);
+  }
+
+  tft.setTextSize(1);
+  tft.setCursor(6, 95);
+  tft.print("Sound notifications are turned: ");
 }
 
 
@@ -406,15 +421,66 @@ void Refresh_Main_Menu() {
     Chat_Menu.drawButton(false);
     Change_Menu(2);
   }
+
 }
 
 
 void Refresh_Settings_Menu() {
-  Back_Button.press(Cursor_Pressed && Back_Button.contains(Cursor_X, Cursor_Y));
+
+  if (tabKeyPressed) {
+
+    tabKeyPressed = false;
+    tabCount++;
+
+    if (tabCount % 2 == 1) { // Back Button
+
+    Cursor_X = 29;
+    Cursor_Y = 42;
+
+    Back_Button.drawButton(false);
+    sound_Turned_On_Button.drawButton(true);
+
+    } else if (tabCount % 2 == 0) { // Sound Button
+
+      Cursor_X = 225;
+      Cursor_Y = 98;
+      
+      Back_Button.drawButton(true);
+      sound_Turned_On_Button.drawButton(false);
+      
+    }
+
+  }
+
+  Back_Button.press((Cursor_Pressed|| enterKeyPressed_Screen) && Back_Button.contains(Cursor_X, Cursor_Y));
   if (Back_Button.justPressed() || escKeyPressed) {
     escKeyPressed = false;
+    enterKeyPressed_Screen = false;
+    tabCount = 0;
+    Cursor_X = 0;
+    Cursor_Y = 0;
     Back_Button.drawButton(false);
     Change_Menu(0);
+  }
+
+  sound_Turned_On_Button.press((Cursor_Pressed || enterKeyPressed_Screen)&& sound_Turned_On_Button.contains(Cursor_X, Cursor_Y));
+  if (sound_Turned_On_Button.justPressed()) {
+    /*if (sound_Switch_Active) {
+      sound_Switch_Active = false;
+    } else {
+      sound_Switch_Active = true;
+    }*/
+    enterKeyPressed_Screen = false;
+    sound_Switch_Active = !sound_Switch_Active;
+    sound_Turned_On_Button.drawButton(false);
+    delay(100);
+    Draw_Settings_Menu();
+  } else if (soundOn || soundOff) {
+    soundOn = false;
+    soundOff = false;
+    sound_Turned_On_Button.drawButton(false);
+    delay(100);
+    Draw_Settings_Menu();
   }
 }
 

@@ -46,14 +46,16 @@ extern volatile bool numLockKeyPressed = false; // ?
 
 extern volatile bool arrowUpPressed = false; // Scroll one page up in chat
 extern volatile bool arrowDownPressed = false; // Scroll one page down in chat
+
 extern volatile bool arrowRightPressed = false; // ?
 extern volatile bool arrowLeftPressed = false; // ?
 
-extern volatile bool volumeUpKeyPressed = false; // Increase speaker volume
-extern volatile bool volumeDownKeyPressed = false; // decrease speaker volume;
+extern volatile bool soundOn = false; // Increase speaker volume
+extern volatile bool soundOff = false; // decrease speaker volume;
 
 extern volatile bool brightnessUpKeyPressed = false; // Increase screen brightness
 extern volatile bool brightnessDownKeyPressed = false; // decrease screen brightness
+
 
 SdFat SD;
 
@@ -104,9 +106,8 @@ ISR(PCINT2_vect)
 
   scanval >>= 1; // ignore the start bit
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
-  //handle_key_press(scanval, lastscan, lastlastscan);
 
-  //Serial.println(scanval, HEX);
+  Serial.println(scanval, HEX);
   currentTime = millis();
   if(lastscan != 0xF0 && scanval != 0xF0){
     if (scanval == 0x12 || scanval == 0x59) { // Shift press
@@ -170,7 +171,7 @@ ISR(PCINT2_vect)
 
       }
     break;
-
+    
     case 0x74: //ARROW RIGHT
       if (message.length() > 0 && lastscan == 0xE0) {
         arrowRightPressed = true;
@@ -184,21 +185,18 @@ ISR(PCINT2_vect)
 
       }
     break;
+    
+      
+    case 0x05: //FX Volume up
+        sound_Switch_Active = true;
+        soundOn = true;
+    break;
+
+    case 0x06: //FX Volume down
+        sound_Switch_Active = false;
+        soundOff = true;
+    break;
       /*
-      case 0x66: //FX Volume up
-        if (message.length() > 0) {
-          volumeUpKeyPressed = true;
-
-        }
-      break;
-
-      case 0x66: //FX Volume down
-        if (message.length() > 0) {
-          volumeDownKeyPressed = true;
-
-        }
-      break;
-
       case 0x66: //FX Brightness up
         if (message.length() > 0) {
           brightnessUpKeyPressed = true;
@@ -344,11 +342,12 @@ ISR(PCINT2_vect)
       arrowUpPressed = true;
   } else if (scanval == 0x72 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWDOWN press
       arrowDownPressed = true;
-  } else if (scanval == 0x74 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWRIGHT press
+  } /*else if (scanval == 0x74 && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWRIGHT press
       arrowRightPressed = true;
   } else if (scanval == 0x6B && lastscan == 0xF0 && lastlastscan == 0xE0) { // ARROWLEFT press
       arrowLeftPressed = true;
-  } else if (scanval == 0x0D && lastscan == 0xF0) {
+
+  } */else if (scanval == 0x0D && lastscan == 0xF0) {
       tabKeyPressed = true;
   }
     
