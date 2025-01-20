@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "KeyboardFlags.h"
+#include "SDReaderWriter.h"
 // ChatHandler.h
 #ifndef CHATHANDLER_H
 #define CHATHANDLER_H
@@ -19,6 +20,8 @@ Adafruit_GFX_Button Enter_Button;
 Adafruit_GFX_Button chatButtons[MAX_CHATS];
 Adafruit_GFX_Button scrollDownButton;
 Adafruit_GFX_Button scrollUpButton;
+Adafruit_GFX_Button scroll_Up_Chat_Button;
+Adafruit_GFX_Button scroll_Down_Chat_Button;
 
 
 // Variables --------------------------------------------------------------------------------------
@@ -34,6 +37,7 @@ int logo_X = 40;  // X coordinate of the center of the logo
 int logo_Y = 160; // Y coordinate of the center of the logo
 extern volatile bool keyboardActive;
 int selectedChat = 0;
+int startIndex = 0; // starting index for messages in chat
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -264,11 +268,19 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
   tft.setCursor(6, 6);
   tft.print(contactName);
   tft.drawLine(0, 56, 320, 56, BLACK);
+  tft.drawLine(0, 225, 320, 225, BLACK);
   Back_Button.drawButton(true);
+
+  scroll_Up_Chat_Button.initButton(&tft, 235, 42, 50, 20, BLACK, BLACK, WHITE, "Up", 1);
+  scroll_Down_Chat_Button.initButton(&tft, 290, 42, 50, 20, BLACK, BLACK, WHITE, "Down", 1);
+
+  scroll_Up_Chat_Button.drawButton(true);
+  scroll_Down_Chat_Button.drawButton(true);
 
   String messages = getChatMessages(phoneNumber);
 
 // Display the messages line by line
+  /*
   tft.setTextSize(1);
   tft.setTextColor(BLACK);
   int cursorX = 4;
@@ -284,6 +296,8 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
       cursorX += 6;
     }
   }
+  */
+  loadMessages(phoneNumber, 0, 4);
 }
 
 void Draw_Phone_Number_Selector() {
@@ -667,6 +681,38 @@ void Refresh_Chat_Viewer() {
 
     Back_Button.drawButton(false);
     Change_Menu(2);
+  }
+
+  scroll_Up_Chat_Button.press((Cursor_Pressed && scroll_Up_Chat_Button.contains(Cursor_X, Cursor_Y))  || arrowUpPressed);
+  if (scroll_Up_Chat_Button.justPressed()) {
+
+    arrowUpPressed = false;
+    scroll_Up_Chat_Button.drawButton(false);
+    /*
+    if (startIndex < getStoredMessagesCount(phoneNumber) - 3) {
+      startIndex++;
+      loadMessages(phoneNumber, startIndex, 4);
+    } else {
+      delay(100);
+      scroll_Up_Chat_Button.drawButton(true);
+    }
+    */
+
+  }
+
+  scroll_Down_Chat_Button.press((Cursor_Pressed && scroll_Up_Chat_Button.contains(Cursor_X, Cursor_Y)) || arrowDownPressed);
+  if (scroll_Down_Chat_Button.justPressed()) {
+
+    arrowDownPressed = false;
+    scroll_Down_Chat_Button.drawButton(false);
+
+    if (startIndex > 0) {
+      startIndex--;
+      //loadMessages(phoneNumber, startIndex, 4);
+    } else {
+      delay(100);
+      scroll_Down_Chat_Button.drawButton(true);
+    }
   }
 
   if (keyPressDetected){

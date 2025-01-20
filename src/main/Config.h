@@ -23,9 +23,15 @@ extern int activeInput;              // Active Input (0: none, 1: phoneNumberInp
 
 // Chat constraints --------------------------------------------------------------------
 #define MAX_NAME_LENGTH 20
+<<<<<<< HEAD
+#define MAX_MESSAGES 8
+#define MAX_MESSAGE_LENGTH 30
+#define MAX_CHATS 4
+=======
 #define MAX_MESSAGES 3
 #define MAX_MESSAGE_LENGTH 30
 #define MAX_CHATS 3
+>>>>>>> 4596a8f2d38fd1661d3a78b25c2b77e1323979e3
 #define MAX_INPUT_LENGTH 64
 
 
