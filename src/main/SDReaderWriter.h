@@ -18,5 +18,6 @@ void loadMessages(String, int, int);
 void loadContacts();
 String getNameByPhoneNumber(const char*);
 int getStoredMessagesCount(const char*);
+String formatDateString(String);
 
 #endif

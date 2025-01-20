@@ -17,10 +17,10 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 void setupDisplay(){
 // Initialize serial communication for debugging (optional)
   
-  //newContact("+41786936406", "Yanick");
+  newContact("+41786936406", "Yanick");
   //newContact("+41796299706", "Mike");
   newContact("+491605895978", "Max");
-  //newContact("+41794410255", "Gioia");
+  newContact("+41794410255", "Gioia");
   newContact("+411605895978", "Dummy1");
   newContact("+421605895978", "Fuck");
   newContact("+431605895978", "Foodin");
@@ -62,6 +62,14 @@ void setupDisplay(){
     storeMessage("+431605895978", "2025-01-03_14-51-57_0", "Test 5");
     storeMessage("+431605895978", "2025-01-03_14-51-59_1", "Test 6");
     storeMessage("+431605895978", "2025-01-03_14-52-23_1", "Test 7");
+
+    newContact("+41794410255", "Gioia");
+    storeMessage("+41794410255", "2025-01-03_14-31-57_0", "Test 2");
+    storeMessage("+41794410255", "2025-01-03_14-41-59_1", "Test 3");
+    storeMessage("+41794410255", "2025-01-03_14-50-23_1", "Test 4");
+    storeMessage("+41794410255", "2025-01-03_14-51-57_0", "Test 5");
+    storeMessage("+41794410255", "2025-01-03_14-51-59_1", "Test 6");
+    storeMessage("+41794410255", "2025-01-03_14-52-23_1", "Test 7");
 
     InitializeTouchscreen(tft);
     InitializeButtons(tft);

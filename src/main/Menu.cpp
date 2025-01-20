@@ -734,10 +734,13 @@ void Refresh_Chat_Viewer() {
 
   if (refresh_Chat_View) { // add case if less than 4 messages
       refresh_Chat_View = false;
-      startIndexChat = getStoredMessagesCount(phoneNumber.c_str() - 4);
+      startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
       
       message_Cursor_X = 4;
       message_Cursor_Y = 66;
+      tft.fillRect(0, 56, 320, 169, WHITE);
+      tft.drawLine(0, 56, 320, 56, BLACK);
+      tft.drawLine(0, 225, 320, 225, BLACK);
 
       loadMessages(phoneNumber, startIndexChat, 4);
 
@@ -797,7 +800,7 @@ void Refresh_Chat_Viewer() {
   } 
   if (enterKeyPressed_Screen) {
     enterKeyPressed_Screen = false;
-    //enterKeyPressed_SMS = true;
+    enterKeyPressed_SMS = true;
     Chat_Cursor_X = 4;
     tft.fillRect(0, SCREEN_HEIGHT - 12 , SCREEN_WIDTH, 12, WHITE);
   }

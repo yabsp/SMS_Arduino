@@ -106,7 +106,7 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
 
         tft.setCursor(message_Cursor_X, message_Cursor_Y);
         // Display timestamp + name
-        tft.print(String(fileName) + ": "  + getNameByPhoneNumber(phoneNumber.c_str()));
+        tft.print(formatDateString(String(fileName)) + ": "  + getNameByPhoneNumber(phoneNumber.c_str()));
         //message_Cursor_X += 8;
         message_Cursor_Y += 12;
         
@@ -123,7 +123,7 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
 
         tft.setCursor(message_Cursor_X, message_Cursor_Y);
         // Display timestamp + name
-        tft.print(String(fileName) + ": "  + "You");
+        tft.print(formatDateString(String(fileName)) + ": "  + "You");
         //message_Cursor_X += 8;
         message_Cursor_Y += 12;
         
