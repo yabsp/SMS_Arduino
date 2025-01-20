@@ -17,7 +17,7 @@ void setupSDAndFolderStruct(){
 
 void storeMessage(const char* phoneNumber, const char* timestamp, const char* messageContent) {
 
-  String filePath = String("/contacts/") + String(phoneNumber);
+  String filePath = String("/contacts/") + String(phoneNumber) + "/";
 
   if (!SD.exists(filePath)) {
     if (SD.mkdir(filePath)) {
@@ -52,7 +52,7 @@ void storeMessage(const char* phoneNumber, const char* timestamp, const char* me
 
 void storeContact(const char *phoneNumber, const char *contactName) {
 
-    String folderPath = String("/contacts/") + phoneNumber +"/";
+    String folderPath = String("/contacts/") + String(phoneNumber) + "/";
     
     if (!SD.exists(folderPath)) {
       SD.mkdir(folderPath);
@@ -79,8 +79,18 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
     return;
   }
 
+  int count = 0;
   Serial.println("Iterating through messages:");
   SdFile file;
+
+  while(file.openNext(&dir, O_RDONLY)) {
+    if (count == startIndex) {
+      file.close();
+      break;
+    }
+    count++;
+    file.close();
+  }
   
   int offset = startIndex;
   while (file.openNext(&dir, O_RDONLY) && (offset - startIndex < messageAmount)) {
@@ -95,22 +105,49 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
     while (file.available()) {
       size_t bytesRead = file.fgets(buffer, sizeof(buffer));
       if (bytesRead > 0) {
+
         Serial.print(buffer); 
       }
   }
 
     file.close();
     offset++;
-    
-    tft.setCursor(message_Cursor_X, message_Cursor_Y);
-    // Display timestamp + name
-    message_Cursor_X += 8;
-    message_Cursor_Y += 8;
-    
-    tft.setCursor(message_Cursor_X, message_Cursor_Y);
-    // Display message
-    message_Cursor_X += 8;
-    message_Cursor_Y += 8;
+
+    if (String(fileName).endsWith("_0")) { // incoming message
+
+      tft.setTextColor(BLACK);
+
+      tft.setCursor(message_Cursor_X, message_Cursor_Y);
+      // Display timestamp + name
+      tft.print(String(fileName) + ": "  + getNameByPhoneNumber(phoneNumber.c_str()));
+      //message_Cursor_X += 8;
+      message_Cursor_Y += 12;
+      
+      tft.setCursor(message_Cursor_X, message_Cursor_Y);
+      // Display message
+      tft.print(buffer);
+      //message_Cursor_X += 10;
+      message_Cursor_Y += 15;
+
+    } else if (String(fileName).endsWith("_1")) { // outgoing messages
+
+      tft.setTextColor(BLACK);
+      tft.fillRect(0, message_Cursor_Y - 3, 320, 27, LIGHTGREY);
+
+      tft.setCursor(message_Cursor_X, message_Cursor_Y);
+      // Display timestamp + name
+      tft.print(String(fileName) + ": "  + "You");
+      //message_Cursor_X += 8;
+      message_Cursor_Y += 12;
+      
+      tft.setCursor(message_Cursor_X, message_Cursor_Y);
+      // Display message
+      tft.print(buffer);
+      //message_Cursor_X += 10;
+      message_Cursor_Y += 15;
+
+    }
+  
 
   }
   dir.close();
@@ -158,7 +195,7 @@ void loadContacts() {
   contactsDir.close();
 }
 
-void getNameByPhoneNumber(const char* phoneNumber) {
+String getNameByPhoneNumber(const char* phoneNumber) {
   bool contactFound = false;
 
   SdFile contactsDir;
@@ -185,6 +222,7 @@ void getNameByPhoneNumber(const char* phoneNumber) {
           char contactName[100];
           infoFile.fgets(contactName, sizeof(contactName));
           infoFile.close();
+          return String(contactName);
 
   // Optional, trims first and last name
           String contactNameString = String(contactName);
@@ -201,6 +239,7 @@ void getNameByPhoneNumber(const char* phoneNumber) {
     entry.close();
   }
    contactsDir.close();
+   return "";
 }
 
 int getStoredMessagesCount(const char* phoneNumber) {
@@ -223,4 +262,32 @@ int getStoredMessagesCount(const char* phoneNumber) {
   }
   dir.close();
   return count;
+}
+
+String formatDateString(String filename) {
+
+  if (filename.endsWith("_0") || filename.endsWith("_1")) {
+    // Remove the "_0" or "_1" part
+    filename = filename.substring(0, filename.length() - 2);
+
+    // Extract the date and time parts
+    String datePart = filename.substring(0, 10);  // "2025-01-03"
+    String timePart = filename.substring(11, 19); // "14-30-00"
+
+    // Reformat the date
+    String day = datePart.substring(8, 10);  // "03"
+    String month = datePart.substring(5, 7); // "01"
+    String year = datePart.substring(0, 4);  // "2025"
+
+    // Reformat the time
+    String hours = timePart.substring(0, 2); // "14"
+    String minutes = timePart.substring(3, 5); // "30"
+
+    // Combine into the final format
+    String formattedString = day + "." + month + "." + year + ", " + hours + ":" + minutes;
+    return formattedString;
+  }
+
+  // If not ending with "_0" or "_1", return an empty string or error
+  return "";
 }

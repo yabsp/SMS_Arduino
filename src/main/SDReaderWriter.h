@@ -16,7 +16,7 @@ void storeMessage(const char*, const char*, const char*);
 void storeContact(const char*, const char*);
 void loadMessages(String, int, int);
 void loadContacts();
-void getNameByPhoneNumber(const char*);
+String getNameByPhoneNumber(const char*);
 int getStoredMessagesCount(const char*);
 
 #endif
