@@ -26,6 +26,7 @@ int inputLength = 0; // current length of the input
 String phoneNumber;
 String contactName;
 uint8_t chatOffset = 0; // Tracks the scroll position for visible chats
+uint8_t visibleChats = 4;
 extern int Chat_Cursor_X = 4;
 extern int Chat_Cursor_Y = 230;
 int tabCount = 0; // Used to cycle buttons
@@ -231,7 +232,7 @@ void Draw_Chat_Menu() {
   scrollDownButton.initButton(&tft, 290, calculateBottom(30) + 236 , 50, 30, BLACK, BLACK, LIGHTGREY, "Down", 1);
 
   // Create buttons for each visible chat (based on chatOffset)
-  uint8_t visibleChats = 4; // Number of chats visible at a time
+  //uint8_t visibleChats = 4; // Number of chats visible at a time
   for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
     String label = chatList[i + chatOffset].contactName;
     if (chatList[i + chatOffset].unreadMessages > 0) {
@@ -335,8 +336,8 @@ void Refresh_Main_Menu() {
 
     if(tabCount != 0 && tabCount % 2 == 1){ // In Settings Button
 
-      Serial.println("tabCount Even");
-      Serial.println(tabCount);
+      //Serial.println("tabCount Even");
+      //Serial.println(tabCount);
       Cursor_X = 83;
       Cursor_Y = 187;
 
@@ -345,8 +346,8 @@ void Refresh_Main_Menu() {
 
     } else if (tabCount != 0 && tabCount % 2 == 0){ // In Chats Button
 
-      Serial.println("tabCount Odd");
-      Serial.println(tabCount);
+      //Serial.println("tabCount Odd");
+      //Serial.println(tabCount);
       Cursor_X = 207;
       Cursor_Y = 187;
 
@@ -388,8 +389,8 @@ void Refresh_Settings_Menu() {
 
 
 void Refresh_Chat_Menu() {
-
-    if (tabCount == 0 && enterKeyPressed_Screen) {
+    
+    if (tabCount == 0 && enterKeyPressed_Screen && selectedChat == -1) {
       enterKeyPressed_Screen = false;
     }
 
@@ -462,7 +463,7 @@ void Refresh_Chat_Menu() {
 
       arrowDownPressed = false;
 
-      if(selectedChat < 3) {
+      if(selectedChat < 3) { // if Contacts 0 to 2 selected
 
         selectedChat++;
 
@@ -479,7 +480,7 @@ void Refresh_Chat_Menu() {
         Cursor_X = 129;
         Cursor_Y = 70 + selectedChat * 40;
 
-      } else if(selectedChat == chatCount - 1) {
+      } else if(selectedChat == chatCount - 1) { // if last Contact selected -> move to Contact 0
         Serial.println("in selectedChat == chatCount case");
 
         Cursor_X = 129;
@@ -493,85 +494,97 @@ void Refresh_Chat_Menu() {
         chatButtons[3].drawButton(true);
         chatButtons[0].drawButton(false);
 
-      } else if (selectedChat >= 3) {
+      } else if (selectedChat >= 3) { // if Contact 3 or higher selected, move screen one Contact down
 
         Cursor_X = 129;
         Cursor_Y = 190;
 
         Serial.println("in selectedChat >= 3 case");
-        selectedChat++; // 3
-        chatOffset++; // 0
+        selectedChat++;
+        chatOffset++;
         Draw_Chat_Menu();
         chatButtons[2].drawButton(true);
         chatButtons[3].drawButton(false);
       }
-      
+
     }
     
-    /* Not working properly
     if (arrowUpPressed) {
 
       arrowUpPressed = false;
 
-      if (selectedChat <= 0) {
-        Serial.println("in selectedChat <= 0 case");
+      if (tabCount != 0){
+        if (selectedChat <= 0){
+          chatButtons[selectedChat].drawButton(true);
 
-        Serial.println(chatCount);
-        Serial.println(selectedChat);
-        Serial.println(chatOffset);
+          tabCount = 0;
+          selectedChat = 0;
+          chatOffset = 0;
+          Draw_Chat_Menu();
 
-        Cursor_X = 129;
-        Cursor_Y = 190;
+          chatButtons[0].drawButton(false);
 
+          Cursor_X = 129;
+          Cursor_Y = 70;
+
+        }
+      }
+
+      if (selectedChat == 0){ // if Contact 0 is selected
         selectedChat = chatCount - 1;
         chatOffset = chatCount - 4;
 
         Draw_Chat_Menu();
 
+        chatButtons[0].drawButton(true);
         chatButtons[3].drawButton(false);
-
-      } else if (selectedChat > 4) {
-        Serial.println("in selectedChat > 3 case");
 
         Cursor_X = 129;
         Cursor_Y = 190;
 
-        selectedChat--;
-        chatOffset--;
+      } else if (selectedChat < 0){
 
-         //Wrong Index
-        chatButtons[selectedChat - 2 - 1].drawButton(false);
-        chatButtons[selectedChat - 2].drawButton(true);
+          tabCount = 0;
+          selectedChat = 0;
+          chatOffset = 0;
+          Draw_Chat_Menu();
+
+          chatButtons[0].drawButton(false);
+
+          Cursor_X = 129;
+          Cursor_Y = 70;
+
+
+      } else if (selectedChat > (chatCount - 4)){ // if Contact(#chatCount-1) to Contact(#chatCount-3) is selected, only move Cursors
         
-
-      } else if (selectedChat <= 4) {
-
-        Serial.println("in selectedChat <= 4 case");
-
         selectedChat--;
-        if(chatOffset > 0) {
+        //chatOffset--; if not working try to implement this
+
+        chatButtons[5 + selectedChat - chatCount].drawButton(true);
+        chatButtons[4 + selectedChat - chatCount].drawButton(false);
+
+        Cursor_X = 129;
+        Cursor_Y = 190 - ((chatCount - selectedChat - 1) * 40);
+
+      } else { // if Contact between (#chatCount-3) and 1, move up by one Contact
+
+        if (chatOffset > 0) {
           chatOffset--;
         }
 
-        Cursor_X = 129;
-        Cursor_Y = 70 + selectedChat * 40;
-
+        selectedChat--;
         Draw_Chat_Menu();
 
-        chatButtons[selectedChat-1].drawButton(true);
-        if (selectedChat < 4){
-          chatButtons[selectedChat].drawButton(false);
-        }
+        chatButtons[1].drawButton(true);
+        chatButtons[0].drawButton(false);
+
+        Cursor_X = 129;
+        Cursor_Y = 70;
 
       }
 
-      Serial.println(selectedChat);
-      Serial.println(chatOffset);
-      Serial.println(Cursor_Y);
-
     }
-    */
-
+    
     Back_Button.press((Cursor_Pressed || enterKeyPressed_Screen) && Back_Button.contains(Cursor_X, Cursor_Y));
     if (Back_Button.justPressed() || escKeyPressed) {
         enterKeyPressed_Screen = false;
@@ -620,15 +633,17 @@ void Refresh_Chat_Menu() {
     }
 
     // Check for button presses on visible chat buttons
-    uint8_t visibleChats = 4; // Number of chats visible at a time
+    //uint8_t visibleChats = 4; // Number of chats visible at a time
     for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
-        chatButtons[i].press(Cursor_Pressed && chatButtons[i].contains(Cursor_X, Cursor_Y));
+        chatButtons[i].press((Cursor_Pressed || enterKeyPressed_Screen) && chatButtons[i].contains(Cursor_X, Cursor_Y));   
         if (chatButtons[i].justPressed()) {
             chatButtons[i].drawButton(false);
             phoneNumber = chatList[i + chatOffset].phoneNumber;
             contactName = chatList[i + chatOffset].contactName;
+            enterKeyPressed_Screen = false;
             Change_Menu(3); // Go to chat viewer
         }
+  
     }
 
     enterKeyPressed_Screen = false;
@@ -645,7 +660,11 @@ void Refresh_Chat_Viewer() {
     message = "";
     phoneNumber = "";
     contactName = "";
-    
+
+    tabCount = 0;
+    chatOffset = 0;
+    selectedChat = -1;
+
     Back_Button.drawButton(false);
     Change_Menu(2);
   }
@@ -692,6 +711,10 @@ void Refresh_Chat_Viewer() {
     message = "";
     phoneNumber = "";
     contactName = "";
+
+    tabCount = 0;
+    chatOffset = 0;
+    selectedChat = -1;
     
     Back_Button.drawButton(false);
     Change_Menu(2);
