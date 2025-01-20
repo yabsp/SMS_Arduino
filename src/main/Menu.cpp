@@ -277,7 +277,7 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
   scroll_Up_Chat_Button.drawButton(true);
   scroll_Down_Chat_Button.drawButton(true);
 
-  String messages = getChatMessages(phoneNumber);
+  //String messages = getChatMessages(phoneNumber);
 
 // Display the messages line by line
   /*

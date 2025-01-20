@@ -15,7 +15,9 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
 void setupDisplay(){
 // Initialize serial communication for debugging (optional)
+
   InitializeTouchscreen(tft);
+
   InitializeButtons(tft);
   Serial.println("Initialized all");
   Change_Menu(0); // Start in Main_Menu
@@ -42,6 +44,7 @@ void loopDisplay(){
 
   while (testing < 1){
 
+/*
     // Contact 1
     saveMessageInMemory("+41786936406","TestSpichty","2025");
     
@@ -70,7 +73,7 @@ void loopDisplay(){
 
     // Contact 7
     saveMessageInMemory("+41756894322123", "Fudin", "2024-2025 Skiferien");
-
+*/
 
   }
 }

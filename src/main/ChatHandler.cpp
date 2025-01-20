@@ -20,7 +20,7 @@ struct Message {
 struct StoredChat {
   String phoneNumber; // Key
   //char phoneNumer[16];
-  Message messages[MAX_MESSAGES]; // Messages for this chat
+  //Message messages[MAX_MESSAGES]; // Messages for this chat
   uint8_t messageCount; // Number of messages
 };
 
@@ -102,7 +102,7 @@ void setChat(String phoneNumber, String contactName) {
   }
 }
 
-
+/*
 // Saves a new received message to the memory ----------------------------------------------------
 void saveMessageInMemory(const String &phoneNumber, const String &message, const String &timestamp) {
   testing++;
@@ -151,9 +151,11 @@ void saveMessageInMemory(const String &phoneNumber, const String &message, const
     Serial.println("Max chats reached, cannot save message!");
   }
 }
+*/
 
 
 // Returns all messages for a specific phonenumber -----------------------------------------------
+/*
 String getChatMessages(const String &phoneNumber) {
   for (uint8_t i = 0; i < storedChatCount; i++) { // finds the correct chat
     if (storedChats[i].phoneNumber == phoneNumber) {
@@ -171,6 +173,7 @@ String getChatMessages(const String &phoneNumber) {
   }
   return "No chat history found for: " + phoneNumber + "\n"; // If no chat found
 }
+*/
 
 
 // Increment unread message counter by phone number ---------------------------------------------

@@ -36,8 +36,8 @@ void listChats();
 uint8_t findChatIndexByPhoneNumber(const String& phoneNumber);
 uint8_t findChatIndexByName(const String& contactName);
 String findContactNameByPhoneNumber(const String& phoneNumber);
-String getChatMessages(const String &phoneNumber);
-void saveMessageInMemory(const String &phoneNumber, const String &message, const String &timestamp);
+//String getChatMessages(const String &phoneNumber);
+//void saveMessageInMemory(const String &phoneNumber, const String &message, const String &timestamp);
 void createChatFromSerialInput();
 
 #endif

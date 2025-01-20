@@ -147,7 +147,7 @@ void displayLastMessage(String rawResponse) {
   Serial.println("Time: " + lastTime);
   Serial.println("Message: " + lastMessageContent);
   Serial.println("-------------------------");
-  saveMessageInMemory(lastPhoneNumber, lastMessageContent, lastDate + ", " + lastTime);
+  //saveMessageInMemory(lastPhoneNumber, lastMessageContent, lastDate + ", " + lastTime);
 }
 
 
