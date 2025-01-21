@@ -47,6 +47,7 @@ extern volatile bool refresh_Chat_View = false;
 extern volatile bool sound_Switch_Active = true;
 extern volatile bool increaseSoundTime;
 extern volatile bool decreaseSoundTime;
+extern volatile bool refresh_Chat_Menu;
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -612,6 +613,13 @@ void Refresh_Settings_Menu() {
 
 
 void Refresh_Chat_Menu() {
+
+    if (refresh_Chat_Menu) {
+      refresh_Chat_Menu = false;
+
+      Draw_Chat_Menu();
+      Refresh_Chat_Menu();
+    }
     
     if (tabCount == 0 && enterKeyPressed_Screen && selectedChat == -1) {
       enterKeyPressed_Screen = false;

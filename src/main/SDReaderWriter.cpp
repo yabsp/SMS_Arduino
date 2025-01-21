@@ -2,6 +2,7 @@
 #include "Menu.h"
 
 extern volatile bool sdCardBusy = false;
+extern volatile bool refresh_Chat_Menu = false;
 
 void setupSDAndFolderStruct(){
   sdCardBusy = true;
@@ -29,6 +30,7 @@ void storeMessage(const char* phoneNumber, const char* timestamp, const char* me
       String contactName = getNameByPhoneNumber(phoneNumber);
       if (contactName == ""){
         newContact(phoneNumber, phoneNumber);
+        refresh_Chat_Menu = true;
       }
     } else {
       Serial.println("Failed to create contacts/phoneNumber directory");
