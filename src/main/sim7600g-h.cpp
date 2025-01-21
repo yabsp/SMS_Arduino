@@ -7,8 +7,7 @@
 //SoftwareSerial sim7600(RX_PIN, TX_PIN);
 volatile bool newMessage = false;
 const char simPin[] = "4824";
-const String const_phoneNumber = "+41794410255";
-int counter = 1;
+extern String recipientPhoneNumber = "";
 extern volatile bool refresh_Chat_View;
 extern volatile bool sound_Switch_Active;
 
@@ -94,7 +93,7 @@ void loopSim7600() {
   if (enterKeyPressed_SMS) {
     Serial.println(message);
     enterKeyPressed_SMS = false; // Reset the flag
-    sendSMS(const_phoneNumber);
+    sendSMS();
     message = "";
    }
 }
@@ -232,8 +231,10 @@ void isrRI() {
   newMessage = true;
 }
 
-bool sendSMS(const String &phoneNumber) {
-  counter++;
+bool sendSMS() {
+  if (recipientPhoneNumber == "") {
+    return false;
+  } 
 
   Serial.println("Checking Connection...");
   sim7600.println("AT");
@@ -257,37 +258,23 @@ bool sendSMS(const String &phoneNumber) {
 
 
   sim7600.print("AT+CMGS=\"");
-  sim7600.print(phoneNumber);
+  sim7600.print(recipientPhoneNumber);
   sim7600.println("\"");
   delay(300);
 
   sim7600.print(message);
 
-  /*for (unsigned int i = 0; i < message.length(); i++) {
-    sim7600.print(message[i]);
-    delay(10); // Small delay to avoid buffer overflow
-  }
-  */
-
   delay(300);
 
   sim7600.write(26); // Send termination character
-  delay(10000);
+  delay(200);
 
-  if (responseEqualsGiven("OK")) {
-
-      Serial.println("SMS sent successfully.");
-
-      String temp = getCurrentTime() + "_1";
-      storeMessage(phoneNumber.c_str(), temp.c_str(), message.c_str());
-      while (sdCardBusy);
-      refresh_Chat_View = true;
+  String temp = getCurrentTime() + "_1";
+  storeMessage(recipientPhoneNumber.c_str(), temp.c_str(), message.c_str());
+  while (sdCardBusy);
+   refresh_Chat_View = true;
       
-      return true;
-  } else {
-      Serial.println("Failed to send SMS.");
-      return false;
-  }
+  return true;
 }
 
 String getCurrentTime() {

@@ -321,6 +321,7 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
   Back_Button.drawButton(true);
   Serial.println(contactName);
   Serial.println(phoneNumber);
+  recipientPhoneNumber = phoneNumber;
 
   scroll_Up_Chat_Button.initButton(&tft, 235, 42, 50, 20, BLACK, BLACK, WHITE, "Up", 1);
   scroll_Down_Chat_Button.initButton(&tft, 290, 42, 50, 20, BLACK, BLACK, WHITE, "Down", 1);

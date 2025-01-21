@@ -382,3 +382,85 @@ Chat getContactByIndex(int index) {
   sdCardBusy = false;
   return contact;
 }
+
+
+String getPhoneNumberByIndex(int index) {
+  sdCardBusy = true;
+  SdFile dir, entry;
+  int currentIndex = 0;
+
+  if (!dir.open("/contacts/")) {
+    Serial.println("Failed to open directory: " + String("/contacts/"));
+    sdCardBusy = false;
+    return "";
+  }
+
+  while (entry.openNext(&dir, O_RDONLY)) {
+    if (entry.isDir()) { 
+      if (currentIndex == index) {
+        char dirName[50];
+        entry.getName(dirName, sizeof(dirName));
+        String phoneNumber = String(dirName);
+
+        entry.close();
+        dir.close();
+        sdCardBusy = false;
+        return phoneNumber;
+      }
+      currentIndex++;
+    }
+    entry.close();
+  }
+  dir.close();
+  sdCardBusy = false;
+  return "";
+}
+
+String getPhoneNumberAndContactNameByIndex(int index) {
+  sdCardBusy = true;
+  SdFile dir, entry;
+  int currentIndex = 0;
+
+  if (!dir.open("/contacts/")) {
+    Serial.println("Failed to open directory: " + String("/contacts/"));
+    sdCardBusy = false;
+    return "";
+  }
+
+  while (entry.openNext(&dir, O_RDONLY)) {
+    if (entry.isDir()) { 
+      if (currentIndex == index) {
+        char dirName[50];
+        entry.getName(dirName, sizeof(dirName));
+        String phoneNumber = String(dirName);
+
+        String infoFilePath = String("/contacts/") + String(dirName) + "/info";
+        SdFile infoFile;
+        String contactName = "";
+
+        if (infoFile.open(infoFilePath.c_str(), O_RDONLY)) {
+          char name[100];
+          infoFile.fgets(name, sizeof(name)); 
+          contactName = String(name);
+          contactName.trim();
+          infoFile.close();
+        } else {
+          Serial.println("Failed to open info file: " + infoFilePath);
+        }
+        entry.rewind();
+		    dir.rewind();
+        entry.close();
+        dir.close();
+        sdCardBusy = false;
+
+        return phoneNumber + "_" + contactName;
+      }
+      currentIndex++;
+    }
+    entry.close();
+  }
+  dir.rewind();
+  dir.close();
+  sdCardBusy = false;
+  return "";
+}

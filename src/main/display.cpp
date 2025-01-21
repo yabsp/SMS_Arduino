@@ -16,7 +16,7 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
 void setupDisplay(){
 // Initialize serial communication for debugging (optional)
-  
+  /*
   newContact("+41786936406", "Yanick");
   //newContact("+41796299706", "Mike");
   newContact("+491605895978", "Max");
@@ -25,6 +25,25 @@ void setupDisplay(){
   newContact("+421605895978", "Fuck");
   newContact("+431605895978", "Foodin");
   storeContact("+41794410255", "Gioia");
+  */
+
+  int contactCount = getContactsCount();
+  for (int i = 0; i < contactCount; i++) {
+
+    String result = getPhoneNumberAndContactNameByIndex(i);
+
+    if (result == ""){
+      Serial.println("Failed to retrieve contact.");
+    } else{
+      int separatorIndex = result.indexOf('_');
+      String phoneNumber = result.substring(0, separatorIndex);
+      String contactName = result.substring(separatorIndex + 1);
+
+      Serial.println("Phone Number: " + phoneNumber);
+      Serial.println("Contact Name: " + contactName);
+      newContact(phoneNumber, contactName);
+    }
+  }
 
   
   /*

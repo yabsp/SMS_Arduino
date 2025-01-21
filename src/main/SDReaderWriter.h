@@ -23,5 +23,7 @@ int getStoredMessagesCount(const char*);
 String formatDateString(String);
 int getContactsCount();
 Chat getContactByIndex(int);
+String getPhoneNumberByIndex(int index);
+String getPhoneNumberAndContactNameByIndex (int index);
 
 #endif

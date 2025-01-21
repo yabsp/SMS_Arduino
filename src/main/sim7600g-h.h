@@ -12,6 +12,7 @@
 //extern SoftwareSerial sim7600;
 extern volatile bool newMessage;
 extern const char simPin[];
+extern String recipientPhoneNumber;
 
 enum SimStatus {READY, SIM_PIN, SIM_PUK, UNKNOWN};
 
@@ -24,7 +25,7 @@ SimStatus checkCPINStatus();
 String sendCommandAndGetResponse(const char *command, unsigned long timeout = 1000);
 void readWhileAvailable();
 void isrRI();
-bool sendSMS(const String &phoneNumber);
+bool sendSMS();
 String getCurrentTime();
 
 #endif

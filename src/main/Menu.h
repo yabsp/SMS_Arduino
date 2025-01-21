@@ -7,6 +7,7 @@
 #include "Config.h"
 #include "Utils.h"
 #include "ChatHandler.h"
+#include "sim7600g-h.h"
 
 // Function prototyping -----------------------------------------------------------------------
 void Draw_Main_Menu();
