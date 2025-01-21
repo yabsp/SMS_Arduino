@@ -16,7 +16,7 @@ void playRick() {
   // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
   // !!negative numbers are used to represent dotted notes,
   // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
-  /*
+  
   int melody[] = { // Melody as it was implemented
 
     // Never Gonna Give You Up - Rick Astley
@@ -24,7 +24,7 @@ void playRick() {
     // Arranged by Chlorondria
 
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,4, //1
-    
+    /*
     NOTE_E5,-4, NOTE_FS5,-4, NOTE_A5,16, NOTE_G5,16, NOTE_FS5,8,
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,2,
     NOTE_A4,16, NOTE_A4,16, NOTE_B4,16, NOTE_D5,8, NOTE_D5,16,
@@ -35,10 +35,10 @@ void playRick() {
     NOTE_E5,-4, NOTE_FS5,-4, NOTE_A5,16, NOTE_G5,16, NOTE_FS5,8,
     NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,2,
     NOTE_A4,16, NOTE_A4,16, NOTE_B4,16, NOTE_D5,8, NOTE_D5,16,
-    
+    */
   };
-  */
-
+  
+  /*
   const int* melody;
   int melodyLength = 0;
 
@@ -154,7 +154,7 @@ void playRick() {
 
   if (melodyLength == 0) { // skip if melody is empty
     return;
-  }
+  }*/
 
   // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
   // there are two values per note (pitch and duration), so for each note there are four bytes
@@ -189,5 +189,5 @@ void playRick() {
     noTone(buzzer);
   }
 
-  delete[] melody; // Free allocated memory
+  //delete[] melody; // Free allocated memory
 }

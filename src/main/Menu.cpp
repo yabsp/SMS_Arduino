@@ -913,21 +913,6 @@ void Refresh_Chat_Viewer() {
 
   }
 
-  if (refresh_Chat_View) { // add case if less than 4 messages
-      refresh_Chat_View = false;
-      startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
-      
-      message_Cursor_X = 4;
-      message_Cursor_Y = 66;
-      tft.fillRect(0, 56, 320, 169, WHITE);
-      tft.drawLine(0, 56, 320, 56, BLACK);
-      tft.drawLine(0, 225, 320, 225, BLACK);
-
-      loadMessages(phoneNumber, startIndexChat, 4);
-
-    }
-
-
   scroll_Down_Chat_Button.press((Cursor_Pressed && scroll_Down_Chat_Button.contains(Cursor_X, Cursor_Y)) || arrowDownPressed);
   if (scroll_Down_Chat_Button.justPressed()) {
 
@@ -983,7 +968,11 @@ void Refresh_Chat_Viewer() {
     enterKeyPressed_Screen = false;
     enterKeyPressed_SMS = true;
     Chat_Cursor_X = 4;
-    tft.fillRect(0, SCREEN_HEIGHT - 12 , SCREEN_WIDTH, 12, WHITE);
+    startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
+    //refresh_Chat_View = true;
+    delay(100);
+    Draw_Chat_Viewer(phoneNumber.c_str(), contactName.c_str());
+    Refresh_Chat_Viewer();
   }
   
   if (escKeyPressed) {
@@ -1003,6 +992,26 @@ void Refresh_Chat_Viewer() {
     
     Back_Button.drawButton(false);
     Change_Menu(2);
+  }
+
+  if (refresh_Chat_View) { // add case if less than 4 messages
+
+      refresh_Chat_View = false;
+
+      if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
+        startIndexChat = getStoredMessagesCount(phoneNumber.c_str());
+      } else {
+        startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
+      }
+      
+      message_Cursor_X = 4;
+      message_Cursor_Y = 66;
+      tft.fillRect(0, 56, 320, 169, WHITE);
+      tft.drawLine(0, 56, 320, 56, BLACK);
+      tft.drawLine(0, 225, 320, 225, BLACK);
+
+      loadMessages(phoneNumber, startIndexChat, 4);
+
   }
   
 }
@@ -1378,6 +1387,12 @@ void Change_Menu(uint8_t no){
     tabKeyPressed = false;
     enterKeyPressed_Screen = false;
     escKeyPressed = false;
+    arrowUpPressed = false;
+    arrowDownPressed = false;
+
+    message_Cursor_X = 4;
+    message_Cursor_Y = 66;
+
 
     Current_Menu = no;
     switch(no){ // Change to the drawn menu
@@ -1395,7 +1410,11 @@ void Change_Menu(uint8_t no){
         break;
       case 3:
         keyboardActive = true;
-        startIndexChat = getStoredMessagesCount(phoneNumber.c_str())-4;
+        if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
+          startIndexChat = getStoredMessagesCount(phoneNumber.c_str());
+        } else {
+          startIndexChat = getStoredMessagesCount(phoneNumber.c_str())-4;
+        }
         Draw_Chat_Viewer(phoneNumber, contactName);
         break;
       case 4:
@@ -1408,6 +1427,11 @@ void Change_Menu(uint8_t no){
 
 // Refresh Menus --------------------------------------------------------------------------------------------
 void Refresh_Menu(){
+
+  arrowUpPressed = false;
+  arrowDownPressed = false;
+  message_Cursor_X = 4;
+  message_Cursor_Y = 66;
 
   switch(Current_Menu){ // Refesh the current menu
     case 0:
