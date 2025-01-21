@@ -23,13 +23,14 @@ extern volatile bool arrowLeftPressed;
 extern volatile bool soundOn; // Turns on sound notification            f1
 extern volatile bool soundOff; // Turns off sound notification          f2
 
-extern volatile bool brightnessUpKeyPressed; // Increase screen brightness      Key not known
-extern volatile bool brightnessDownKeyPressed; // decrease screen brightness    Key not known
+extern volatile bool increaseSoundTime; // Increase sounde duration     f4
+extern volatile bool decreaseSoundTime; // Decrease sound duration      f3
 
 
 extern volatile bool keyPressDetected; // New flag for single key detection     
 extern String lastKeyPressed;            // Last key pressed
 extern String message;                 // Shared message buffer
+extern uint8_t soundLength;
 
 extern volatile bool refresh_Chat_View;
 extern volatile bool sound_Switch_Active;

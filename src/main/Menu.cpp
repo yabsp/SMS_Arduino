@@ -23,6 +23,8 @@ Adafruit_GFX_Button scrollUpButton;
 Adafruit_GFX_Button scroll_Up_Chat_Button;
 Adafruit_GFX_Button scroll_Down_Chat_Button;
 Adafruit_GFX_Button sound_Turned_On_Button;
+Adafruit_GFX_Button increase_Sound_Length_Button;
+Adafruit_GFX_Button decrease_Sound_Length_Button;
 
 
 // Variables --------------------------------------------------------------------------------------
@@ -43,6 +45,8 @@ uint16_t message_Cursor_X = 4;
 uint16_t message_Cursor_Y = 66; // lower part of the character on screen
 extern volatile bool refresh_Chat_View = false;
 extern volatile bool sound_Switch_Active = true;
+extern volatile bool increaseSoundTime;
+extern volatile bool decreaseSoundTime;
 
 
 // Draw Menu Functions --------------------------------------------------------------------------------------
@@ -222,6 +226,8 @@ void Draw_Settings_Menu() {
   tft.drawLine(0, 56, 320, 56, BLACK);
   Back_Button.drawButton(true);
 
+  decrease_Sound_Length_Button.initButton(&tft, 120, 162, 40, 20, BLACK, BLACK, LIGHTGREY, "-", 1);
+  increase_Sound_Length_Button.initButton(&tft, 290, 162, 40, 20, BLACK, BLACK, LIGHTGREY, "+", 1);
 
   if (sound_Switch_Active) {
     sound_Turned_On_Button.initButton(&tft,225, 98, 50, 30, BLACK, BLACK, LIGHTGREY, "On", 1);
@@ -234,6 +240,29 @@ void Draw_Settings_Menu() {
   tft.setTextSize(1);
   tft.setCursor(6, 95);
   tft.print("Sound notifications are turned: ");
+
+  tft.setCursor(6, 160);
+  tft.print("Sound duration: ");
+
+  increase_Sound_Length_Button.drawButton(true);
+  decrease_Sound_Length_Button.drawButton(true);
+
+  tft.setTextColor(BLACK);
+
+  if(soundLength < 10){
+  tft.setCursor(199, 145);
+  tft.print(soundLength);
+  } else if (soundLength == 10) {
+    tft.setCursor(196, 145);
+    tft.print(soundLength);
+  }
+
+  tft.fillRect(152, 165, 100, 10, LIGHTGREY);
+  tft.fillRect(152, 165, soundLength*10, 10, TURQUOISE);
+  tft.drawRect(153, 164, 100, 10, BLACK);
+  tft.drawRect(152, 165, 100, 10, BLACK);
+  tft.drawRect(151, 166, 100, 10, BLACK);
+
 }
 
 
@@ -432,15 +461,15 @@ void Refresh_Settings_Menu() {
     tabKeyPressed = false;
     tabCount++;
 
-    if (tabCount % 2 == 1) { // Back Button
+    if (tabCount % 4 == 1) { // Back Button
 
     Cursor_X = 29;
     Cursor_Y = 42;
 
     Back_Button.drawButton(false);
-    sound_Turned_On_Button.drawButton(true);
+    increase_Sound_Length_Button.drawButton(true);
 
-    } else if (tabCount % 2 == 0) { // Sound Button
+    } else if (tabCount % 4 == 2) { // Sound Button
 
       Cursor_X = 225;
       Cursor_Y = 98;
@@ -448,8 +477,23 @@ void Refresh_Settings_Menu() {
       Back_Button.drawButton(true);
       sound_Turned_On_Button.drawButton(false);
       
-    }
+    } else if (tabCount % 4 == 3) { // decrease sound duration Button
 
+      Cursor_X = 120;
+      Cursor_Y = 170;
+      
+      sound_Turned_On_Button.drawButton(true);
+      decrease_Sound_Length_Button.drawButton(false);
+
+    } else if (tabCount % 4 == 0) { // increase sound duration Button
+
+      Cursor_X = 290;
+      Cursor_Y = 170;
+      
+      decrease_Sound_Length_Button.drawButton(true);
+      increase_Sound_Length_Button.drawButton(false);
+
+    }
   }
 
   Back_Button.press((Cursor_Pressed|| enterKeyPressed_Screen) && Back_Button.contains(Cursor_X, Cursor_Y));
@@ -463,7 +507,7 @@ void Refresh_Settings_Menu() {
     Change_Menu(0);
   }
 
-  sound_Turned_On_Button.press((Cursor_Pressed || enterKeyPressed_Screen)&& sound_Turned_On_Button.contains(Cursor_X, Cursor_Y));
+  sound_Turned_On_Button.press((Cursor_Pressed || enterKeyPressed_Screen) && sound_Turned_On_Button.contains(Cursor_X, Cursor_Y));
   if (sound_Turned_On_Button.justPressed()) {
     /*if (sound_Switch_Active) {
       sound_Switch_Active = false;
@@ -482,6 +526,74 @@ void Refresh_Settings_Menu() {
     delay(100);
     Draw_Settings_Menu();
   }
+
+  decrease_Sound_Length_Button.press((Cursor_Pressed || enterKeyPressed_Screen) && decrease_Sound_Length_Button.contains(Cursor_X, Cursor_Y));
+  if (decrease_Sound_Length_Button.justPressed() || decreaseSoundTime) {
+    if(!decreaseSoundTime && soundLength > 0){
+      soundLength--;
+    }
+    enterKeyPressed_Screen = false;
+    decreaseSoundTime = false;
+
+    decrease_Sound_Length_Button.drawButton(false);
+
+    tft.fillRect(195, 145, 14, 14, WHITE);
+    tft.setTextColor(BLACK);
+
+    if(soundLength < 10){
+    tft.setCursor(199, 145);
+    tft.print(soundLength);
+    } else if (soundLength == 10) {
+      tft.setCursor(196, 145);
+      tft.print(soundLength);
+    }
+
+    tft.fillRect(152, 165, 100, 10, LIGHTGREY);
+    tft.fillRect(152, 165, soundLength*10, 10, TURQUOISE);
+    tft.drawRect(153, 164, 100, 10, BLACK);
+    tft.drawRect(152, 165, 100, 10, BLACK);
+    tft.drawRect(151, 166, 100, 10, BLACK);
+
+    delay(50);
+
+    decrease_Sound_Length_Button.drawButton(true);
+
+  }
+
+  increase_Sound_Length_Button.press((Cursor_Pressed || enterKeyPressed_Screen) && increase_Sound_Length_Button.contains(Cursor_X, Cursor_Y));
+  if (increase_Sound_Length_Button.justPressed() || increaseSoundTime) {
+    if(!increaseSoundTime && soundLength < 10){
+      soundLength++;
+    }
+    enterKeyPressed_Screen = false;
+    increaseSoundTime = false;
+
+    increase_Sound_Length_Button.drawButton(false);
+
+    tft.fillRect(195, 145, 14, 14, WHITE);
+    tft.setTextColor(BLACK);
+
+    if(soundLength < 10){
+    tft.setCursor(199, 145);
+    tft.print(soundLength);
+    } else if (soundLength == 10) {
+      tft.setCursor(196, 145);
+      tft.print(soundLength);
+    }
+
+    tft.fillRect(152, 165, 100, 10, LIGHTGREY);
+    tft.fillRect(152, 165, soundLength*10, 10, TURQUOISE);
+    tft.drawRect(153, 164, 100, 10, BLACK);
+    tft.drawRect(152, 165, 100, 10, BLACK);
+    tft.drawRect(151, 166, 100, 10, BLACK);
+
+
+    delay(50);
+
+    increase_Sound_Length_Button.drawButton(true);
+
+  }
+
 }
 
 
