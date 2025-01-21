@@ -350,16 +350,29 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
   }
   */
 
-  if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
+  if (getStoredMessagesCount(phoneNumber.c_str()) <= 0) {
+
+    Serial.println("No chat history");
+
+    tft.fillRect(0, 56, 320, 169, WHITE);
+    tft.drawLine(0, 56, 320, 56, BLACK);
+    tft.drawLine(0, 225, 320, 225, BLACK);
+
+    tft.setCursor(114, 140);
+    tft.setTextColor(BLACK);
+    tft.setTextSize(1);
+    tft.println("No chat history yet!");
+  } else if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
       tft.fillRect(0, 56, 320, 169, WHITE);
       tft.drawLine(0, 56, 320, 56, BLACK);
       tft.drawLine(0, 225, 320, 225, BLACK);
       loadMessages(phoneNumber.c_str(), 0, getStoredMessagesCount(phoneNumber.c_str()));
-    } else {
+  } else {
       loadMessages(phoneNumber.c_str(), getStoredMessagesCount(phoneNumber.c_str()) - 4, 4);
       tft.drawLine(0, 56, 320, 56, BLACK);
       tft.drawLine(0, 225, 320, 225, BLACK);
-    }
+  }
+
 }
 
 void Draw_Phone_Number_Selector() {
@@ -971,7 +984,7 @@ void Refresh_Chat_Viewer() {
     startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
     //refresh_Chat_View = true;
     delay(100);
-    Draw_Chat_Viewer(phoneNumber.c_str(), contactName.c_str());
+    //Draw_Chat_Viewer(phoneNumber.c_str(), contactName.c_str());
     //Refresh_Chat_Viewer();
   }
   
@@ -994,7 +1007,7 @@ void Refresh_Chat_Viewer() {
     Change_Menu(2);
   }
 
-  if (refresh_Chat_View) { // add case if less than 4 messages
+  if (refresh_Chat_View && recipientPhoneNumber == phoneNumber) { // add case if less than 4 messages
   
       refresh_Chat_View = false;
       /*
