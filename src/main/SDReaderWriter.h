@@ -11,6 +11,7 @@
 extern SdFat SD;
 extern uint16_t message_Cursor_X;
 extern uint16_t message_Cursor_Y;
+extern volatile boolean sdCardBusy;
 
 void setupSDAndFolderStruct();
 void storeMessage(const char*, const char*, const char*);

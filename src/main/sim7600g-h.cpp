@@ -172,7 +172,7 @@ void displayLastMessage(String rawResponse) {
 
 
 bool responseEqualsGiven(const char *expected) {
-    unsigned long timeout = 500;
+    unsigned long timeout = 1500;
     unsigned long start = millis();
     String response = "";
 
@@ -272,6 +272,7 @@ bool sendSMS(const String &phoneNumber) {
 
       String temp = getCurrentTime() + "_1";
       storeMessage(phoneNumber.c_str(), temp.c_str(), message.c_str());
+      while (sdCardBusy);
       refresh_Chat_View = true;
       
       return true;
@@ -283,7 +284,6 @@ bool sendSMS(const String &phoneNumber) {
 
 String getCurrentTime() {
   sim7600.println("AT+CCLK?");
-  delay(500);
   String rawTime = "";
   while (!sim7600.available());
   while (sim7600.available()) {
@@ -291,7 +291,6 @@ String getCurrentTime() {
   }
   //int indexCCLK = indexOf("+CCLK:", currentIndex);
   
-
   int cclkIndex = rawTime.indexOf("+CCLK:", 0);
  
   int endIndex = rawTime.indexOf('\n', cclkIndex);
