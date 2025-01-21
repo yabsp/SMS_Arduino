@@ -114,8 +114,10 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
           Serial.print(buffer); 
         }
       }
-
+      
       if (String(fileName).endsWith("_0")) { // incoming message
+
+        Serial.println("in case _0");
 
         tft.setTextColor(BLACK);
 
@@ -132,6 +134,8 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
         message_Cursor_Y += 15;
 
       } else if (String(fileName).endsWith("_1")) { // outgoing messages
+
+        Serial.println("in case _1");
 
         tft.setTextColor(BLACK);
         tft.fillRect(0, message_Cursor_Y - 3, 320, 27, LIGHTGREY);

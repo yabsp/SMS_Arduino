@@ -174,6 +174,8 @@ void displayLastMessage(String rawResponse) {
   //saveMessageInMemory(lastPhoneNumber, lastMessageContent, lastDate + ", " + lastTime);
   storeMessage(lastPhoneNumber.c_str(), formattedTimestamp.c_str(), lastMessageContent.c_str());
 
+  while(sdCardBusy);
+
   refresh_Chat_View = true;
 }
 
