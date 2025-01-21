@@ -53,8 +53,10 @@ extern volatile bool arrowLeftPressed = false; // ?
 extern volatile bool soundOn = false; // Increase speaker volume
 extern volatile bool soundOff = false; // decrease speaker volume;
 
-extern volatile bool brightnessUpKeyPressed = false; // Increase screen brightness
-extern volatile bool brightnessDownKeyPressed = false; // decrease screen brightness
+extern volatile bool increaseSoundTime = false; // Increase sound duration
+extern volatile bool decreaseSoundTime = false; // Decrease sound duration
+
+extern uint8_t soundLength = 3;
 
 
 SdFat SD;
@@ -107,7 +109,7 @@ ISR(PCINT2_vect)
   scanval >>= 1; // ignore the start bit
   scanval &= 0xFF; // ignore the parity and stop bit, isolate 8 data bits
 
-  Serial.println(scanval, HEX);
+  //Serial.println(scanval, HEX);
   currentTime = millis();
   if(lastscan != 0xF0 && scanval != 0xF0){
     if (scanval == 0x12 || scanval == 0x59) { // Shift press
@@ -143,14 +145,14 @@ ISR(PCINT2_vect)
         //Serial.println("ESC_PRESSED");
       }
     break;
-
+    /*
     case 0x0D: //TAB
       if (message.length() > 0) {
         tabKeyPressed = true;
 
       }
     break;
-
+    */
     case 0x77: //NUMLOCK
       if (message.length() > 0) {
         numLockKeyPressed = true;
@@ -187,29 +189,29 @@ ISR(PCINT2_vect)
     break;
     
       
-    case 0x05: //FX Volume up
+    case 0x05: //F1 sound On
         sound_Switch_Active = true;
         soundOn = true;
     break;
 
-    case 0x06: //FX Volume down
+    case 0x06: //F2 sound Off
         sound_Switch_Active = false;
         soundOff = true;
     break;
-      /*
-      case 0x66: //FX Brightness up
-        if (message.length() > 0) {
-          brightnessUpKeyPressed = true;
-
-        }
+      
+    case 0x04: //F3 decrease sound duration 
+          if(soundLength > 0) {
+            soundLength--;
+          }
+          decreaseSoundTime = true;
       break;
 
-      case 0x66: //FX Brightness down
-        if (message.length() > 0) {
-          brightnessDownKeyPressed = true;
-        }
-      break;
-      */
+    case 0x0C: //F4 increase sound duration MAY INTERFERE WITH TAB
+          if(soundLength < 10) {
+            soundLength++;
+          }
+          increaseSoundTime = true;
+    break;
 
     case 0x4C: //ö
       if (keyboardActive) {
