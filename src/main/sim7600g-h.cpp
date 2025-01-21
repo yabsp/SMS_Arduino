@@ -267,7 +267,7 @@ bool sendSMS() {
   delay(300);
 
   sim7600.write(26); // Send termination character
-  delay(200);
+  delay(5000);
 
   String temp = getCurrentTime() + "_1";
   storeMessage(recipientPhoneNumber.c_str(), temp.c_str(), message.c_str());
@@ -284,14 +284,15 @@ String getCurrentTime() {
   while (sim7600.available()) {
     rawTime = sim7600.readString();
   }
-  //int indexCCLK = indexOf("+CCLK:", currentIndex);
+
+  Serial.println("ROHE ZEIT: "+ rawTime);
   
   int cclkIndex = rawTime.indexOf("+CCLK:", 0);
  
   int endIndex = rawTime.indexOf('\n', cclkIndex);
   String timeStamp = rawTime.substring(cclkIndex, endIndex);
 
-  Serial.println("ROHE ZEIT: "+ timeStamp);
+  Serial.println("Gekürzte ZEIT: "+ timeStamp);
 
   String formattedTimestamp = "20" + timeStamp.substring(8, 10) + "-" + 
     timeStamp.substring(11, 13) + "-" +          
