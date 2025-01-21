@@ -1,9 +1,13 @@
 #include "SDReaderWriter.h"
 #include "Menu.h"
 
+extern volatile bool sdCardBusy = false;
+
 void setupSDAndFolderStruct(){
+  sdCardBusy = true;
   if (!SD.begin(CHIPSELECT, SD_SCK_MHZ(50))) {
     Serial.println("SdFat initialization failed!");
+    sdCardBusy = false;
     return;
   } else {
     Serial.println("SdFat initialized.");
@@ -11,29 +15,31 @@ void setupSDAndFolderStruct(){
 
   if (!SD.exists("/contacts/")) {
     SD.mkdir("/contacts/");
-  } 
+  }
+  sdCardBusy = false; 
 }
 
 void storeMessage(const char* phoneNumber, const char* timestamp, const char* messageContent) {
-
-  String filePath = String("/contacts/") + String(phoneNumber) + "/";
+  sdCardBusy = true;
+  String filePath = String("/contacts/") + String(phoneNumber) + String("/");
 
   if (!SD.exists(filePath)) {
     if (SD.mkdir(filePath)) {
       Serial.println("contacts/phoneNumber directory created");
     } else {
       Serial.println("Failed to create contacts/phoneNumber directory");
+      sdCardBusy = false;
       return;
     }
   }
 
-  filePath = filePath + String("/msgs/");
+  filePath = filePath + String("msgs/");
 
   if (!SD.exists(filePath)) {
     if (SD.mkdir(filePath)) {
       Serial.println("Message directory created");
-    }else {
-    Serial.println("Could not create messages directory");
+    } else {
+      Serial.println("Could not create messages directory");
     } 
   } 
 
@@ -47,10 +53,11 @@ void storeMessage(const char* phoneNumber, const char* timestamp, const char* me
   } else {
     Serial.println("Failed to create message: " + filePath);
   }
+  sdCardBusy = false;
 }
 
 void storeContact(const char *phoneNumber, const char *contactName) {
-
+    sdCardBusy = true;
     String folderPath = String("/contacts/") + String(phoneNumber) + "/";
     
     if (!SD.exists(folderPath)) {
@@ -64,9 +71,11 @@ void storeContact(const char *phoneNumber, const char *contactName) {
       file.close();
       Serial.println("Contact stored: " + String(contactName));
     }
+    sdCardBusy = false;
 }
 
 void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
+  sdCardBusy = true;
   SdFile dir;
   String path = String("/contacts/") + phoneNumber + String("/msgs/");
 
@@ -74,8 +83,10 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
 
   if (!dir.open(path.c_str())) {
     Serial.println("Failed to open messages directory.");
+    sdCardBusy = false;
     return;
   } else if (startIndex < 0){
+    sdCardBusy = false;
     return;
   }
 
@@ -143,9 +154,11 @@ void loadMessages(String phoneNumber, int startIndex, int messageAmount) {
   }
   dir.rewind();
   dir.close();
+  sdCardBusy = false;
 }
 
 void loadContacts() {
+  sdCardBusy = true;
   SdFile contactsDir;
 
   if (!contactsDir.open("/contacts/")) {
@@ -186,9 +199,11 @@ void loadContacts() {
   }
 
   contactsDir.close();
+  sdCardBusy = false;
 }
 
 String getNameByPhoneNumber(const char* phoneNumber) {
+  sdCardBusy = true;
   bool contactFound = false;
 
   SdFile contactsDir;
@@ -215,6 +230,7 @@ String getNameByPhoneNumber(const char* phoneNumber) {
           char contactName[100];
           infoFile.fgets(contactName, sizeof(contactName));
           infoFile.close();
+          sdCardBusy = false;
           return String(contactName);
 
   // Optional, trims first and last name
@@ -234,10 +250,12 @@ String getNameByPhoneNumber(const char* phoneNumber) {
   }
   contactsDir.rewind();
   contactsDir.close();
-   return "";
+  sdCardBusy = false;
+  return "";
 }
 
 int getStoredMessagesCount(const char* phoneNumber) {
+  sdCardBusy = true;
   SdFile dir;
   String path = "/contacts/" + String(phoneNumber) + "/msgs/";
   int count = 0;
@@ -246,6 +264,7 @@ int getStoredMessagesCount(const char* phoneNumber) {
 
   if (!dir.open(path.c_str())) {
     Serial.println("Failed to open messages directory.");
+    sdCardBusy = false;
     return count;
   }
 
@@ -258,6 +277,7 @@ int getStoredMessagesCount(const char* phoneNumber) {
   }
   dir.rewind();
   dir.close();
+  sdCardBusy = false;
   return count;
 }
 
@@ -291,12 +311,14 @@ String formatDateString(String filename) {
 
 
 int getContactsCount() {
+  sdCardBusy = true;
   SdFile dir, entry;
   
   int counter = 0;
 
   if (!dir.open("/contacts/")) {
     Serial.println("Failed to open directory: " + String("/contacts/"));
+    sdCardBusy = false;
     return 0;
   }
 
@@ -304,22 +326,24 @@ int getContactsCount() {
     if (entry.isDir()) { 
       counter++;
     }
-	entry.rewind();
     entry.close();
   }
   dir.rewind();
   dir.close();
+  sdCardBusy = false;
   return counter;
 }
 
 
 Chat getContactByIndex(int index) {
+  sdCardBusy = true;
   SdFile dir, entry;
   int currentIndex = 0;
   Chat contact = {"", ""};
 
   if (!dir.open("/contacts/")) {
     Serial.println("Failed to open directory: " + String("/contacts/"));
+    sdCardBusy = false;
     return contact;
   }
 
@@ -342,10 +366,11 @@ Chat getContactByIndex(int index) {
         } else {
           Serial.println("Failed to open info file: " + infoFilePath);
         }
+        entry.rewind();
+		    dir.rewind();
         entry.close();
         dir.close();
-		entry.rewind();
-		dir.rewind();
+        sdCardBusy = false;
         return contact;
       }
       currentIndex++;
@@ -354,5 +379,6 @@ Chat getContactByIndex(int index) {
   }
   dir.rewind();
   dir.close();
+  sdCardBusy = false;
   return contact;
 }
