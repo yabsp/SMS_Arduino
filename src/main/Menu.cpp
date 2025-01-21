@@ -972,7 +972,7 @@ void Refresh_Chat_Viewer() {
     //refresh_Chat_View = true;
     delay(100);
     Draw_Chat_Viewer(phoneNumber.c_str(), contactName.c_str());
-    Refresh_Chat_Viewer();
+    //Refresh_Chat_Viewer();
   }
   
   if (escKeyPressed) {
@@ -995,39 +995,38 @@ void Refresh_Chat_Viewer() {
   }
 
   if (refresh_Chat_View) { // add case if less than 4 messages
-
+  
       refresh_Chat_View = false;
-
+      /*
       if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
-        startIndexChat = getStoredMessagesCount(phoneNumber.c_str());
+          startIndexChat = getStoredMessagesCount(phoneNumber.c_str());
+        } else {
+          startIndexChat = getStoredMessagesCount(phoneNumber.c_str())-4;
+        }
+      */
+      if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
+
         message_Cursor_X = 4;
         message_Cursor_Y = 66;
         tft.fillRect(0, 56, 320, 169, WHITE);
         tft.drawLine(0, 56, 320, 56, BLACK);
         tft.drawLine(0, 225, 320, 225, BLACK);
 
-        loadMessages(phoneNumber, startIndexChat, startIndexChat);
+        loadMessages(phoneNumber, 0, getStoredMessagesCount(phoneNumber.c_str()));
 
       } else {
         startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
+
         message_Cursor_X = 4;
         message_Cursor_Y = 66;
         tft.fillRect(0, 56, 320, 169, WHITE);
         tft.drawLine(0, 56, 320, 56, BLACK);
         tft.drawLine(0, 225, 320, 225, BLACK);
 
-      loadMessages(phoneNumber, startIndexChat, 4);
-
+        loadMessages(phoneNumber, startIndexChat, 4);
       }
-      /*
-      message_Cursor_X = 4;
-      message_Cursor_Y = 66;
-      tft.fillRect(0, 56, 320, 169, WHITE);
-      tft.drawLine(0, 56, 320, 56, BLACK);
-      tft.drawLine(0, 225, 320, 225, BLACK);
 
-      loadMessages(phoneNumber, startIndexChat, 4);
-      */
+      //Refresh_Chat_Viewer();
   }
   
 }
