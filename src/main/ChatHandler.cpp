@@ -52,6 +52,15 @@ void newContact(String phoneNumber, String contactName) {
 
     if (chatList[i].phoneNumber == phoneNumber) {
       // Wenn die Nummer gefunden wird, prüfe, ob der Name "Unknown_" ist
+      if (chatList[i].contactName = phoneNumber){
+        Serial.println("Debug: Aktualisiere Kontakt mit Telefonnummer als Namen...");
+        chatList[i].contactName = contactName;
+        Serial.print("Aktualisiert: Telefonnummer: ");
+        Serial.print(phoneNumber);
+        Serial.print(", Neuer Kontaktname: ");
+        Serial.println(contactName);
+        return;
+      }
       if (chatList[i].contactName.startsWith("Unknown_")) {
         Serial.println("Debug: Aktualisiere existierenden 'Unknown' Kontakt...");
         chatList[i].contactName = contactName;

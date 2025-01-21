@@ -26,6 +26,10 @@ void storeMessage(const char* phoneNumber, const char* timestamp, const char* me
   if (!SD.exists(filePath)) {
     if (SD.mkdir(filePath)) {
       Serial.println("contacts/phoneNumber directory created");
+      String contactName = getNameByPhoneNumber(phoneNumber);
+      if (contactName == ""){
+        newContact(phoneNumber, phoneNumber);
+      }
     } else {
       Serial.println("Failed to create contacts/phoneNumber directory");
       sdCardBusy = false;
