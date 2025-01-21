@@ -59,11 +59,11 @@ void Draw_Main_Menu() {
   tft.setTextSize(2);
   tft.setCursor(48,90);
   tft.print("University of Basel");
-  tft.setCursor(53,120);
-  tft.print("Arduino SMS Sender");
+  tft.setCursor(97,120);
+  tft.print("SMS Machine");
   tft.setCursor(45,150);
   tft.setTextSize(1);
-  tft.print("A Project by Max, Mike, Gioia and Yanick");
+  tft.print("A Project by Gioia, Max, Mike and Yanick");
   
   // Logo
   for (int i = 0; i < 15; i++) {
@@ -226,10 +226,10 @@ void Draw_Settings_Menu() {
   tft.print("Basel, 29 ° C");*/
   tft.drawLine(0, 56, 320, 56, BLACK);
   Back_Button.drawButton(true);
-
+  /*
   decrease_Sound_Length_Button.initButton(&tft, 120, 162, 40, 20, BLACK, BLACK, LIGHTGREY, "-", 1);
   increase_Sound_Length_Button.initButton(&tft, 290, 162, 40, 20, BLACK, BLACK, LIGHTGREY, "+", 1);
-
+  */
   if (sound_Switch_Active) {
     sound_Turned_On_Button.initButton(&tft,225, 98, 50, 30, BLACK, BLACK, LIGHTGREY, "On", 1);
     sound_Turned_On_Button.drawButton(true);
@@ -241,7 +241,7 @@ void Draw_Settings_Menu() {
   tft.setTextSize(1);
   tft.setCursor(6, 95);
   tft.print("Sound notifications are turned: ");
-
+  /*
   tft.setCursor(6, 160);
   tft.print("Sound duration: ");
 
@@ -263,7 +263,7 @@ void Draw_Settings_Menu() {
   tft.drawRect(153, 164, 100, 10, BLACK);
   tft.drawRect(152, 165, 100, 10, BLACK);
   tft.drawRect(151, 166, 100, 10, BLACK);
-
+  */
 }
 
 
@@ -359,7 +359,12 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
     tft.drawLine(0, 56, 320, 56, BLACK);
     tft.drawLine(0, 225, 320, 225, BLACK);
 
-    tft.setCursor(114, 140);
+
+    tft.fillRect(104, 126, 130, 16, LIGHTGREY);
+    tft.drawRect(104, 126, 130, 16, BLACK);
+    tft.drawRect(103, 125, 132, 17, BLACK);
+    tft.drawRect(102, 124, 134, 18, BLACK);
+    tft.setCursor(110, 130);
     tft.setTextColor(BLACK);
     tft.setTextSize(1);
     tft.println("No chat history yet!");
@@ -992,7 +997,7 @@ void Refresh_Chat_Viewer() {
     startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
     //refresh_Chat_View = true;
     delay(100);
-    //Draw_Chat_Viewer(phoneNumber.c_str(), contactName.c_str());
+    Draw_Chat_Viewer(phoneNumber.c_str(), contactName.c_str());
     //Refresh_Chat_Viewer();
   }
   
