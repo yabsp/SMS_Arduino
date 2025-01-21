@@ -1000,10 +1000,26 @@ void Refresh_Chat_Viewer() {
 
       if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
         startIndexChat = getStoredMessagesCount(phoneNumber.c_str());
+        message_Cursor_X = 4;
+        message_Cursor_Y = 66;
+        tft.fillRect(0, 56, 320, 169, WHITE);
+        tft.drawLine(0, 56, 320, 56, BLACK);
+        tft.drawLine(0, 225, 320, 225, BLACK);
+
+        loadMessages(phoneNumber, startIndexChat, startIndexChat);
+
       } else {
         startIndexChat = getStoredMessagesCount(phoneNumber.c_str()) - 4;
+        message_Cursor_X = 4;
+        message_Cursor_Y = 66;
+        tft.fillRect(0, 56, 320, 169, WHITE);
+        tft.drawLine(0, 56, 320, 56, BLACK);
+        tft.drawLine(0, 225, 320, 225, BLACK);
+
+      loadMessages(phoneNumber, startIndexChat, 4);
+
       }
-      
+      /*
       message_Cursor_X = 4;
       message_Cursor_Y = 66;
       tft.fillRect(0, 56, 320, 169, WHITE);
@@ -1011,7 +1027,7 @@ void Refresh_Chat_Viewer() {
       tft.drawLine(0, 225, 320, 225, BLACK);
 
       loadMessages(phoneNumber, startIndexChat, 4);
-
+      */
   }
   
 }
@@ -1339,7 +1355,8 @@ void Refresh_Phone_Number_Selector() {
 
         // Ensure both fields are filled
       if (phoneNumber.length() > 0 && contactName.length() > 0) {
-              newContact(phoneNumber, contactName); // Create new contact
+              storeContact(phoneNumber.c_str(), contactName.c_str()); // Create new contact
+              newContact(phoneNumber, contactName);
               Serial.println("Neuer Kontakt erfolgreich erstellt:");
               Serial.print("Telefonnummer: ");
               Serial.println(phoneNumber);
