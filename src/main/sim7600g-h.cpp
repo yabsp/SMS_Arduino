@@ -38,13 +38,6 @@ void setupSim7600() {
     delay(200);
     readWhileAvailable();
 
-    // set to text mode
-    sim7600.println("AT+CMGF=1");
-    delay(500);
-
-    // connect to network time protocol server of the server pool
-    sim7600.println("AT+CNTP=\"ch.pool.ntp.org\", 0");
-
     // Checks if SIM card is unlocked, if not, it unlocks it
     Serial.println("Checking CPIN status...");
     SimStatus cpinStatus = checkCPINStatus();
@@ -68,6 +61,22 @@ void setupSim7600() {
             Serial.println("CPIN status: " + String(cpinStatus));
             break;
     }
+
+    // set to text mode
+    sim7600.println("AT+CMGF=1");
+    delay(200);
+
+    // set storage location to SIM card
+    sim7600.println("AT+CPMS=\"SM\"");
+    delay(200);
+
+    // connect to network time protocol server of the server pool
+    sim7600.println("AT+CNTP=\"ch.pool.ntp.org\", 0");
+    delay(200);
+
+    sim7600.println("AT+CMGD=1,4");
+    delay(200);
+
     readWhileAvailable();
     sim7600.println("AT+CFUN?");
     if (responseEqualsGiven("0")) {
@@ -101,7 +110,6 @@ void readWhileAvailableMessage() {
       playRick();
     }
 }
-
 
 void displayLastMessage(String rawResponse) {
   Serial.println("You received a new message:");
