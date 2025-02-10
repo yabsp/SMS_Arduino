@@ -196,13 +196,8 @@ void Draw_Main_Menu() {
       tft.drawPixel(logo_Y+21+i, logo_X+3+j, BLACK);
       tft.drawPixel(logo_Y+18+i, logo_X-6+j, BLACK);
       tft.drawPixel(logo_Y+18+i, logo_X+6+j, BLACK);
-
-
     }
   }
-
-
-
 
   //Buttons
   Settings_Menu.drawButton(true);
@@ -219,17 +214,9 @@ void Draw_Settings_Menu() {
   tft.setCursor(6, 6);
   tft.setTextSize(2);
   tft.print("Settings");
-  /*tft.setCursor(215, 4);
-  tft.setTextSize(1);
-  tft.print("22.12.2024, 11:46");
-  tft.setCursor(215, 16);
-  tft.print("Basel, 29 ° C");*/
   tft.drawLine(0, 56, 320, 56, BLACK);
   Back_Button.drawButton(true);
-  /*
-  decrease_Sound_Length_Button.initButton(&tft, 120, 162, 40, 20, BLACK, BLACK, LIGHTGREY, "-", 1);
-  increase_Sound_Length_Button.initButton(&tft, 290, 162, 40, 20, BLACK, BLACK, LIGHTGREY, "+", 1);
-  */
+ 
   if (sound_Switch_Active) {
     sound_Turned_On_Button.initButton(&tft,225, 98, 50, 30, BLACK, BLACK, LIGHTGREY, "On", 1);
     sound_Turned_On_Button.drawButton(true);
@@ -241,29 +228,6 @@ void Draw_Settings_Menu() {
   tft.setTextSize(1);
   tft.setCursor(6, 95);
   tft.print("Sound notifications are turned: ");
-  /*
-  tft.setCursor(6, 160);
-  tft.print("Sound duration: ");
-
-  increase_Sound_Length_Button.drawButton(true);
-  decrease_Sound_Length_Button.drawButton(true);
-
-  tft.setTextColor(BLACK);
-
-  if(soundLength < 10){
-  tft.setCursor(199, 145);
-  tft.print(soundLength);
-  } else if (soundLength == 10) {
-    tft.setCursor(196, 145);
-    tft.print(soundLength);
-  }
-
-  tft.fillRect(152, 165, 100, 10, LIGHTGREY);
-  tft.fillRect(152, 165, soundLength*10, 10, TURQUOISE);
-  tft.drawRect(153, 164, 100, 10, BLACK);
-  tft.drawRect(152, 165, 100, 10, BLACK);
-  tft.drawRect(151, 166, 100, 10, BLACK);
-  */
 }
 
 
@@ -283,16 +247,8 @@ void Draw_Chat_Menu() {
   scrollUpButton.initButton(&tft, 290, 78, 50, 30, BLACK, BLACK, LIGHTGREY, "Up", 1);
   scrollDownButton.initButton(&tft, 290, calculateBottom(30) + 236 , 50, 30, BLACK, BLACK, LIGHTGREY, "Down", 1);
 
-  // Create buttons for each visible chat (based on chatOffset)
-  //uint8_t visibleChats = 4; // Number of chats visible at a time
-
   for (uint8_t i = 0; i < visibleChats && (i + chatOffset) < chatCount; i++) {
     String label = chatList[i + chatOffset].contactName;
-    /*
-    if (chatList[i + chatOffset].unreadMessages > 0) {
-      label += " (" + String(chatList[i + chatOffset].unreadMessages) + ")";
-    }*/
-
     chatButtons[i].initButton(
       &tft,
       calculateLeft(250) + 4,     // X-Coordinate
@@ -329,28 +285,7 @@ void Draw_Chat_Viewer(String phoneNumber, String contactName) {
 
   scroll_Up_Chat_Button.drawButton(true);
   scroll_Down_Chat_Button.drawButton(true);
-
-  //String messages = getChatMessages(phoneNumber);
-
-// Display the messages line by line
-  /*
-  tft.setTextSize(1);
-  tft.setTextColor(BLACK);
-  int cursorX = 4;
-  int cursorY = 60;
-
-  for (uint16_t i = 0; i < messages.length(); i++) {
-    if (messages[i] == '\n') {    // Move to the next line if newline character is found
-      cursorY += 10;
-      cursorX = 4;
-    } else {
-      tft.setCursor(cursorX, cursorY);
-      tft.print(messages[i]);
-      cursorX += 6;
-    }
-  }
-  */
-
+  
   if (getStoredMessagesCount(phoneNumber.c_str()) <= 0) {
 
     Serial.println("No chat history");
@@ -413,8 +348,6 @@ void Draw_Phone_Number_Selector() {
   tft.setTextSize(1);
   tft.setCursor(81, 175); // Adjusted Y-coordinate for centered text
   tft.print("Click to enter contact name");
-
-  //createChatFromSerialInput();
 }
 
 
@@ -431,8 +364,6 @@ void Refresh_Main_Menu() {
 
     if(tabCount != 0 && tabCount % 2 == 1){ // In Settings Button
 
-      //Serial.println("tabCount Even");
-      //Serial.println(tabCount);
       Cursor_X = 83;
       Cursor_Y = 187;
 
@@ -440,9 +371,7 @@ void Refresh_Main_Menu() {
       Chat_Menu.drawButton(true);
 
     } else if (tabCount != 0 && tabCount % 2 == 0){ // In Chats Button
-
-      //Serial.println("tabCount Odd");
-      //Serial.println(tabCount);
+      
       Cursor_X = 207;
       Cursor_Y = 187;
 
@@ -1023,13 +952,7 @@ void Refresh_Chat_Viewer() {
   if (refresh_Chat_View && recipientPhoneNumber == phoneNumber) { // add case if less than 4 messages
   
       refresh_Chat_View = false;
-      /*
-      if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
-          startIndexChat = getStoredMessagesCount(phoneNumber.c_str());
-        } else {
-          startIndexChat = getStoredMessagesCount(phoneNumber.c_str())-4;
-        }
-      */
+      
       if (getStoredMessagesCount(phoneNumber.c_str()) < 4) {
 
         message_Cursor_X = 4;
@@ -1363,8 +1286,6 @@ void Refresh_Phone_Number_Selector() {
           tft.setCursor(18, 175);
           tft.setTextSize(2);
 
-          //tft.setCursor(10, 175);
-          //tft.setTextSize(1);
           tft.print(contactName); // Display entered contact name on the screen
           Serial.print("Eingegebener Kontaktname: ");
           Serial.println(contactName); // Debugging output
@@ -1419,8 +1340,6 @@ void Refresh_Phone_Number_Selector() {
   escKeyPressed= false;
 
 }
-
-
 
 // Change Menus --------------------------------------------------------------------------------------------
 void Change_Menu(uint8_t no){
@@ -1521,19 +1440,9 @@ void Blink_Underscore(uint16_t x, uint16_t y) {
   if (millis() - lastBlink > 500) { // Toggle every 500ms
     lastBlink = millis();
     underscoreVisible = !underscoreVisible;
-    // tft.fillRect(x, y, w, h, color);
     tft.fillRect(x, y + 7, 6, 2, WHITE);
           
   }
-
-  // Calculate dynamic position of the underscore
-  //int underscoreX = baseX + inputLength * 6; // Each character in size 1 takes 6 pixels
-  /*
-  if (underscoreVisible) {
-    tft.setTextColor(BLACK);
-    tft.setCursor(x, y); // Position after the current input
-    tft.print("_");
-  } */
 
   if (underscoreVisible) {
     tft.fillRect(x, y + 7, 6, 2, BLACK);
