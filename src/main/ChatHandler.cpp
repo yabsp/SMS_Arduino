@@ -2,26 +2,15 @@
 #include "Utils.h"
 #include "Menu.h"
 
-
-//#include <SD.h>
-
 // A structure to hold message details
 struct Message {
   String timestamp;
   String phoneNumber;
   String content;
-  /*
-  char timestamp[25]; 
-  char phoneNumber[16];
-  char content[64];
-  */
 };
 
 struct StoredChat {
   String phoneNumber; // Key
-  //char phoneNumer[16];
-  //Message messages[MAX_MESSAGES]; // Messages for this chat
-  //Message messages[MAX_MESSAGES]; // Messages for this chat
   uint8_t messageCount; // Number of messages
 };
 
@@ -111,95 +100,6 @@ void setChat(String phoneNumber, String contactName) {
     newContact(phoneNumber, contactName);
   }
 }
-
-/*
-/*
-// Saves a new received message to the memory ----------------------------------------------------
-void saveMessageInMemory(const String &phoneNumber, const String &message, const String &timestamp) {
-  testing++;
-  for (uint8_t i = 0; i < storedChatCount; i++) {
-    if (storedChats[i].phoneNumber == phoneNumber) {
-      // Add message to existing chat
-      if (storedChats[i].messageCount >= MAX_MESSAGES) {
-        for (uint8_t j = 0; j < MAX_MESSAGES - 1; j++) {
-          storedChats[i].messages[j] = storedChats[i].messages[j + 1];
-        }
-        storedChats[i].messages[MAX_MESSAGES - 1] = {timestamp, phoneNumber, message};
-        Serial.println("Oldest message removed. New message added to chat for: " + phoneNumber);
-      } else {
-        storedChats[i].messages[storedChats[i].messageCount++] = {timestamp, phoneNumber, message};
-        Serial.println("Message added to existing chat for: " + phoneNumber);
-      }
-      //Draw_Chat_Viewer(phoneNumber, findContactNameByPhoneNumber(phoneNumber));
-      Refresh_Chat_Viewer();
-    return;
-  }
-}
-
-  // Create new chat
-  if (storedChatCount < MAX_CHATS) {
-    storedChats[storedChatCount].phoneNumber = phoneNumber;
-    storedChats[storedChatCount].messageCount = 0;
-    storedChats[storedChatCount].messages[storedChats[storedChatCount].messageCount++] = {timestamp, phoneNumber, message};
-    storedChatCount++;
-    Serial.println("New chat created and message added for: " + phoneNumber);
-
-  // Check if the phone number is already in chatList
-    if (findChatIndexByPhoneNumber(phoneNumber) == chatCount) {
-    // Assign sequential "Unknown" name
-      uint8_t unknownIndex = 1;
-      for (uint8_t i = 0; i < chatCount; i++) {
-        if (chatList[i].contactName.startsWith("Unknown_")) {
-          unknownIndex++;
-        }
-      }
-      String unknownName = "Unknown_" + String(unknownIndex);
-      newContact(phoneNumber, unknownName);
-    }
-    //Draw_Chat_Viewer(phoneNumber, findContactNameByPhoneNumber(phoneNumber));
-    Refresh_Chat_Viewer();
-  } else {
-    Serial.println("Max chats reached, cannot save message!");
-  }
-}*/
-
-/*
-// Returns all messages for a specific phonenumber -----------------------------------------------
-/*
-String getChatMessages(const String &phoneNumber) {
-  for (uint8_t i = 0; i < storedChatCount; i++) { // finds the correct chat
-    if (storedChats[i].phoneNumber == phoneNumber) {
-      String messages = "Chat history for: " + phoneNumber + "\n";
-      messages += "--------------------------------\n";
-
-    // Concatenate all messages
-    for (uint8_t j = 0; j < storedChats[i].messageCount; j++) {
-      messages += storedChats[i].messages[j].timestamp + ": " + storedChats[i].messages[j].phoneNumber + "\n";
-      messages += storedChats[i].messages[j].content + "\n";
-    }
-    messages += "--------------------------------\n";
-    return messages;
-    }
-  }
-  return "No chat history found for: " + phoneNumber + "\n"; // If no chat found
-}
-*/
-
-/*
-// Increment unread message counter by phone number ---------------------------------------------
-void incrementUnreadMessages(const String& phoneNumber) {
-  uint8_t index = findChatIndexByPhoneNumber(phoneNumber);
-  if (index < chatCount) {
-    chatList[index].unreadMessages++;
-    Serial.print("Unread messages for ");
-    Serial.print(phoneNumber);
-    Serial.print(": ");
-    Serial.println(chatList[index].unreadMessages);
-  } else {
-    Serial.println("Chat not found!");
-  }
-}
-*/
 
 // Retrieve chat by phone number -----------------------------------------------------------------
 Chat* getChatByPhoneNumber(const String& phoneNumber) {
